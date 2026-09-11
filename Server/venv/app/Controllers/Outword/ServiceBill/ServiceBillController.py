@@ -1,6 +1,7 @@
 import traceback
+import json
 from flask import Flask, jsonify, request, copy_current_request_context
-from app import app, db
+from app import app, db, socketio
 from app.models.Outword.ServiceBill.ServiceBillModel import ServiceBillHead, ServiceBillDetail
 from sqlalchemy import text, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -270,6 +271,8 @@ def insert_servicebill():
 
         db.session.commit()
 
+        socketio.emit('service_bill_added', json.loads(json.dumps({**head_data, 'rbid': new_head.rbid}, default=str)))
+
         # Fetch company parameters and generate ledger entries
         company_parameters = fetch_company_parameters(head_data['Company_Code'], head_data['Year_Code'])
         gledger_entries = generate_gledger_entries(head_data, company_parameters, detail_data)
@@ -283,7 +286,7 @@ def insert_servicebill():
 
         threading.Thread(target=async_send_gledger).start()
 
-     
+
         # if gledger_entries:
         #     response = send_gledger_entries(head_data, gledger_entries, trans_type)
         #     if response.status_code != 200:
@@ -406,6 +409,8 @@ def update_servicebill():
 
         db.session.commit()
 
+        socketio.emit('service_bill_updated', json.loads(json.dumps({**head_data, 'rbid': rbid, 'Doc_No': updated_head.Doc_No}, default=str)))
+
         # Fetch company parameters and generate ledger entries
         company_parameters = fetch_company_parameters(head_data['Company_Code'], head_data['Year_Code'])
         gledger_entries = generate_gledger_entries(head_data, company_parameters, detail_data)
@@ -418,7 +423,7 @@ def update_servicebill():
                 print(f"[Async Gledger Error] {e}")
 
         threading.Thread(target=async_send_gledger).start()
-        
+
         # if gledger_entries:
         #     response = send_gledger_entries(head_data, gledger_entries, trans_type)
         #     if response.status_code != 200:
@@ -488,6 +493,14 @@ def delete_data_by_rbid():
                     raise Exception("Failed to delete record in gLedger")
 
         db.session.commit()
+
+        socketio.emit('service_bill_deleted', {
+            'rbid': rbid,
+            'Doc_No': doc_no,
+            'Company_Code': Company_Code,
+            'Year_Code': Year_Code
+        })
+
         return jsonify({
             "message": f"Deleted {deleted_head_rows} head row(s) and {deleted_detail_rows} detail row(s) successfully"
         }), 200

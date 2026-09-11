@@ -4,6 +4,7 @@ import AccountMasterHelp from "../../../Helper/AccountMasterHelp";
 import GSTRateMasterHelp from "../../../Helper/GSTRateMasterHelp";
 import ItemMasterHelp from "../../../Helper/SystemmasterHelp";
 import axios from "axios";
+import io from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
@@ -65,6 +66,7 @@ const headerCellStyle = {
 };
 
 const API_URL = process.env.REACT_APP_API;
+const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
 
 const ServiceBill = () => {
   const companyCode = sessionStorage.getItem("Company_Code");
@@ -937,6 +939,70 @@ const ServiceBill = () => {
       customerCodeElement.focus();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    socket.on("service_bill_updated", (data) => {
+      if (data?.Doc_No && formData.Doc_No && String(data.Doc_No) === String(formData.Doc_No)) {
+        axios.get(`${API_URL}/getservicebillByid?doc_no=${formData.Doc_No}&Company_Code=${companyCode}&Year_Code=${Year_Code}`)
+          .then((response) => {
+            const { service_bill_head, service_bill_details, service_labels } = response.data;
+            const detailsArray = Array.isArray(service_bill_details) ? service_bill_details : [];
+            newSaleid = service_bill_head.rbid;
+            partyName = service_labels[0].partyname;
+            partyCode = service_bill_head.Customer_Code;
+            billToName = service_labels[0].millname;
+            billToCode = service_bill_head.TDS_Ac;
+            gstRateCode = service_bill_head.GstRateCode;
+            gstName = service_labels[0].GST_Name;
+            itemName = service_labels[0].itemname;
+            item_Code = service_bill_details[0].Item_Code;
+            GroupName = service_labels[0].System_Name_E;
+            GroupCode = service_bill_details[0].Group_Code;
+            gstStateCode = service_labels[0].GSTStateCode;
+            proformaServicebillno = service_bill_head.ProformaServicebillno;
+            proformaid = service_bill_head.Proformaid;
+            const itemNameMap = service_labels.reduce((map, label) => {
+              if (label.Item_Code !== undefined && label.itemname) {
+                map[label.Item_Code] = label.itemname;
+              }
+              return map;
+            }, {});
+            const groupNameMap = service_labels.reduce((map, label) => {
+              if (label.Group_Code !== undefined && label.System_Name_E) {
+                map[label.Group_Code] = label.System_Name_E;
+              }
+              return map;
+            }, {});
+            const enrichedDetails = detailsArray.map((detail) => ({
+              ...detail,
+              itemname: itemNameMap[detail.Item_Code] || "Unknown Item",
+              System_Name_E: groupNameMap[detail.Group_Code] || "",
+            }));
+            setFormData((prev) => ({ ...prev, ...service_bill_head }));
+            setLastTenderData(service_bill_head || {});
+            setLastTenderDetails(enrichedDetails);
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("service_bill_deleted", (data) => {
+      if (data?.Doc_No && formData.Doc_No && String(data.Doc_No) === String(formData.Doc_No)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("service_bill_updated");
+      socket.off("service_bill_deleted");
+      socket.disconnect();
+    };
+  }, [formData.Doc_No]);
 
 
   const handlerecordDoubleClicked = async () => {

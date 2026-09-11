@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AccountMasterHelp from "../../../Helper/AccountMasterHelp";
 import UTRLotnoHelp from "../../../Helper/UTRLotnoHelp";
 import axios from "axios";
+import io from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
@@ -47,6 +48,7 @@ const headerCellStyle = {
 };
 
 const API_URL = process.env.REACT_APP_API;
+const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
 
 const UTREntry = () => {
   const docDateRef = useRef(null);
@@ -901,6 +903,51 @@ useEffect(() => {
       handleAddOne();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    socket.on("utr_entry_updated", (data) => {
+      if (data?.utrid && formData.utrid && String(data.utrid) === String(formData.utrid)) {
+        axios.get(`${API_URL}/getutrByid?Company_Code=${companyCode}&doc_no=${formData.doc_no}`)
+          .then((response) => {
+            const respData = response.data;
+            lblBankname = respData.labels.bankAcName;
+            lblmillname = respData.labels.millName;
+            newbank_ac = respData.utr_head.bank_ac;
+            newmill_code = respData.utr_head.mill_code;
+
+            setFormData((prev) => ({ ...prev, ...respData.utr_head }));
+            setLastTenderData(respData.utr_head || {});
+            setLastTenderDetails(respData.utr_details || []);
+
+            const totalItemAmount = respData.utr_details.reduce(
+              (total, user) => total + parseFloat(user.amount),
+              0
+            );
+            setGlobalTotalAmount(totalItemAmount.toFixed(2));
+            const totalDiff = (parseFloat(respData.utr_head.amount) || 0) - totalItemAmount;
+            setDiff(totalDiff.toFixed(2));
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("utr_entry_deleted", (data) => {
+      if (data?.utrid && formData.utrid && String(data.utrid) === String(formData.utrid)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("utr_entry_updated");
+      socket.off("utr_entry_deleted");
+      socket.disconnect();
+    };
+  }, [formData.utrid]);
 
   useEffect(() => {
     if (selectedRecord) {

@@ -1,8 +1,9 @@
 import React from "react";
-import TableUtility from "../../../Common/UtilityCommon/TableUtility"; 
+import { Provider } from "react-redux";
+import otherPurchaseStore from "../../../store/otherPurchaseStore";
+import OtherPurchaseLiveTable from "./OtherPurchaseLiveTable";
 
 const OtherPurchaseUtility = ({includeYearCode=true}) => {
-    const apiUrl = `${process.env.REACT_APP_API}/getall-OtherPurchase`;
     const columns = [
         { label: "Doc No", key: "Doc_No" },
         { label: "Doc Date", key: "Doc_Date" },
@@ -13,16 +14,17 @@ const OtherPurchaseUtility = ({includeYearCode=true}) => {
     ];
 
     return (
-        <TableUtility
-            title="Other Purchase"
-            apiUrl={apiUrl}
-            columns={columns}
-            rowKey="Doc_No"
-            addUrl="/other-purchase"
-            detailUrl="/other-purchase"
-            permissionUrl="/other-purchaseutility"
-            includeYearCode={includeYearCode}
-        />
+        <Provider store={otherPurchaseStore}>
+            <OtherPurchaseLiveTable
+                title="Other Purchase"
+                columns={columns}
+                rowKey="Doc_No"
+                addUrl="/other-purchase"
+                detailUrl="/other-purchase"
+                permissionUrl="/other-purchaseutility"
+                includeYearCode={includeYearCode}
+            />
+        </Provider>
     );
 };
 

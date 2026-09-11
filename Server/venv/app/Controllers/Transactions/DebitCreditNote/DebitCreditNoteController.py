@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
-from app import app, db
-from app.models.Transactions.DebitCreditNote.DebitCreditNoteModels import DebitCreditNoteHead, DebitCreditNoteDetail 
+from app import app, db, socketio
+from app.models.Transactions.DebitCreditNote.DebitCreditNoteModels import DebitCreditNoteHead, DebitCreditNoteDetail
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 import os
+import json
 import requests
 from datetime import datetime
 from app.utils.CommonGLedgerFunctions import fetch_company_parameters,get_accoid,get_ac_Name, get_acShort_Name
@@ -550,6 +551,8 @@ def insert_debitcreditnote():
             db.session.rollback()
             return jsonify({"error": "Failed to create gLedger record", "details": response.json()}), response.status_code
 
+        socketio.emit('debit_credit_note_added', json.loads(json.dumps({**headData, 'dcid': new_head.dcid}, default=str)))
+
         return jsonify({
             "message": "Data Inserted successfully",
             "head": task_head_schema.dump(new_head),
@@ -940,6 +943,8 @@ def update_debitCreditnote():
             db.session.rollback()
             return jsonify({"error": "Failed to create gLedger record", "details": response.json()}), response.status_code
 
+        socketio.emit('debit_credit_note_updated', json.loads(json.dumps({**headData, 'dcid': dcid, 'doc_no': updateddoc_no}, default=str)))
+
         return jsonify({
             "message": "Data Inserted successfully",
             "head": updatedHeadCount,
@@ -1042,6 +1047,13 @@ def delete_data_by_dcid():
 
                 if response.status_code != 200:
                     raise Exception("Failed to delete record in gLedger")
+
+        socketio.emit('debit_credit_note_deleted', {
+            'dcid': dcid,
+            'doc_no': doc_no,
+            'Company_Code': Company_Code,
+            'Year_Code': Year_Code
+        })
 
         return jsonify({
             "message": f"Deleted {deleted_task_rows} Task row(s) and {deleted_user_rows} User row(s) successfully"

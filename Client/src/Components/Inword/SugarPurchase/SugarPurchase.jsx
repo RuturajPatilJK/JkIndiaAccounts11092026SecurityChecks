@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import AccountMasterHelp from "../../../Helper/AccountMasterHelp";
 import GSTRateMasterHelp from "../../../Helper/GSTRateMasterHelp";
 import axios from "axios";
+import io from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
@@ -80,6 +81,7 @@ const headerCellStyle = {
 
 const SugarPurchase = () => {
   const API_URL = process.env.REACT_APP_API;
+  const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
   const companyCode = sessionStorage.getItem("Company_Code");
   const Year_Code = sessionStorage.getItem("Year_Code");
   const username = sessionStorage.getItem("username");
@@ -860,6 +862,40 @@ const SugarPurchase = () => {
       handleAddOne();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    socket.on("purchase_bill_updated", (data) => {
+      if (data?.purchaseid && formData.purchaseid && String(data.purchaseid) === String(formData.purchaseid)) {
+        axios.get(`${API_URL}/getsugarpurchasebyid?doc_no=${formData.doc_no}&Company_Code=${companyCode}&Year_Code=${Year_Code}`)
+          .then((response) => {
+            if (response.status === 200) {
+              NavigationSetFields(
+                response.data.getData_SugarPurchaseHead_data,
+                response.data.getData_SugarPurchaseDetail_data
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("purchase_bill_deleted", (data) => {
+      if (data?.purchaseid && formData.purchaseid && String(data.purchaseid) === String(formData.purchaseid)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("purchase_bill_updated");
+      socket.off("purchase_bill_deleted");
+      socket.disconnect();
+    };
+  }, [formData.purchaseid]);
 
   //After Record DoubleClicked on utility page show that record on User Creation for Edit Mode
   const handlerecordDoubleClicked = async () => {

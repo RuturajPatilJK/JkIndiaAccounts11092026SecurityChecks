@@ -3,6 +3,7 @@ import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import io from "socket.io-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./OtherPurchase.css";
@@ -22,6 +23,7 @@ import OtherReport from "./OtherPurchaseReport";
 
 //API Credentials
 const API_URL = process.env.REACT_APP_API;
+const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
 
 //Labels Global variables
 var SupplierName = ""
@@ -786,6 +788,53 @@ const OtherPurchase = () => {
       handleAddOne();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    socket.on("other_purchase_updated", (data) => {
+      if (data?.Doc_No && formData.Doc_No && String(data.Doc_No) === String(formData.Doc_No)) {
+        axios.get(`${API_URL}/get-OtherPurchaseSelectedRecord?Company_Code=${companyCode}&Year_Code=${Year_Code}&Doc_No=${formData.Doc_No}`)
+          .then((response) => {
+            const respData = response.data;
+            SupplierName = respData.labels.SupplierName;
+            SupplierCode = respData.selected_Record_data.Supplier_Code;
+            Exp_Ac_Name = respData.labels.ExpAcName;
+            Exp_Ac_Code = respData.selected_Record_data.Exp_Ac;
+            TDSCutAcName = respData.labels.TDSCutAcName;
+            TDSCutAcCode = respData.selected_Record_data.TDS_Cutt_AcCode;
+            TDSAcName = respData.labels.tdsacname;
+            TDSAcCodeNew = respData.selected_Record_data.TDS_AcCode;
+            GStrateName = respData.labels.GST_Name;
+            GStrateCode = respData.selected_Record_data.GST_RateCode;
+            Provision_Ac_Code = respData.selected_Record_data.Provision_Ac;
+            Provision_Ac_Name = respData.labels.provisionAcName;
+            GroupCode = respData.selected_Record_data.Group_Code;
+            GroupName = respData.labels.groupName;
+            sectionName = respData.labels.Nature_of_Payment;
+            sectionCode = respData.selected_Record_data.Section_Code;
+            setTDSsectioncode(respData.labels.TDS_Section_Code);
+            setFormData((prev) => ({ ...prev, ...respData.selected_Record_data }));
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("other_purchase_deleted", (data) => {
+      if (data?.Doc_No && formData.Doc_No && String(data.Doc_No) === String(formData.Doc_No)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("other_purchase_updated");
+      socket.off("other_purchase_deleted");
+      socket.disconnect();
+    };
+  }, [formData.Doc_No]);
 
   //change No functionality to get that particular record
   const handleKeyDown = async (event) => {

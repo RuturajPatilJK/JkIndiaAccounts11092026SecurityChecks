@@ -8,6 +8,7 @@ import ItemMasterHelp from "../../../Helper/SystemmasterHelp";
 import BrandMasterHelp from "../../../Helper/BrandMasterHelp";
 import axios from "axios";
 // import axios from '../../../api/axiosInstance';
+import io from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
@@ -81,6 +82,7 @@ const headerCellStyle = {
 
 //API URL
 const API_URL = process.env.REACT_APP_API;
+const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
 
 const SaleBill = () => {
 
@@ -892,6 +894,62 @@ const SaleBill = () => {
       handleAddOne();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    socket.on("sale_bill_updated", (data) => {
+      if (data?.saleid && formData.saleid && String(data.saleid) === String(formData.saleid)) {
+        axios.get(`${API_URL}/SaleBillByid?saleid=${formData.saleid}&Company_Code=${companyCode}&Year_Code=${Year_Code}`)
+          .then((response) => {
+            if (response.status === 200) {
+              const respData = response.data;
+              partyName = respData.last_details_data[0].partyname;
+              partyCode = respData.last_head_data.Ac_Code;
+              unitName = respData.last_details_data[0].unitname;
+              unitCode = respData.last_details_data[0].unitaccode;
+              billToName = respData.last_details_data[0].billtoname;
+              billToCode = respData.last_head_data.Bill_To;
+              gstrate = respData.last_details_data[0].gstrate;
+              gstRateCode = respData.last_head_data.GstRateCode;
+              millName = respData.last_details_data[0].millname;
+              millCode = respData.last_head_data.mill_code;
+              itemName = respData.last_details_data[0].itemname;
+              item_Code = respData.last_details_data[0].System_Code;
+              brandName = respData.last_details_data[0].brandName;
+              brandCode = respData.last_details_data[0].brandCode;
+              brokerCode = respData.last_head_data.BROKER;
+              brokerName = respData.last_details_data[0].brokername;
+              transportCode = respData.last_details_data[0].transportaccode;
+              transportName = respData.last_details_data[0].transportname;
+              millgstno = respData.last_details_data[0].MillGSTNo;
+              gstName = respData.last_details_data[0].GSTName;
+              lblGodownName = respData.last_details_data[0].godownName;
+              newGodownCode = respData.last_head_data.godownCode;
+              setFormData((prev) => ({ ...prev, ...respData.last_head_data }));
+              setLastTenderData(respData.last_head_data || {});
+              setLastTenderDetails(respData.last_details_data || []);
+            }
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("sale_bill_deleted", (data) => {
+      if (data?.saleid && formData.saleid && String(data.saleid) === String(formData.saleid)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("sale_bill_updated");
+      socket.off("sale_bill_deleted");
+      socket.disconnect();
+    };
+  }, [formData.saleid]);
 
   const handlerecordDoubleClicked = async () => {
     setIsEditing(false);

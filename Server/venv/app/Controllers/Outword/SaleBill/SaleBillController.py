@@ -1,4 +1,5 @@
 import traceback
+import json
 from flask import Flask, jsonify, request, copy_current_request_context
 from app import app, db,socketio
 from app.models.Outword.SaleBill.SaleBillModels import SaleBillHead,SaleBillDetail
@@ -501,6 +502,8 @@ def insert_SaleBill():
 
         db.session.commit()
 
+        socketio.emit('sale_bill_added', json.loads(json.dumps(headData, default=str)))
+
         gledger_entries = create_sale_gledger_entries(headData, detailData, new_doc_no, new_head.saleid, dono)
 
         @copy_current_request_context
@@ -674,6 +677,8 @@ def update_SaleBill():
                         
         db.session.commit()
 
+        socketio.emit('sale_bill_updated', json.loads(json.dumps({**headData, 'saleid': updatedsaleid}, default=str)))
+
         gledger_entries = create_sale_gledger_entries(headData, detailData, doc_no, updatedsaleid,dono)
 
         @copy_current_request_context
@@ -760,6 +765,12 @@ def delete_data_by_saleid():
                 raise Exception("Failed to delete record in gLedger")
 
             db.session.commit()
+
+            socketio.emit('sale_bill_deleted', {
+                'saleid': saleid,
+                'Company_Code': Company_Code,
+                'Year_Code': Year_Code
+            })
 
             return jsonify({
                 "message": f"Deleted {deleted_saleBillHead_rows} saleBillHead row(s) and {deleted_saleBillDetail_rows} saleBillDetail row(s) successfully"

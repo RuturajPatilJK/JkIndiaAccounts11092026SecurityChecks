@@ -1122,24 +1122,24 @@ const DeliveryOrder = () => {
 
 
 
-  useEffect(() => {
-    const refreshPendingDOData = async () => {
-      try {
-        const companyCode = sessionStorage.getItem("Company_Code");
-        const res = await axios.get(`${API_URL}/getdata-Pending_DO`, {
-          params: { company_code: companyCode }
-        });
-        const all = res.data.all_data || [];
-        setPendingDOCount(all.filter((r) => r.Approved !== "Y").length);
-        // If the popup is open, push fresh rows into it immediately
-        if (pendingDOModalOpenRef.current) {
-          setPendingDOList(all);
-        }
-      } catch {
-        // silent — badge/list stays at last known value
+  const refreshPendingDOData = async () => {
+    try {
+      const companyCode = sessionStorage.getItem("Company_Code");
+      const res = await axios.get(`${API_URL}/getdata-Pending_DO`, {
+        params: { company_code: companyCode }
+      });
+      const all = res.data.all_data || [];
+      setPendingDOCount(all.filter((r) => r.Approved !== "Y").length);
+      // If the popup is open, push fresh rows into it immediately
+      if (pendingDOModalOpenRef.current) {
+        setPendingDOList(all);
       }
-    };
+    } catch {
+      // silent — badge/list stays at last known value
+    }
+  };
 
+  useEffect(() => {
     refreshPendingDOData();
 
     let ws;
@@ -1157,6 +1157,16 @@ const DeliveryOrder = () => {
     };
     connectWS();
 
+    return () => {
+      clearTimeout(wsReconnectTimer);
+      if (ws) ws.close();
+    };
+  }, []);
+
+  // Live sync: refresh the record currently open here if someone else changes/deletes it.
+  // Separate effect (own connection) so it can depend on formData.doid/doc_no without
+  // disturbing the pending-DO badge/native-WebSocket logic above.
+  useEffect(() => {
     const socket = io(WEBSOCKET_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
@@ -1172,7 +1182,15 @@ const DeliveryOrder = () => {
       console.log("Delivery Order Updated:", data);
       refreshPendingDOData();
       if (data?.doid && formData.doid && String(data.doid) === String(formData.doid)) {
-        toast.info("This delivery order was updated by another user.");
+        axios.get(`${API_URL}/DOByid?company_code=${companyCode}&doc_no=${formData.doc_no}&Year_Code=${Year_Code}`)
+          .then((response) => {
+            if (response.status === 200) {
+              CommonFeilds(response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
       }
     });
 
@@ -1185,14 +1203,12 @@ const DeliveryOrder = () => {
     });
 
     return () => {
-      clearTimeout(wsReconnectTimer);
-      if (ws) ws.close();
       socket.off("delivery_order_added");
       socket.off("delivery_order_updated");
       socket.off("delivery_order_deleted");
       socket.disconnect();
     };
-  }, []);
+  }, [formData.doid, formData.doc_no]);
 
 
   const handleTenderWithoutCarpoDetailsFetched = async (details, event) => {

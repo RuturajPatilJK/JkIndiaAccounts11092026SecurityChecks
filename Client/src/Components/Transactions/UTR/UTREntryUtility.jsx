@@ -1,8 +1,12 @@
 import React from "react";
-import TableUtility from "../../../Common/UtilityCommon/TableUtility";
+import { Provider } from "react-redux";
+import LiveTableUtility from "../../../Common/UtilityCommon/LiveTableUtility";
+import utrEntryStore from "../../../store/utrEntryStore";
+import { actions, fetchAll, selectors, selectStatus } from "../../../store/utrEntrySlice";
+
+const socketEvents = { added: "utr_entry_added", updated: "utr_entry_updated", deleted: "utr_entry_deleted" };
 
 function UTREntryUtility() {
-    const apiUrl = `${process.env.REACT_APP_API}/getdata-utr`;
     const columns = [
         { key: "doc_no", label: "Doc No" },
         { key: "doc_date", label: "Doc Date" },
@@ -17,18 +21,22 @@ function UTREntryUtility() {
     ];
 
     return (
-        <TableUtility
-            title="UTR Entry"
-            apiUrl={apiUrl}
-            queryParams={{
-                Company_Code: sessionStorage.getItem("Company_Code")
-            }}
-            columns={columns}
-            rowKey="doc_no"
-            addUrl="/utr-entry"
-            detailUrl="/utr-entry"
-            permissionUrl="/utrentry-Utility"
-        />
+        <Provider store={utrEntryStore}>
+            <LiveTableUtility
+                title="UTR Entry"
+                columns={columns}
+                rowKey="doc_no"
+                addUrl="/utr-entry"
+                detailUrl="/utr-entry"
+                permissionUrl="/utrentry-Utility"
+                selectors={selectors}
+                fetchAll={fetchAll}
+                selectStatus={selectStatus}
+                actions={actions}
+                socketEvents={socketEvents}
+                socketMode="refetch"
+            />
+        </Provider>
     );
 }
 

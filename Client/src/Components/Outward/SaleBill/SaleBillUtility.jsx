@@ -1,8 +1,12 @@
 import React from "react";
-import TableUtility from "../../../Common/UtilityCommon/TableUtility"; 
+import { Provider } from "react-redux";
+import LiveTableUtility from "../../../Common/UtilityCommon/LiveTableUtility";
+import saleBillStore from "../../../store/saleBillStore";
+import { actions, fetchAll, selectors, selectStatus } from "../../../store/saleBillSlice";
+
+const socketEvents = { added: "sale_bill_added", updated: "sale_bill_updated", deleted: "sale_bill_deleted" };
 
 const SaleBillUtility = ({includeYearCode =true}) => {
-    const apiUrl = `${process.env.REACT_APP_API}/getdata-SaleBill`;
     const columns = [
         { label: "Doc No", key: "doc_no" },
         { label: "Doc Date", key: "doc_date" },
@@ -29,17 +33,24 @@ const SaleBillUtility = ({includeYearCode =true}) => {
     };
     
     return (
-        <TableUtility
-            title="Sugar Bill For GST"
-            apiUrl={apiUrl}
-            columns={columns}
-            rowKey="saleid"
-            addUrl="/sale-bill"
-            detailUrl="/sale-bill"
-            permissionUrl="/SaleBill-utility"
-            includeYearCode = {includeYearCode}
-            getRowStyle={getRowStyle}
-        />
+        <Provider store={saleBillStore}>
+            <LiveTableUtility
+                title="Sugar Bill For GST"
+                columns={columns}
+                rowKey="saleid"
+                addUrl="/sale-bill"
+                detailUrl="/sale-bill"
+                permissionUrl="/SaleBill-utility"
+                includeYearCode = {includeYearCode}
+                getRowStyle={getRowStyle}
+                selectors={selectors}
+                fetchAll={fetchAll}
+                selectStatus={selectStatus}
+                actions={actions}
+                socketEvents={socketEvents}
+                socketMode="refetch"
+            />
+        </Provider>
     );
 };
 

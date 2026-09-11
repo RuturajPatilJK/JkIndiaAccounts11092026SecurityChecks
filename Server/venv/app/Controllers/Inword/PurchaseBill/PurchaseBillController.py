@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request, copy_current_request_context
-from app import app, db
-from app.models.Inword.PurchaseBill.PurchaseBillModels import SugarPurchase, SugarPurchaseDetail 
+from app import app, db, socketio
+from app.models.Inword.PurchaseBill.PurchaseBillModels import SugarPurchase, SugarPurchaseDetail
 from app.models.Reports.GLedeger.GLedgerModels import Gledger
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 import os
+import json
 import traceback
 import requests
 from app.utils.CommonGLedgerFunctions import fetch_company_parameters,get_accoid,getPurchaseAc,create_gledger_entry,send_gledger_entries,get_acShort_Name,get_ac_Name
@@ -325,6 +326,8 @@ def insert_SugarPurchase():
 
         db.session.commit()
 
+        socketio.emit('purchase_bill_added', json.loads(json.dumps(headData, default=str)))
+
         gledger_entries = create_gledger_entries(headData, detailData, new_doc_no,do_no)
 
         @copy_current_request_context
@@ -537,7 +540,9 @@ def update_SugarPurchase():
             )
 
         db.session.commit()
-    
+
+        socketio.emit('purchase_bill_updated', json.loads(json.dumps({**headData, 'doc_no': doc_no, 'purchaseid': purchaseid}, default=str)))
+
         gledger_entries = create_gledger_entries(headData, detailData, doc_no,dono)
 
         @copy_current_request_context
@@ -657,6 +662,13 @@ def delete_data_SugarPurchase():
                 raise Exception("Failed to delete record in gLedger")
 
             db.session.commit()
+
+            socketio.emit('purchase_bill_deleted', {
+                'doc_no': doc_no,
+                'purchaseid': purchaseid,
+                'Company_Code': Company_Code,
+                'Year_Code': Year_Code
+            })
 
             return jsonify({
                 "message": f"Deleted {deleted_user_rows} SugarPurchase row(s) and {deleted_task_rows} SugarPurchaseDetail row(s) successfully"

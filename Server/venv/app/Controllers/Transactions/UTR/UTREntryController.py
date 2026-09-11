@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
-from app import app, db
+from app import app, db, socketio
 from app.models.Transactions.UTR.UTREntryModels import UTRHead, UTRDetail
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 from app.utils.CommonGLedgerFunctions import fetch_company_parameters, get_accoid, create_gledger_entry,send_gledger_entries,get_ac_Name
 import os
+import json
 import requests
 import traceback
 from app.utils.CommonCompanyLogs.CompanyLogsUtils import create_company_log_entry
@@ -213,6 +214,8 @@ def insert_utr():
             db.session.rollback()
             return jsonify({"error": "Failed to create gLedger record", "details": response.json()}), response.status_code
 
+        socketio.emit('utr_entry_added', json.loads(json.dumps({**head_data, 'utrid': new_head.utrid}, default=str)))
+
         utr_head_schema = UTRHeadSchema()
         utr_detail_schema = UTRDetailSchema(many=True)
             
@@ -415,6 +418,8 @@ def update_utr():
             db.session.rollback()
             return jsonify({"error": "Failed to create gLedger record", "details": response.json()}), response.status_code
 
+        socketio.emit('utr_entry_updated', json.loads(json.dumps({**head_data, 'utrid': utrid, 'doc_no': updated_head_doc_no}, default=str)))
+
         return jsonify({
             "message": "Data updated successfully",
             "head": updated_head_count,
@@ -516,6 +521,13 @@ def delete_data_by_utrid():
                     raise Exception("Failed to delete record in gLedger")
 
         db.session.commit()
+
+        socketio.emit('utr_entry_deleted', {
+            'utrid': utrid,
+            'doc_no': doc_no,
+            'Company_Code': Company_Code,
+            'Year_Code': Year_Code
+        })
 
         return jsonify({
             "message": f"Deleted {deleted_head_rows} head row(s) and {deleted_detail_rows} detail row(s) successfully"

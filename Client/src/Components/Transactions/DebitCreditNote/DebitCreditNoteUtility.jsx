@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import {
     Table,
     TableBody,
@@ -24,8 +25,13 @@ import { formatReadableAmount } from "../../../Common/FormatFunctions/FormatAmou
 import BackButton from "../../../Common/Buttons/BackButton";
 import CreateNewButton from "../../../Common/Buttons/CreateNewButton";
 import CircularSpinner from "../../../Common/Spinners/CircularSpinner";
+import debitCreditNoteStore from "../../../store/debitCreditNoteStore";
+import { actions, fetchAll, selectors, selectStatus } from "../../../store/debitCreditNoteSlice";
+import useLiveSocket from "../../../hooks/useLiveSocket";
 
 const API_URL = process.env.REACT_APP_API;
+
+const socketEvents = { added: "debit_credit_note_added", updated: "debit_credit_note_updated", deleted: "debit_credit_note_deleted" };
 
 const styles = {
     tableHeaderCell: {
@@ -39,12 +45,26 @@ const styles = {
     }
 };
 
-function DebitCreditNoteUtility() {
+function DebitCreditNoteUtilityInner() {
     const uid = sessionStorage.getItem('uid');
     const companyCode = sessionStorage.getItem('Company_Code');
     const Year_Code = sessionStorage.getItem('Year_Code');
 
-    const [fetchedData, setFetchedData] = useState([]);
+    const dispatch = useDispatch();
+    const fetchedData = useSelector(selectors.selectAll);
+    const status = useSelector(selectStatus);
+    const isLoading = status === 'idle' || status === 'loading';
+
+    useLiveSocket({
+        events: socketEvents,
+        actions,
+        fetchAll,
+        fetchParams: { companyCode, yearCode: Year_Code },
+        companyCode,
+        yearCode: Year_Code,
+        mode: "refetch",
+    });
+
     const [filteredData, setFilteredData] = useState([]);
     const [perPage, setPerPage] = useState(15);
     const [searchTerm, setSearchTerm] = useState("");
@@ -52,7 +72,6 @@ function DebitCreditNoteUtility() {
     const [filterValue, setFilterValue] = useState("DN");
     const [canView, setCanView] = useState(null);
     const [permissionsData, setPermissionData] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,33 +82,22 @@ function DebitCreditNoteUtility() {
                 const canView = response.data?.UserDetails?.canView === "Y";
                 setCanView(canView);
                 setPermissionData(response.data?.UserDetails);
-                if (canView) fetchData();
+                if (canView && status === 'idle') {
+                    dispatch(fetchAll({ companyCode, yearCode: Year_Code }));
+                }
             } catch (error) {
                 console.error("Error fetching user permissions:", error);
                 setCanView(false);
             }
         };
 
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const url = `${API_URL}/getdata-debitcreditNote?Company_Code=${companyCode}&Year_Code=${Year_Code}`;
-                const response = await axios.get(url);
-                const data = response.data?.all_data || [];
-                setFetchedData(data);
-                filterData(data, filterValue);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         checkPermissions();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, companyCode, Year_Code, uid]);
 
     useEffect(() => {
         filterData(fetchedData, filterValue);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm, filterValue, fetchedData]);
 
     const filterData = (data, filterValue) => {
@@ -276,6 +284,14 @@ function DebitCreditNoteUtility() {
                 />
             </Grid>
         </div>
+    );
+}
+
+function DebitCreditNoteUtility() {
+    return (
+        <Provider store={debitCreditNoteStore}>
+            <DebitCreditNoteUtilityInner />
+        </Provider>
     );
 }
 

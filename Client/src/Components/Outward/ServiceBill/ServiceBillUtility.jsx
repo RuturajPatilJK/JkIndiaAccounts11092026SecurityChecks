@@ -1,7 +1,11 @@
 import React from "react";
-import TableUtility from "../../../Common/UtilityCommon/TableUtility";
+import { Provider } from "react-redux";
+import LiveTableUtility from "../../../Common/UtilityCommon/LiveTableUtility";
+import serviceBillStore from "../../../store/serviceBillStore";
+import { actions, fetchAll, selectors, selectStatus } from "../../../store/serviceBillSlice";
 
-const API_URL = process.env.REACT_APP_API;
+const socketEvents = { added: "service_bill_added", updated: "service_bill_updated", deleted: "service_bill_deleted" };
+
 function ServiceBillUtility({ includeYearCode = true }) {
     const columns = [
         { key: "Doc_No", label: "Doc No" },
@@ -18,16 +22,23 @@ function ServiceBillUtility({ includeYearCode = true }) {
     ];
 
     return (
-        <TableUtility
-            title="Service Bill"
-            apiUrl={`${API_URL}/getdata-servicebill`}
-            columns={columns}
-            rowKey="Doc_No"
-            addUrl="/service-bill"
-            detailUrl="/service-bill"
-            permissionUrl="/ServiceBill-utility"
-            includeYearCode={includeYearCode}
-        />
+        <Provider store={serviceBillStore}>
+            <LiveTableUtility
+                title="Service Bill"
+                columns={columns}
+                rowKey="Doc_No"
+                addUrl="/service-bill"
+                detailUrl="/service-bill"
+                permissionUrl="/ServiceBill-utility"
+                includeYearCode={includeYearCode}
+                selectors={selectors}
+                fetchAll={fetchAll}
+                selectStatus={selectStatus}
+                actions={actions}
+                socketEvents={socketEvents}
+                socketMode="refetch"
+            />
+        </Provider>
     );
 }
 

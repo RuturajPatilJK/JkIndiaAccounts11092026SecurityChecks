@@ -1,6 +1,7 @@
 import traceback
+import json
 from flask import Flask, jsonify, request, copy_current_request_context
-from app import app, db
+from app import app, db, socketio
 from app.models.Transactions.OtherPurchaseModels import OtherPurchase
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError 
@@ -436,6 +437,8 @@ def create_OtherPurchase():
         db.session.add(new_record)
         db.session.commit()
 
+        socketio.emit('other_purchase_added', json.loads(json.dumps(new_record_data, default=str)))
+
         gledger_entries = create_gledger_entries(new_record_data, '', new_record.Doc_No)
 
         @copy_current_request_context
@@ -630,6 +633,8 @@ def update_OtherPurchase():
      
         db.session.commit()
 
+        socketio.emit('other_purchase_updated', json.loads(json.dumps(update_data, default=str)))
+
         gledger_entries = create_gledger_entries(update_data, '', Doc_No)
         response = send_gledger_entries(update_data, gledger_entries, tran_type)
 
@@ -755,6 +760,12 @@ def delete_OtherPurchase():
             raise Exception("Failed to delete record from gLedger")
 
         db.session.commit()
+
+        socketio.emit('other_purchase_deleted', {
+            'Doc_No': Doc_No,
+            'Company_Code': Company_Code,
+            'Year_Code': Year_Code
+        })
 
         return jsonify({"message": "Record deleted successfully"}), 200
 

@@ -1,8 +1,16 @@
 import React from "react";
-import TableUtility from "../../../Common/UtilityCommon/TableUtility";
+import { Provider } from "react-redux";
+import LiveTableUtility from "../../../Common/UtilityCommon/LiveTableUtility";
+import deliveryOrderStore from "../../../store/deliveryOrderStore";
+import { actions, fetchAll, selectors, selectStatus } from "../../../store/deliveryOrderSlice";
+
+const socketEvents = { added: "delivery_order_added", updated: "delivery_order_updated", deleted: "delivery_order_deleted" };
+// Delivery Order's existing backend emits (already shipped, not modified here) only carry
+// doid/doc_no/company_code/year_code, not full row data, and use lowercase company_code/year_code
+// keys — so this list refetches on any of the 3 events instead of upserting in place.
+const scopeKeys = { company: "company_code", year: "year_code" };
 
 function DeliveryOredrUtility() {
-    const apiUrl = `${process.env.REACT_APP_API}/getdata-DO`;
     const columns = [
         { key: "doc_no", label: "Doc No" },
         { key: "doc_date", label: "Doc Date"},
@@ -31,26 +39,30 @@ function DeliveryOredrUtility() {
         if (row.tenderdetailid === null) {
             return { backgroundColor: '#ffcccc' };
         }
-        return {}; 
+        return {};
     };
-    
+
 
     return (
-        <TableUtility
-            title="Delivery Order"
-            apiUrl={apiUrl}
-            queryParams={{
-                Company_Code: sessionStorage.getItem("Company_Code"),
-                Year_Code: sessionStorage.getItem("Year_Code"),
-            }}
-            columns={columns}
-            rowKey="doc_no"
-            addUrl="/delivery-order"
-            detailUrl="/delivery-order"
-            permissionUrl="/delivery-order-utility"
-            getRowStyle={getRowStyle}
-
-        />
+        <Provider store={deliveryOrderStore}>
+            <LiveTableUtility
+                title="Delivery Order"
+                columns={columns}
+                rowKey="doc_no"
+                addUrl="/delivery-order"
+                detailUrl="/delivery-order"
+                permissionUrl="/delivery-order-utility"
+                getRowStyle={getRowStyle}
+                includeYearCode
+                selectors={selectors}
+                fetchAll={fetchAll}
+                selectStatus={selectStatus}
+                actions={actions}
+                socketEvents={socketEvents}
+                scopeKeys={scopeKeys}
+                socketMode="refetch"
+            />
+        </Provider>
     );
 }
 

@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AccountMasterHelp from "../../../Helper/AccountMasterHelp";
 import GSTRateMasterHelp from "../../../Helper/GSTRateMasterHelp";
 import axios from "axios";
+import io from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import ActionButtonGroup from "../../../Common/CommonButtons/ActionButtonGroup";
 import NavigationButtons from "../../../Common/CommonButtons/NavigationButtons";
@@ -68,6 +69,7 @@ const headerCellStyle = {
 };
 
 const API_URL = process.env.REACT_APP_API;
+const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
 
 const DebitCreditNote = () => {
 
@@ -839,6 +841,41 @@ const Post_Date = sessionStorage.getItem("Post_Date")
       handleAddOne();
     }
   }, [selectedRecord, navigatedRecord]);
+
+  // Notify if the record currently open here gets changed/deleted by someone else
+  useEffect(() => {
+    const socket = io(WEBSOCKET_URL, { transports: ["websocket"] });
+
+    const matchesOpenRecord = (data) =>
+      data?.doc_no && formData.doc_no && String(data.doc_no) === String(formData.doc_no) &&
+      (!data.tran_type || !formData.tran_type || data.tran_type === formData.tran_type);
+
+    socket.on("debit_credit_note_updated", (data) => {
+      if (matchesOpenRecord(data)) {
+        axios.get(`${API_URL}/getdebitcreditByid?doc_no=${formData.doc_no}&Company_Code=${companyCode}&Year_Code=${Year_Code}&tran_type=${formData.tran_type}`)
+          .then((response) => {
+            if (response.status === 200) {
+              updateFormData(response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error refreshing record after live update:", error);
+          });
+      }
+    });
+
+    socket.on("debit_credit_note_deleted", (data) => {
+      if (matchesOpenRecord(data)) {
+        toast.warning("This record was deleted by another user.");
+      }
+    });
+
+    return () => {
+      socket.off("debit_credit_note_updated");
+      socket.off("debit_credit_note_deleted");
+      socket.disconnect();
+    };
+  }, [formData.doc_no, formData.tran_type]);
 
   // After Record DoubleClicked on utility page show that record on User Creation for Edit Mode
   const handlerecordDoubleClicked = async () => {
