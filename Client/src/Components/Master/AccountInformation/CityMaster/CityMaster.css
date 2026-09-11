@@ -1,0 +1,21 @@
+.CityMaster {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.citymaster-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: -10px;
+}
+
+.citymasterlabel {
+    font-weight: bold;
+    margin-right: 16px;
+    min-width: 100px;
+    margin-top: -10px;
+}

@@ -1,0 +1,106 @@
+.broadcast-container {
+    padding: -10px;
+    background-color: #fafafa;
+    min-height: 100vh;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.button-group button {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 20px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.button-group button:hover {
+    background-color: #1565c0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.button-group button:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.button-group button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.4);
+}
+
+.button-group button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.button-group button::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    transform: scale(0);
+    background: rgba(255, 255, 255, 0.4);
+    transition: transform 0.5s, opacity 1s;
+    transform-origin: center;
+}
+
+.button-group button:active::after {
+    transform: scale(2.5);
+    opacity: 0;
+    transition: 0s;
+}
+
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.table-container {
+  max-height: 850px; 
+  overflow-y: auto;
+}
+
+.MuiTableHead-root th {
+  position: sticky;
+  top: 0;
+
+  z-index: 1;
+}
+
+
+.message-box {
+    margin-bottom: 20px;
+}
+
+.table-header {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}

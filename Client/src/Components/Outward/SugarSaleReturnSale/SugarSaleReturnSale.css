@@ -1,0 +1,62 @@
+.sugarsalereturnsaleDiv {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.sugarsalereturnsalelabel {
+  font-weight: bold;
+  margin-right: 16px;
+  min-width: 90px;
+  margin-top: -10px;
+  text-align: left;
+}
+
+
+.SugarSaleReturnSaleModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: 0;
+}
+
+.SugarSaleReturnSale-dialog {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 1000px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-out;
+  max-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.SugarSaleReturnSale-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 150px);
+}
+
+.SugarSaleReturnSale-header,
+.SugarSaleReturnSale-footer {
+  width: 100%;
+}
+
+.SugarSaleReturnSale-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin-top: 20px;
+  color: rgb(12, 14, 177);
+}

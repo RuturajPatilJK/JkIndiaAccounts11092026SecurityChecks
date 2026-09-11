@@ -1,0 +1,94 @@
+.receiptPayment-form-container {
+  max-width: 100%;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #0f0f0f;
+  border-radius: 8px;
+  background-color: #E8F8F5;
+  display: block; 
+}
+
+.container.mt-4 {
+  text-align: left; 
+}
+
+.container.mt-4 .table.table-bordered {
+  margin-left: -580px !important; 
+}
+
+.JournanalVouchermodal {
+position: fixed;
+top: 0;
+left: 0;
+z-index: 1050;
+width: 130%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+outline: 0;
+}
+
+.JournanalVouchermodal-dialog {
+background: #fff;
+border-radius: 10px;
+width: 90%;
+max-width: 1500px;
+padding: 20px;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+transition: transform 0.3s ease-out;
+overflow-y: auto;
+max-height: 85vh;
+margin-left: 80px;
+}
+
+@media (min-width: 768px) {
+.modal-dialog {
+    max-width: 80%;
+}
+}
+
+@media (min-width: 1024px) {
+.modal-dialog {
+    max-width: 70%;
+}
+}
+
+@media (min-width: 1440px) {
+.modal-dialog {
+    max-width: 60%;
+}
+}
+
+.JournanalVouchermodal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #e5e5e5;
+padding-bottom: 10px;
+color: #007bff;
+font-size: 20px;
+white-space: nowrap;
+}
+
+.JournanalVouchermodal-body {
+padding: 20px;
+overflow-y: auto;
+}
+
+.JournanalVouchermodal-footer {
+display: flex;
+justify-content: flex-end;
+padding: 10px 20px;
+border-top: 1px solid #e5e5e5;
+}
+
+.JournalVoucherModal-title {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  color: rgb(12, 14, 177);
+}

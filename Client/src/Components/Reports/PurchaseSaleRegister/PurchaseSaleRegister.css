@@ -1,0 +1,55 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    grid-gap: 15px;
+    margin-top: 20px;
+}
+
+.grid-container > div {
+    background: #f8f9fa; 
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.second-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.second-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+
+.second-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.second-table tr:first-child {
+    background-color: #f1f1f1;
+    font-size: 1.1em;
+}
+
+.second-table td:nth-child(2),
+.second-table td:nth-child(4) {
+    font-weight: bold;
+    color: #007bff;
+}
+
+
+.PurchaseSaleregister-row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.PurchaseSaleregisterlabel {
+    flex-shrink: 0;
+    width: 100px;
+    text-align: right;
+}

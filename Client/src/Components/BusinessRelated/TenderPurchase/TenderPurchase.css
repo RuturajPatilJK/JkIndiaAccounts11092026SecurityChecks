@@ -1,0 +1,287 @@
+.SugarTenderPurchase-container {
+  max-width: 100%;
+  margin: auto;
+}
+
+.SugarTenderPurchase-col-Text {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  width: 130px;
+}
+
+.SugarTenderPurchase-col-Ewaybillno {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+  width: 200px;
+}
+
+.SugarTenderPurchase-form-group-type {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+  width: 250px;
+}
+
+.SugarTenderPurchase-row {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 0.5rem;
+  margin-top: 20px;
+}
+
+.SugarTenderPurchase-col {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.SugarTenderPurchase-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.SugarTenderPurchase-form-label {
+  font-weight: bold;
+  min-width: 100px;
+  margin-top: -5px;
+  font-size: 14px;
+}
+
+.SugarTenderPurchase-form-control {
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.SugarTenderPurchase-form-control[disabled],
+.SugarTenderPurchase-form-control[readonly] {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#IsmillName {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  color: blue;
+  font-weight: bold;
+}
+
+
+.TenderPurchaseHelp-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: -15px;
+}
+
+.TenderPurchaseHelpLabel {
+  font-weight: bold;
+  min-width: 100px;
+  margin-top: -5px;
+  font-size: 14px;
+}
+
+/* Modal styles */
+
+.TenderPurchase-custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+
+.TenderPurchase-custom-modal-large-dialog {
+  background-color: #fff;
+  width: 80%;
+  max-width: 1200px; /* Larger size */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.TenderPurchase-custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.TenderPurchase-custom-modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  color: rgb(12, 14, 177);
+}
+
+.TenderPurchase-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.TenderPurchase-custom-modal-body {
+  padding: 20px 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.TenderPurchase-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.TenderPurchase-form-element {
+  flex: 1;
+  padding: 10px;
+}
+
+.TenderPurchase-account-master-help {
+  width: 100%;
+}
+
+.TenderPurchase-form-row label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.TenderPurchase-form-row input,
+.TenderPurchase-form-row select,
+.TenderPurchase-form-row textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.TenderPurchase-form-row input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.TenderPurchase-custom-modal-footer {
+
+  gap: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #ddd;
+}
+
+.TenderPurchase-btn-primary,
+.TenderPurchase-btn-secondary {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.TenderPurchase-btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.TenderPurchase-btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.TenderPurchase-btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.TenderPurchase-btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+@media (max-width: 768px) {
+  .TenderPurchase-custom-modal-large-dialog {
+    width: 90%;
+    max-width: 800px;
+  }
+
+  .TenderPurchase-custom-modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .TenderPurchase-custom-modal-footer {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+/* .mill-balance-container {
+  background-color: yellow;
+  padding: 6px;
+  border-radius: 5px; 
+}
+
+.balance-value {
+  font-weight: bold;
+  color: black;
+  margin : 0;
+} */
+
+
+.mill-balance-container {
+  background-color: #fff8dc; 
+  border-radius: 8px;
+  border: 1px solid #ffd700; 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.balance-value {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.balance-value label {
+  margin-right: 8px;
+  color: #0d441d; 
+  font-weight: 700;
+}
+
+.balance-value span {
+  color: #000;
+  font-weight: 600;
+}
+
+

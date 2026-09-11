@@ -1,0 +1,73 @@
+.SugarSaleBill-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: -15px;
+  margin-top: 20px;
+}
+
+.SugarSaleBillLabel {
+  font-weight: bold;
+  margin-right: 16px;
+  min-width: 90px;
+  margin-top: -10px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.SugarSaleBillLabelBroker {
+  font-weight: bold;
+  margin-right: 16px;
+  margin-top: -10px;
+  white-space: nowrap;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.SugarSaleBill-col {
+  flex-grow: 1;
+}
+
+/* sugar purchse Detail */
+.sugar-salebill-modal {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  padding-top: 10%;
+}
+
+.sugar-salebill-modal-dialog {
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  max-width: 1000px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sugar-salebill-body {
+  padding: 20px;
+  overflow-y: auto;
+
+}
+
+.sugar-salebill-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.sugar-salebill-modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  color: rgb(12, 14, 177);
+}

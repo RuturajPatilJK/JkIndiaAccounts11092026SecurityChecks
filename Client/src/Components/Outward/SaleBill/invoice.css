@@ -1,0 +1,155 @@
+
+.style1 {
+    height: auto;
+    width: 200px;
+  }
+  .img{
+    width: 140px;
+    margin-left: 10px;
+  }
+  .style2 {
+    height: auto;
+    width: 140px;
+  }
+  .auto-style3 {
+    width: 100%;
+    border: 1px solid black; 
+    padding: 0px; 
+    color: rgb(255, 0, 0); 
+  }
+  .style4 {
+    height: 130px;
+    width: 300px;
+    text-align: left;
+  }
+  .auto-style5 {
+    width: 343px;
+  }
+  .H1 {
+    color: rgb(255, 0, 0);
+  }
+  .hadelable {
+    color: rgb(52, 125, 221);
+    font-weight: bold;
+  }
+  .centered-container {
+    width: 900px;
+    margin: 0 auto;
+  }
+   
+  .undertdleft {
+    width: 80px;
+    text-align: left;
+    color: black;
+    font-style: inherit;
+  }
+  .auto-styletd {
+    border: 1px solid black;
+    width: 500px; /* Adds a black border to the td */
+  }
+  .styletdright {
+    border: 1px solid black;
+    width: 500px; /* Adds a black border to the td */
+  }
+  .no-top-space {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+  .tdTable {
+    width: 100%;
+    margin-right: 5px;
+    border: 0px solid black; 
+    
+  }
+  .undertrright {
+    width: 100%;
+  }
+  .undertdrigth {
+    width: 0px;
+    text-align: left;
+    color: black;
+    font-style: inherit;
+  }
+  .auto-styletdrigth{
+    
+    border: 0px solid black; 
+    border-bottom: 1px solid black;  
+  }
+  .auto-GST{
+    
+    border: 0px solid black; 
+    border-bottom: 0px solid black;  
+  }
+  .right {
+    width: 50px;
+    text-align: left;
+    color: black;
+    font-style: inherit;
+  } 
+  
+  .itemright {
+    border: 0px solid black;
+    border-top: 1px solid black;
+    width: 500px; /* Adds a black border to the td */
+  } 
+  
+  .itamleft{
+    text-align: right;
+  } 
+  
+  
+  .righttd{
+    
+    border: 0px solid black; 
+    border-bottom: 1px solid black;   
+  }
+  
+  
+  .styletd {
+    border: 1px solid black;
+    width: 500px; /* Adds a black border to the td */
+  }
+  .trborder{
+    border: 1px solid black; 
+    width: 100px;
+  }
+  .noborder{
+    
+    border: 0px solid black; 
+  }
+  .undertdack {
+    width: 0p;
+    text-align: left;
+    color: black;
+    font-style: inherit;
+  }
+  
+  .underAmt {
+    width: 80px;
+    text-align: right;
+    color: black;
+    font-style: inherit;
+    font-weight:bold;
+  }
+  .underRate {
+    width: 80px;
+    text-align: center;
+    color: black;
+    font-style: inherit;
+  }
+  
+  .auto-styletdamrt {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 500px; /* Adds a black border to the td */
+  }
+  
+  
+  .word{
+    text-align: left;
+    border: 0px solid black; 
+    border-bottom: 1px solid black;   
+  }
+  .footer{
+    text-align: left;
+  }

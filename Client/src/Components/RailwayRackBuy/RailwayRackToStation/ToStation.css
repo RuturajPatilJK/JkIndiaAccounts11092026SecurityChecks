@@ -1,0 +1,97 @@
+
+.brandMasterMain{
+    margin-top: 40px;
+}
+.brand-master-form {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 20px;
+}
+
+.form-groupbrandmaster {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-labelbrandmaster {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    margin-right: 10px;
+    width: 30%;
+    text-align: right;
+}
+
+.form-inputbrandmaster,
+.form-select {
+    width: 65%;
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-inputbrandmaster:focus,
+.form-select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.form-inputbrandmaster:hover,
+.form-select:hover {
+    border-color: #0056b3;
+    background-color: #e9f3ff;
+}
+
+.form-inputbrandmaster::placeholder,
+.form-select::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.form-button {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.form-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.form-button:active {
+    background-color: #003d82;
+}
+
+.form-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.form-groupbrandmaster:last-child {
+    margin-bottom: 25px;
+}

@@ -1,0 +1,164 @@
+/* ============================================================
+   CommonPrintStyle.css
+   Use:  import '../../../Common/Print/CommonPrintStyle.css';
+   ============================================================ */
+
+/* ── Screen: hide the print-preview panel until triggered ── */
+.print-preview-overlay {
+  display: none;
+}
+
+/* ── Print media ─────────────────────────────────────────── */
+@media print {
+  /* Reset everything outside the report */
+  body > *:not(#print-root) {
+    display: none !important;
+  }
+  #print-root {
+    display: block !important;
+  }
+
+  /* A4 portrait */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* ── Wrapper ── */
+  .print-document {
+    width: 210mm;
+    min-height: 297mm;
+    font-family: 'Signika', 'Arial', sans-serif;
+    font-size: 8pt;
+    color: #000;
+    position: relative;
+  }
+
+  /* ── Header: only on FIRST page ── */
+  .print-header {
+    display: none;           /* hidden by default on all pages */
+  }
+  .print-document .print-header:first-of-type {
+    display: block;
+    width: 100%;
+  }
+  /* thead repeats on every page — keep header image only once via JS/PDF layer */
+
+  /* ── Footer: only on LAST page ── */
+  .print-footer {
+    display: none;
+  }
+  .print-document .print-footer:last-of-type {
+    display: block;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+
+  /* ── Page number ── */
+  .page-number::after {
+    content: counter(page) " / " counter(pages);
+  }
+  .page-number-wrap {
+    text-align: center;
+    font-size: 7pt;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* ── Content area ── */
+  .print-content {
+    padding: 6mm 8mm;
+  }
+
+  /* ── Report title ── */
+  .print-title {
+    text-align: center;
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 2mm;
+    font-family: 'Signika-Bold', 'Arial', sans-serif;
+  }
+  .print-subtitle {
+    text-align: center;
+    font-size: 8pt;
+    margin-bottom: 4mm;
+  }
+
+  /* ── Table ── */
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;      /* all columns share the full width */
+    font-size: 7.5pt;
+  }
+  .print-table th,
+  .print-table td {
+    border: 0.4pt solid #999;
+    padding: 2pt 3pt;
+    word-break: break-word;
+  }
+  .print-table thead th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Signika-Bold', 'Arial', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Repeat header on every page */
+  .print-table thead {
+    display: table-header-group;
+  }
+  /* Grand total row — sticky appearance (always last, highlighted) */
+  .print-table tfoot tr {
+    background-color: #ffffcc !important;
+    font-weight: bold;
+    font-family: 'Signika-Bold', 'Arial', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-table tfoot {
+    display: table-footer-group;  /* stays at bottom of each page's table */
+  }
+
+  /* Numeric columns: right-align */
+  .print-table .num {
+    text-align: right;
+  }
+  .print-table .cen {
+    text-align: center;
+  }
+
+  /* Avoid row breaks mid-row */
+  .print-table tbody tr {
+    page-break-inside: avoid;
+  }
+
+  /* ── Amount in words ── */
+  .print-amount-words {
+    font-size: 7.5pt;
+    margin-top: 3mm;
+    font-family: 'Signika-Bold', 'Arial', sans-serif;
+  }
+
+  /* ── Powered by ── */
+  .print-powered {
+    font-size: 6pt;
+    color: #777;
+    position: fixed;
+    bottom: 2mm;
+    left: 8mm;
+  }
+
+  /* ── Hide all screen-only elements ── */
+  .no-print,
+  .MuiTableContainer-root,
+  .btn,
+  nav,
+  header,
+  .sidebar {
+    display: none !important;
+  }
+}

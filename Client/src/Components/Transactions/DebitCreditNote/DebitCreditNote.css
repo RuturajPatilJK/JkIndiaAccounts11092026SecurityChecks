@@ -1,0 +1,302 @@
+.modalmain {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  padding-top: 100px;
+}
+
+.debitcreditnodemodaldialog {
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  max-width: 1000px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.debitcreditnodemodaldialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.debitcreditnodemodaldialog-title {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  color: rgb(12, 14, 177);
+}
+
+button[aria-label="Close"] {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+button[aria-label="Close"]:hover {
+  color: #d9534f;
+}
+
+
+.form-element {
+  margin-bottom: 15px;
+}
+
+.debitCreditNote-form-label {
+  font-weight: 700;
+  color: #333;
+  text-align: right;
+}
+
+.debitCreditNote-form-control {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.debitCreditNote-form-control:focus {
+  border-color: #007bff;
+}
+
+.debitCreditNote-col-Ewaybillno {
+  margin-bottom: 20px;
+}
+
+.account-master-help {
+  width: 100%;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: underline;
+  color: #007bff;
+}
+
+/* Modal footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.debitCreditNote-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 16px;
+  min-width: 100px;
+  margin-top: -10px;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.debitCreditNote-col {
+  flex-grow: 1;
+}
+
+.debitCreditNote-form-group {
+  display: flex;
+  align-items: center;
+}
+
+input,
+.AccountMasterHelp {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:disabled,
+.AccountMasterHelp:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.debitdate {
+  margin-right: 60%;
+  margin-top: -20px;
+}
+
+.debitCreditForm {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+
+
+/* report css  */
+.style1 {
+  height: auto;
+  width: 200px;
+}
+.img{
+  width: 140px;
+  margin-left: 10px;
+}
+.style2 {
+  height: auto;
+  width: 140px;
+}
+.auto-style3 {
+  width: 100%;
+  border: 1px solid black; 
+  padding: 0px; 
+  color: rgb(255, 0, 0); 
+}
+.style4 {
+  height: 130px;
+  width: 300px;
+  text-align: left;
+}
+.auto-style5 {
+  width: 343px;
+}
+.H1 {
+  color: rgb(255, 0, 0);
+}
+.hadelable {
+  color: rgb(52, 125, 221);
+  font-weight: bold;
+}
+.centered-container {
+  width: 900px;
+  margin: 0 auto;
+}
+ 
+.undertdleft {
+  width: 80px;
+  text-align: left;
+  color: black;
+  font-style: inherit;
+}
+.auto-styletd {
+  border: 1px solid black;
+  width: 500px; /* Adds a black border to the td */
+}
+.styletdright {
+  border: 1px solid black;
+  width: 500px; /* Adds a black border to the td */
+}
+.no-top-space {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+.tdTable {
+  width: 100%;
+  margin-right: 5px;
+  border: 0px solid black; 
+  
+}
+.undertrright {
+  width: 100%;
+}
+.undertdrigth {
+  width: 0px;
+  text-align: left;
+  color: black;
+  font-style: inherit;
+}
+.auto-styletdrigth{
+  
+  border: 0px solid black; 
+  border-bottom: 1px solid black;  
+}
+.auto-GST{
+  
+  border: 0px solid black; 
+  border-bottom: 0px solid black;  
+}
+.right {
+  width: 50px;
+  text-align: left;
+  color: black;
+  font-style: inherit;
+} 
+
+.itemright {
+  border: 0px solid black;
+  border-top: 1px solid black;
+  width: 500px; /* Adds a black border to the td */
+} 
+
+.itamleft{
+  text-align: right;
+} 
+
+
+.righttd{
+  
+  border: 0px solid black; 
+  border-bottom: 1px solid black;   
+}
+
+
+.styletd {
+  border: 1px solid black;
+  width: 500px; /* Adds a black border to the td */
+}
+.trborder{
+  border: 1px solid black; 
+  width: 100px;
+}
+.noborder{
+  
+  border: 0px solid black; 
+}
+.undertdack {
+  width: 0p;
+  text-align: left;
+  color: black;
+  font-style: inherit;
+}
+
+.underAmt {
+  width: 80px;
+  text-align: right;
+  color: black;
+  font-style: inherit;
+  font-weight:bold;
+}
+.underRate {
+  width: 80px;
+  text-align: center;
+  color: black;
+  font-style: inherit;
+}
+
+.auto-styletdamrt {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  width: 500px; /* Adds a black border to the td */
+}
+
+
+.word{
+  text-align: left;
+  border: 0px solid black; 
+  border-bottom: 1px solid black;   
+}
+.footer{
+  text-align: left;
+}

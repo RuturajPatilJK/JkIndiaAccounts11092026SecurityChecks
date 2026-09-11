@@ -1,0 +1,618 @@
+{
+  "send_pdf_doc": {
+    "template_name": "send_pdf_doc",
+    "header": "document",
+    "params": [
+      "{billtoname}",
+      "{doc_no}",
+      "{doc_dateConverted}",
+      "{Company_Name_E}"
+    ],
+    "pdfName": "Document_{doc_no}_{billtoname}",
+    "subject": "Document {doc_no}",
+    "body": "Document message body"
+  },
+  "SaleBill": {
+    "subject": "Bill No: {doc_no} | Lorry No: {LORRYNO} | Mill: {millname} | Buyer: {billtoname}",
+    "body": "Dear Sir/Madam,\n\nPlease find attached the Sale Bill No: {doc_no} dated {doc_dateConverted} for the dispatch from {millname} to {billtoname}.\n\n• Lorry No: {LORRYNO}\n• Buyer: {billtoname}\n• Quantity: {Quantal} Qtls\n• Grade: {grade}\n• Rate: ₹{rate}/QTL\n• Buyer Contact: {PHONE} / {Mobile_No}\n\nIf you have any questions or require further information, feel free to contact us.\n\nRegards,\n{Company_Name_E}",
+    "pdfName": "Sale Bill - {doc_no} Truck No - {LORRYNO} - {billtoname}",
+    "whatsappMessage": "Hi, please find attached the Sale Bill from {Company_Name_E}. Bill No: {doc_no}, Lorry: {LORRYNO}, Mill: {millname}, Buyer: {billtoname}, Qty: {Quantal} Qtls, Rate: ₹{salerate}/QTL. For queries, contact {PHONE}."
+  },
+  "EwayBill": {
+    "subject": "EWayBill NO: {EWay_Bill_No} Bill No: {doc_no} Lorry No: {LORRYNO} Mill Name: {millname} Get Pass: {Buyer_Name}",
+    "body": "Eway Bill",
+    "pdfName": "EWayBill_{doc_no} - {LORRYNO}",
+    "whatsappMessage": "Hi, EWay Bill from {Company_Name_E}. EWay Bill No: {EWay_Bill_No}, Bill No: {doc_no}, Lorry No: {LORRYNO}, Mill Name: {millname}, Buyer: {Buyer_Name}. For details, see the attached PDF. Contact {PHONE} for support."
+  },
+  "Partywise Balance Stock Report": {
+    "subject": "Partywise Balance Stock Report",
+    "body": "Partywise Balance Stock Report",
+    "pdfName": "Partywise Balance Stock Report",
+    "whatsappMessage": "Hi, Partywise Balance Stock Report . Please check the attached PDF for details."
+  },
+  "Millwise Lifting Stock Report": {
+    "subject": "Millwise Lifting Stock Report",
+    "body": "Millwise Lifting Stock Report",
+    "pdfName": "Millwise Lifting Stock Report",
+    "whatsappMessage": "Hi, Millwise Lifting Stock Report. See the attached PDF for detailed information."
+  },
+  "Self Stock Report": {
+    "subject": "Self Stock Report",
+    "body": "Self Stock Report",
+    "pdfName": "Self Stock Report",
+    "whatsappMessage": "Hi, Self Stock Report. Please find the details in the attached PDF."
+  },
+    "eBuySugar Self Stock Report": {
+    "subject": "eBuySugar Self Stock Report",
+    "body": "eBuySugar Self Stock Report",
+    "pdfName": "eBuySugar Self Stock Report",
+    "whatsappMessage": "Hi, eBuySugar Self Stock Report. Please find the details in the attached PDF."
+  },
+  "Bank Book Report": {
+    "subject": "Bank Book Report",
+    "body": "Bank Book Report",
+    "pdfName": "Bank Book Report",
+    "whatsappMessage": "Hi, Bank Book Report. Please find the details in the attached PDF."
+  },
+  "CustomerLedgerBalance": {
+    "subject": "Customer Ledger Balance Report",
+    "body": "Customer Ledger Balance Report",
+    "pdfName": "Customer Ledger Balance Report",
+    "whatsappMessage": "Hi, Customer Ledger Balance Report. Please find the details in the attached PDF."
+  },
+  "Account Master List": {
+    "subject": "Account Master List",
+    "body": "Account Master List",
+    "pdfName": "Account Master List",
+    "whatsappMessage": "Hi, Account Master List. Please find the details in the attached PDF for your reference."
+  },
+  "Interest Statement Report": {
+    "subject": "Interest Statement Report",
+    "body": "Interest Statement Report",
+    "pdfName": "Interest Statement Report",
+    "whatsappMessage": "Hi, Interest Statement Report. Please find the details in the attached PDF for your reference."
+  },
+  "Stock-Report": {
+    "subject": "Stock-Report",
+    "body": "Stock-Report",
+    "pdfName": "Stock-Report",
+    "whatsappMessage": "Hi, Stock-Report. Please find the details in the attached PDF for your reference."
+  },
+  "Stock Book Detail Report": {
+    "subject": "Stock Book Detail Report",
+    "body": "Stock Book Detail Report",
+    "pdfName": "Stock Book Detail Report",
+    "whatsappMessage": "Hi, Stock Book Detail Report. Please find the details in the attached PDF for your reference."
+  },
+    "intereststatement": {
+    "subject": "Interest Statement Report",
+    "body": "Interest Statement Report",
+    "pdfName": "Interest Statement Report",
+    "whatsappMessage": "Hi, Interest Statement Report. Please find the details in the attached PDF for your reference."
+  },
+  "OurDO": {
+    "subject": "DO No: {doc_no} | Truck: {truck_no} | Qty: {quantal} | Grade: {grade} | Season: {season} | SB No: {SB_No}",
+    "body": "Dear Sir/Madam,\n\nPlease find attached the Delivery Order (DO No: {doc_no}) for Grade: {grade}, Truck No: {truck_no}, Quantity: {quantal} Qtls, Season: {season}, and SB No: {SB_No}.\n\nKindly go through the details and reach out in case of any clarifications.\n\nBest regards,\n{Company_Name_E}",
+    "pdfName": "DO No - {doc_no} Truck No - {truck_no}",
+    "whatsappMessage": "Hi, please find attached the Delivery Order (DO No: {doc_no}, Truck: {truck_no}, Grade: {grade}, Qty: {quantal} Qtls, Season: {season}) for your reference. - {Company_Name_E}"
+  },
+  "utr_template": {
+    "template_name": "utr_template",
+    "header": "document",
+    "subject": "Reference No. {doc_no} | Payment Confirmation – UTR No. {utr_no}",
+    "params": [
+      "{convertedDate}",
+      "{doc_no}",
+      "{Ac_Name_E}",
+      "{Address_E}",
+      "{city_name_e}",
+      "{millemailid}",
+      "{amount}",
+      "{utr_no}"
+    ],
+    "body": "Dear Sir/Madam,\n\nPlease find attached the UTR report for your reference. Below are the payment details:\n\nUTR No.: {utr_no}\nPayment Date: {convertedDate}\nAmount: {amount}\n\nKindly confirm once received.\n\nThank you.\nRegards,\n{Company_Name_E}",
+    "pdfName": "UTR_Report_{mill_code}_{Ac_Name_E}",
+    "whatsappMessage": "Hi, UTR Report. Please find the details in the attached PDF for your reference."
+  },
+  "RecieptPayment": {
+    "subject": "RecieptPayment Report",
+    "body": "RecieptPayment Report",
+    "pdfName": "RecieptPayment_Report_{credit_ac}_{creditname}",
+    "whatsappMessage": "Hi, RecieptPayment Report. Please find the details in the attached PDF for your reference."
+  },
+  "JournalVoucher": {
+    "subject": " Journal Voucher Report",
+    "body": "JournalVoucher Report",
+    "pdfName": "JournalVoucher_Report",
+    "whatsappMessage": "Hi, Our DO Report. Please find the details in the attached PDF for your reference."
+  },
+  "DebitCredit": {
+    "subject": " DebitCredit Report",
+    "body": "DebitCredit Report",
+    "pdfName": "DebitCredit",
+    "whatsappMessage": "Hi,DebitCredit Report. Please find the details in the attached PDF for your reference."
+  },
+  "ServiceBill": {
+    "subject": " ServiceBill Report",
+    "body": "ServiceBill Report",
+    "pdfName": "ServiceBill",
+    "whatsappMessage": "Hi, Our DO Report. Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseBill": {
+    "subject": "Purchase Bill No: {doc_no} | Mill: {millshortname} | Grade: {grade} | Qty: {Quantal} Qtls | Rate: {rate}",
+    "body": "Dear Sir/Madam,\n\nPlease find attached the Purchase Bill No: {doc_no} dated {doc_dateConverted} for {Quantal} Qtls of {grade} sugar at the rate of ₹{rate} per QTL, supplied by {millname}.\n\nMill Address: {supplieraddress}\nMill GST: {suppliergstno}\n\nIf you have any queries, please get in touch.\n\nThanks & Regards,\n{Company_Name_E}",
+    "pdfName": "PurchaseBill_{doc_no}_{millshortname}_{grade}",
+    "whatsappMessage": "Hi, please find attached the Purchase Bill (No: {doc_no}) for {Quantal} Qtls of {grade} sugar from {millshortname}, at ₹{rate}/QTL. For more info, check the PDF. - {Company_Name_E}"
+  },
+  "TenderWiseSauda": {
+    "subject": " TenderWise Sauda Summary Report",
+    "body": "TenderWise Sauda Summary Report",
+    "pdfName": "Tenderwise_Sauda_Summary",
+    "whatsappMessage": "Hi, TenderWise Sauda Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "DuePaymentSummary": {
+    "subject": " Due Payment Summary Report",
+    "body": "Due Payment Summary Report",
+    "pdfName": "Due_Payment_Summary",
+    "whatsappMessage": "Hi, Due Payment Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "MillPaymentSummary": {
+    "subject": " Mill Payment Summary Report",
+    "body": "Mill Payment Summary Report",
+    "pdfName": "Mill_Payment_Summary",
+    "whatsappMessage": "Hi, Mill Payment Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "UTRSummary": {
+    "subject": " UTR Summary Report",
+    "body": "UTR Summary Report",
+    "pdfName": "UTR_Summary",
+    "whatsappMessage": "Hi, UTR Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "SaudaSummary": {
+    "subject": " Sauda Summary Report",
+    "body": "Sauda Summary Report",
+    "pdfName": "Sauda_Summary",
+    "whatsappMessage": "Hi, Sauda Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "NormalSaudaSummary": {
+    "subject": " Normal Sauda Summary Report",
+    "body": "Normal Sauda Summary Report",
+    "pdfName": "Normal_Sauda_Summary",
+    "whatsappMessage": "Hi, Normal Sauda Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "UTRDetailReport": {
+    "subject": " UTR Detail Report",
+    "body": "UTR Detail Report",
+    "pdfName": "UTR_Detail_Report",
+    "whatsappMessage": "Hi, UTR Detail Report. Please find the details in the attached PDF for your reference."
+  },
+  "NewDispatchRegister": {
+    "subject": "NewDispatchRegister",
+    "body": "NewDispatchRegister Report",
+    "pdfName": "NewDispatchRegister",
+    "whatsappMessage": "Hi,NewDispatchRegister Please find the details in the attached PDF for your reference."
+  },
+  "ReturnPurchase": {
+    "subject": "ReturnPurchase",
+    "body": "ReturnPurchase Report",
+    "pdfName": "ReturnPurchase",
+    "whatsappMessage": "Hi,ReturnPurchase Please find the details in the attached PDF for your reference."
+  },
+  "BalanceSheet": {
+    "subject": "{Company_Name_E} Balance Sheet.",
+    "body": "{Company_Name_E} Balance Sheet.",
+    "pdfName": "{Company_Name_E} Balance Sheet",
+    "whatsappMessage": "Hi, Please find the details in the attached BalanceSheet for your reference."
+  },
+  "ProfitNLoss": {
+    "subject": "{Company_Name_E} Profit & Loss",
+    "body": "{Company_Name_E} Profit & Loss",
+    "pdfName": "{Company_Name_E} Profit & Loss",
+    "whatsappMessage": "Hi, Please find the details in the attached Profit N Loss for your reference."
+  },
+  "ProformaInvoiceForDO": {
+    "subject": "Proforma Invoice -{Company_Name_E}",
+    "body": "Dear Sir/Madam,\n\nPlease find attached the Proforma Invoice issued by {Company_Name_E} for your kind reference.\n\nRegards,\n{Company_Name_E}",
+    "pdfName": "Proforma_Invoice_{Company_Name_E}",
+    "whatsappMessage": "Dear Sir/Madam, please find the Proforma Invoice from {Company_Name_E} attached for your reference."
+  },
+  "ledger_print": {
+    "template_name": "ledger_print",
+    "header": "document",
+    "language": "en",
+    "subject": "Ledger - {Company_Name_E}",
+    "params": [
+      "{acCode}",
+      "{acname}",
+      "{fromDate}",
+      "{toDate}",
+      "{Balance}"
+    ],
+    "body": "...",
+    "pdfName": "Opening_Balance_Ledger_{Company_Name_E}",
+    "whatsappMessage": "..."
+  },
+  "SaleTDSRegister": {
+    "subject": "SaleTDSRegister",
+    "body": "SaleTDSRegister Report",
+    "pdfName": "SaleTDSRegister",
+    "whatsappMessage": "Hi,SaleTDSRegister Please find the details in the attached PDF for your reference."
+  },
+  "SaleMonthWise": {
+    "subject": "SaleMonthWise",
+    "body": "SaleMonthWise Report",
+    "pdfName": "SaleMonthWise",
+    "whatsappMessage": "Hi,SaleMonthWise Please find the details in the attached PDF for your reference."
+  },
+  "SaleTDSRegisterPartywise": {
+    "subject": "SaleTDSRegisterPartywise",
+    "body": "SaleTDSRegisterPartywise Report",
+    "pdfName": "SaleTDSRegisterPartywise",
+    "whatsappMessage": "Hi,SaleTDSRegisterPartywise Please find the details in the attached PDF for your reference."
+  },
+  "SaleTCSRegister": {
+    "subject": "SaleTCSRegister",
+    "body": "SaleTCSRegister Report",
+    "pdfName": "SaleTCSRegister",
+    "whatsappMessage": "Hi,SaleTCSRegister Please find the details in the attached PDF for your reference."
+  },
+  "SaleRegister": {
+    "subject": "SaleRegister",
+    "body": "SaleRegister Report",
+    "pdfName": "SaleRegister",
+    "whatsappMessage": "Hi,SaleRegister Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseMonthWise": {
+    "subject": "PurchaseMonthWise",
+    "body": "PurchaseMonthWise Report",
+    "pdfName": "PurchaseMonthWise",
+    "whatsappMessage": "Hi,PurchaseMonthWise Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseRegister": {
+    "subject": "PurchaseRegister",
+    "body": "PurchaseRegister Report",
+    "pdfName": "PurchaseRegister",
+    "whatsappMessage": "Hi,PurchaseRegister Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseTDSRegister": {
+    "subject": "PurchaseTDSRegister",
+    "body": "PurchaseTDSRegister Report",
+    "pdfName": "PurchaseTDSRegister",
+    "whatsappMessage": "Hi,PurchaseTDSRegister Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseTDSRegisterPartywise": {
+    "subject": "PurchaseTDSRegisterPartywise",
+    "body": "PurchaseTDSRegisterPartywise Report",
+    "pdfName": "PurchaseTDSRegisterPartywise",
+    "whatsappMessage": "Hi,PurchaseTDSRegisterPartywise Please find the details in the attached PDF for your reference."
+  },
+  "PurchaseTCSRegister": {
+    "subject": "PurchaseTCSRegister",
+    "body": "PurchaseTCSRegister Report",
+    "pdfName": "PurchaseTCSRegister",
+    "whatsappMessage": "Hi,PurchaseTCSRegister Please find the details in the attached PDF for your reference."
+  },
+  "trialBalance": {
+    "subject": "Trial Balance",
+    "body": "Trial Balance Report",
+    "pdfName": "Trial_Balance",
+    "whatsappMessage": "Hi,Trial Balance Please find the details in the attached PDF for your reference."
+  },
+  "StockdetailReport": {
+    "subject": "Stock Detail Report",
+    "body": "Stock Detail Report",
+    "pdfName": "Stock_Detail_Report",
+    "whatsappMessage": "Hi,Stock Detail Report Please find the details in the attached PDF for your reference."
+  },
+  "StockdetailReportMillWise": {
+    "subject": "Stock Detail Report Millwise",
+    "body": "Stock Detail Report Millwise",
+    "pdfName": "Stock_Detail_Report",
+    "whatsappMessage": "Hi,Stock Detail Report Millwise Please find the details in the attached PDF for your reference."
+  },
+  "StockBookItemwise": {
+    "subject": "Stock Detail Report StockBookItemwise",
+    "body": "Stock Detail Report StockBookItemwise",
+    "pdfName": "Stock_Detail_Report",
+    "whatsappMessage": "Hi,Stock Detail Report StockBookItemwise Please find the details in the attached PDF for your reference."
+  },
+  "MillSaleReport": {
+    "subject": "MillSaleReport",
+    "body": "MillSaleReport Report",
+    "pdfName": "MillSaleReport",
+    "whatsappMessage": "Hi,MillSaleReport Please find the details in the attached PDF for your reference."
+  },
+  "SugarPurchaseReturnRegister": {
+    "subject": "SugarPurchaseReturnRegister",
+    "body": "SugarPurchaseReturnRegister Report",
+    "pdfName": "SugarPurchaseReturnRegister",
+    "whatsappMessage": "Hi,SugarPurchaseReturnRegister Please find the details in the attached PDF for your reference."
+  },
+  "TenderWiseProfitNLoss": {
+    "subject": "TenderWiseProfitNLoss",
+    "body": "TenderWiseProfitNLoss Report",
+    "pdfName": "TenderWiseProfitNLoss",
+    "whatsappMessage": "Hi,TenderWiseProfitNLoss Please find the details in the attached PDF for your reference."
+  },
+  "PartyDO": {
+    "subject": "DO No: {doc_no} | Truck: {truck_no} | Qty: {quantal} | Grade: {grade} | Season: {season} | SB No: {SB_No}",
+    "body": "Dear Sir/Madam,\n\nPlease find attached the Delivery Order (DO No: {doc_no}) for Grade: {grade}, Truck No: {truck_no}, Quantity: {quantal} Qtls, Season: {season}, and SB No: {SB_No}.\n\nKindly go through the details and reach out in case of any clarifications.\n\nBest regards,\n{Company_Name_E}",
+    "pdfName": "DO No - {doc_no} Truck No - {truck_no}",
+    "whatsappMessage": "Hi, please find attached the Delivery Order (DO No: {doc_no}, Truck: {truck_no}, Grade: {grade}, Qty: {quantal} Qtls, Season: {season}) for your reference. - {Company_Name_E}"
+  },
+  "OtherPurchase": {
+    "subject": "Other Report",
+    "body": "Other Report",
+    "pdfName": "Other_Report_{Doc_No}",
+    "whatsappMessage": "Hi, Other Report. Please find the details in the attached PDF for your reference."
+  },
+  "ShetkariPurchase": {
+    "subject": "ShetkariPurchase Report",
+    "body": "ShetkariPurchase",
+    "pdfName": "ShetkariPurchase",
+    "whatsappMessage": "ShetkariPurchase"
+  },
+  "DispatchMillWise": {
+    "subject": "Dispatch Mill Wise Report",
+    "body": "Dispatch Mill Wise Report",
+    "pdfName": "Dispatch_Mill_Wise_Report",
+    "whatsappMessage": "Hi, Dispatch Mill Wise Report. Please find the details in the attached PDF for your reference."
+  },
+  "DispatchGradeWise": {
+    "subject": "Dispatch Grade Wise Report",
+    "body": "Dispatch Grade Wise Report",
+    "pdfName": "Dispatch_Grade_Wise_Report",
+    "whatsappMessage": "Hi, Dispatch Grade Wise Report. Please find the details in the attached PDF for your reference."
+  },
+  "PartyWiseDO": {
+    "subject": "Dispatch Party Wise DO Report",
+    "body": "Dispatch Party Wise DO Report",
+    "pdfName": "Dispatch_Party_Wise_DO_Report",
+    "whatsappMessage": "Hi, Dispatch Party Wise DO Report. Please find the details in the attached PDF for your reference."
+  },
+  "PartyWiseDoWithMill": {
+    "subject": "Dispatch Party Wise DO with Mill Report",
+    "body": "Dispatch Party Wise DO with Mill Report",
+    "pdfName": "Dispatch_Party_Wise_DO_with_Mill_Report",
+    "whatsappMessage": "Hi, Dispatch Party Wise DO with Mill Report. Please find the details in the attached PDF for your reference."
+  },
+  "TransportAccountRegister": {
+    "subject": "Transport Account Register Report",
+    "body": "Transport Account Register Report",
+    "pdfName": "Transport_Account_Register_Report",
+    "whatsappMessage": "Hi, Transport Account Register Report. Please find the details in the attached PDF for your reference."
+  },
+  "DowiseCategoryDispatch": {
+    "subject": "DO wise Category Dispatch Report",
+    "body": "DO wise Category Dispatch Report",
+    "pdfName": "DO_wise_Category_Dispatch_Report",
+    "whatsappMessage": "Hi, DO wise Category Dispatch Report. Please find the details in the attached PDF for your reference."
+  },
+  "TransportWiseCategoryDispatch": {
+    "subject": "Transport wise Category Dispatch Report",
+    "body": "Transport wise Category Dispatch Report",
+    "pdfName": "Transport_wise_Category_Dispatch_Report",
+    "whatsappMessage": "Hi, Transport wise Category Dispatch Report. Please find the details in the attached PDF for your reference."
+  },
+  "MillWiseCategoryDispatch": {
+    "subject": "Mill wise Category Dispatch Report",
+    "body": "Mill wise Category Dispatch Report",
+    "pdfName": "Mill_wise_Category_Dispatch_Report",
+    "whatsappMessage": "Hi, Mill wise Category Dispatch Report. Please find the details in the attached PDF for your reference."
+  },
+  "DispatchSummary": {
+    "subject": "Dispatch Summary Report",
+    "body": "Dispatch Summary Report",
+    "pdfName": "Dispatch_Summary_Report",
+    "whatsappMessage": "Hi, Dispatch Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "MillWisePurchase": {
+    "subject": "Mill Wise Purchase Report",
+    "body": "Mill Wise Purchase Report",
+    "pdfName": "Mill_Wise_Purchase_Report",
+    "whatsappMessage": "Hi, Mill Wise Purchase Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTPurchaseBillSummary": {
+    "subject": "GST Utilities Purchase Bill Summary Report",
+    "body": "GST Utilities Purchase Bill Summary Report",
+    "pdfName": "GST_Purchase_Bill_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Purchase Bill Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "EwayBillGenerationSummary": {
+    "subject": "EWayBill Generation Summary Report",
+    "body": "EWayBill Generation Summary Report",
+    "pdfName": "EWayBill_Generation_Summary_Report",
+    "whatsappMessage": "Hi, EWayBill Generation Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTOtherPurchaseSummary": {
+    "subject": "GST Utilities Other Purchase Summary Report",
+    "body": "GST Utilities Other Purchase Summary Report",
+    "pdfName": "GST_Other_Purchase_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Other Purchase Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTPurchaseTDSSummary": {
+    "subject": "GST Utilities Purchase TDS Summary Report",
+    "body": "GST Utilities Purchase TDS Summary Report",
+    "pdfName": "GST_Purchase_TDS_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Purchase TDS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTPurchaseTCSTDSSummary": {
+    "subject": "GST Utilities Purchase TCS/TDS Summary Report",
+    "body": "GST Utilities Purchase TCS/TDS Summary Report",
+    "pdfName": "GST_Purchase_TCSTDSSummary_Report",
+    "whatsappMessage": "Hi, GST Utilities Purchase TCS/TDS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTPurchaseTCSSmmary": {
+    "subject": "GST Utilities Purchase TCS Summary Report",
+    "body": "GST Utilities Purchase TCS Summary Report",
+    "pdfName": "GST_Purchase_TCSTDSSummary_Report",
+    "whatsappMessage": "Hi, GST Utilities Purchase TCS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTSaleBillSummary": {
+    "subject": "GST Utilities Sale Bill Summary Report",
+    "body": "GST Utilities Sale Bill Summary Report",
+    "pdfName": "GST_Sale_Bill_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Sale Bill Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTServiceBillSummary": {
+    "subject": "GST Utilities Service Bill Summary Report",
+    "body": "GST Utilities Service Bill Summary Report",
+    "pdfName": "GST_Service_Bill_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Service Bill Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTSaleTCSTDSSummary": {
+    "subject": "GST Utilities Sale TCS/TDS Summary Report",
+    "body": "GST Utilities Sale TCS/TDS Summary Report",
+    "pdfName": "GST_Sale_TCSTDSSummary_Report",
+    "whatsappMessage": "Hi, GST Utilities Sale TCS/TDS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTSaleTCSSummary": {
+    "subject": "GST Utilities Sale TCS Summary Report",
+    "body": "GST Utilities Sale TCS Summary Report",
+    "pdfName": "GST_Sale_TCSSummary_Report",
+    "whatsappMessage": "Hi, GST Utilities Sale TCS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTDebitNoteSummary": {
+    "subject": "GST Utilities Debit Note Summary Report",
+    "body": "GST Utilities Debit Note Summary Report",
+    "pdfName": "GST_DebitNote_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Debit Note Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTDebitCreditNoteSummary": {
+    "subject": "GST Utilities Debit/Credit Note Summary Report",
+    "body": "GST Utilities Debit/Credit Note Summary Report",
+    "pdfName": "GST_DebitCreditNote_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Debit/Credit Note Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTFreightBillSummary": {
+    "subject": "GST Utilities Freight Bill Summary Report",
+    "body": "GST Utilities Freight Bill Summary Report",
+    "pdfName": "GST_FreightBill_Summary_Report",
+    "whatsappMessage": "Hi, GST Utilities Freight Bill Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTHSNwiseSummary": {
+    "subject": "GST HSN wise Summary Report",
+    "body": "GST HSN wise Summary Report",
+    "pdfName": "GST_HSNwise_Summary_Report",
+    "whatsappMessage": "Hi, GST HSN wise Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTRateWiseSummary": {
+    "subject": "GST Rate wise Summary Report",
+    "body": "GST Rate wise Summary Report",
+    "pdfName": "GST_Ratewise_Summary_Report",
+    "whatsappMessage": "Hi, GST Rate wise Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTTdsSection": {
+    "subject": "GST TDS Sections Summary Report",
+    "body": "GST TDS Sections Summary Report",
+    "pdfName": "GST_TDS_Sections_Summary_Report",
+    "whatsappMessage": "Hi, GST TDS Sections Summary Report. Please find the details in the attached PDF for your reference."
+  },
+
+      "trialBalanceGSTwise": {
+    "subject": "Trial Balance",
+    "body": "Trial Balance Report",
+    "pdfName": "Trial_Balance",
+    "whatsappMessage": "Hi,Trial Balance Please find the details in the attached PDF for your reference."
+  },
+  "GSTCreateB2B": {
+    "subject": "GST Create B2B Summary Report",
+    "body": "GST Create B2B Summary Report",
+    "pdfName": "GST_CreateB2B_Summary_Report",
+    "whatsappMessage": "Hi, GST Create B2B Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTCreateB2CL": {
+    "subject": "GST Create B2CL Summary Report",
+    "body": "GST Create B2CL Summary Report",
+    "pdfName": "GST_CreateB2CL_Summary_Report",
+    "whatsappMessage": "Hi, GST Create B2CL Summary Report. Please find the details in the attached PDF for your reference."
+  },
+  "GSTCreateB2CS": {
+    "subject": "GST Create B2CS Summary Report",
+    "body": "GST Create B2CS Summary Report",
+    "pdfName": "GST_CreateB2CS_Summary_Report",
+    "whatsappMessage": "Hi, GST Create B2CS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+    "AccountsReport": {
+    "subject": "GST Create B2CS Summary Report",
+    "body": "GST Create B2CS Summary Report",
+    "pdfName": "GST_CreateB2CS_Summary_Report",
+    "whatsappMessage": "Hi, GST Create B2CS Summary Report. Please find the details in the attached PDF for your reference."
+  },
+
+    "AgingAnalysisGSTwise": {
+    "subject": "AgingAnalysisGSTwise",
+    "body": "AgingAnalysisGSTwise",
+    "pdfName": "AgingAnalysisGSTwise",
+    "whatsappMessage": "Hi,AgingAnalysisGSTwise. Please find the details in the attached PDF for your reference."
+  },
+
+  "DailySaleAndPurchase": {
+    "subject": "Daily Sale And Purchase Report",
+    "body": "Daily Sale And Purchase Report",
+    "pdfName": "Daily_Sale_Purchase",
+    "whatsappMessage": "Hi, Daily Sale And Purchase Report details in the attached PDF for your reference."
+  },
+  "accounts_sale_bill_2": {
+    "template_name": "accounts_sale_bill_2",
+    "params": [
+      "{billtoname}",
+      "{CompanyName}",
+      "{LORRYNO}",
+      "{driver_no}",
+      "{Doc_No}",
+      "{EWay_Bill_No}",
+      "{millname}",
+      "{billtoname}",
+      "{shiptoname}",
+      "{Quantal}",
+      "{sale_rate}"
+    ],
+    "header": "document",
+    "pdfName": "{doc_no} {LORRYNO} {billtoname}",
+    "subject": "Bill No: {doc_no} | Lorry No: {LORRYNO} | Mill: {millname} | Buyer: {billtoname}",
+    "body": "Dear {billtoname},\n\nPlease find attached the Sale Bill from {CompanyName}.\nLorry No: {LORRYNO}\nDriver Mobile No: {driver_no}\nJK Bill No: {Doc_No}\neWay Bill No: {EWay_Bill_No}\nMill Name: {millname}\n\nBill to: {billtoname}\nShipped to: {shiptoname}\nQuantity (Qntls): {Quantal}\nRate (Per Qntl): {salerate}\n\nFor more details or assistance please contact us:\nCustomer Care: 9881999101\nTrade Enquiry: 9371999101\nDelivery: 9326999101\nAccounts: 7378999101\n\nRegards\nTeam eBuySugar"
+  },
+  "accounts_do": {
+    "template_name": "accounts_do",
+    "params": [
+      "{doc_dateConverted}",
+      "{mill_name}",
+      "{mill_address}",
+      "{CompanyName}",
+      "{doc_no}",
+      "{truck_no}",
+      "{driver_no}",
+      "{UTR_No}",
+      "{quantal}",
+      "{salerate}",
+      "{salebillname}",
+      "{ShipTo}"
+    ],
+    "header": "document",
+    "pdfName": "DeliveryOrder_{doc_no}_{truck_no}_{salebillname}",
+    "subject": "DO No: {doc_no} | Truck: {truck_no} | Qty: {quantal} | Grade: {grade} | Season: {season} | SB No: {SB_No}",
+    "body": "Date: {doc_dateConverted}\n\nDear Sir,\n{mill_name}\n{mill_address}\n\nSubject: Delivery Order from {CompanyName}\n\nPlease find attached Delivery Order, details are as follows:\n\nDO No.: {doc_no}\nTruck No: {truck_no}\nDriver’s Mobile: {driver_no}\nUTR No: {UTR_No}\nQuantity: {quantal} Qntls.\nRate: ₹{salerate}/Qntl\n\nBill to: {salebillname}\nShipped to: {ShipTo}\n\nFor more details or assistance please contact us:\nCustomer Care: 9881999101\nTrade Enquiry: 9371999101\nDelivery: 9326999101\nAccounts: 7378999101\n\nWith regards\nTeam eBuySugar"
+  },
+
+
+  "delivery_orders_jk": {
+    "template_name": "delivery_orders_jk",
+    "params": [
+      "{ShipTo}",
+      "{doc_dateConverted}",
+      "{doc_no}",
+      "{truck_no}",
+      "{mill_name}",
+      "{quantal}",
+      "{grade}",
+      "{salebillname}",
+      "{ShipTo}"
+    ],
+    "pdfName": "DeliveryOrder_{doc_no}_{truck_no}_{salebillname}",
+    "subject": "DO No: {doc_no} | Truck: {truck_no} | Qty: {quantal} | Grade: {grade} | Season: {season} | SB No: {SB_No}",
+    "body": "Date: {doc_dateConverted}\n\nDear Sir,\n{mill_name}\n{mill_address}\n\nSubject: Delivery Order from {CompanyName}\n\nPlease find attached Delivery Order, details are as follows:\n\nDO No.: {doc_no}\nTruck No: {truck_no}\nDriver’s Mobile: {driver_no}\nUTR No: {UTR_No}\nQuantity: {quantal} Qntls.\nRate: ₹{salerate}/Qntl\n\nBill to: {salebillname}\nShipped to: {ShipTo}\n\nFor more details or assistance please contact us:\nCustomer Care: 9881999101\nTrade Enquiry: 9371999101\nDelivery: 9326999101\nAccounts: 7378999101\n\nWith regards\nTeam eBuySugar",
+    "whatsappMessage": "Greetings from eBuySugar! 📄\n\nYour Delivery Order details:\n*DO No:* {doc_no}\n*Mill:* {mill_name}\n*Truck:* {truck_no}\n*Qty:* {quantal} Qtls\n*Grade:* {grade}\n\nFor support, call 9326999101. Thank you for trading with us! - JK India eAgriTech Ltd."
+  
+}
+}

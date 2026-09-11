@@ -1,0 +1,10 @@
+@keyframes tableShadow {
+    0% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+    50% { box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); }
+    100% { box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+  }
+  
+  .table-shadow {
+    animation: tableShadow 3s ease-in-out infinite;
+  }
+  

@@ -1,0 +1,114 @@
+.RecieptPaymentmodal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: 0;
+}
+
+.RecieptPaymentmodal-dialog {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%; 
+  max-width: 1200px; 
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-out;
+  max-height: 100vh;
+  margin: 0; 
+  overflow: hidden; 
+}
+
+.RecieptPaymentmodal-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 150px); 
+}
+
+.RecieptPaymentmodal-header,
+.RecieptPaymentmodal-footer {
+  width: 100%;
+}
+
+.RecieptPaymentmodal-title{
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin: 20px;
+  color: rgb(12, 14, 177);
+}
+
+.ReceiptPaymentLabel {
+  font-weight: 600;  
+  margin-right: 10px;  
+  display: inline-block;
+  font-size: 16px; 
+  color: rgb(27, 25, 25);
+  margin-left: 10px;
+  
+}
+
+.ReceiptPaymentLabelMainDiv {
+  margin-bottom: 15px; 
+  display: flex;
+  gap: 10px;
+  align-items: center; 
+}
+
+
+.receiptpaymentdiv {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.receiptpaymentlabel {
+  font-weight: bold;
+  margin-right: 16px;
+  min-width: 100px;
+  margin-top: -10px;
+}
+
+.receiptpayment-col {
+  flex-grow: 1;
+}
+
+.receiptpayment-form-group {
+  display: flex;
+  align-items: center;
+}
+
+.custom-select {
+  width: 80%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  transition: border 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+  margin-left:10px;
+}
+
+.custom-select:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+}
+
+.custom-select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.custom-select:hover:not(:disabled) {
+  border-color: #007bff;
+}

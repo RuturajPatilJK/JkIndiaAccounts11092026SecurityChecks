@@ -1,0 +1,595 @@
+{
+  "info": {
+    "name": "JK eBuySugar - Complete API Collection",
+    "description": "All API endpoints for JK eBuySugar / JK Accounts application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:8080/api/sugarian" },
+    { "key": "Company_Code", "value": "2" },
+    { "key": "Year_Code", "value": "1" }
+  ],
+  "item": [
+
+    {
+      "name": "01 - Auth & Login",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\",\n  \"Company_Code\": \"{{Company_Code}}\"\n}" }
+          }
+        },
+        {
+          "name": "Check Token",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/check-token" }
+        },
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/userlogin",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}" }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT", "url": "{{BASE_URL}}/change_password",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"old_password\": \"admin123\",\n  \"new_password\": \"newpass456\",\n  \"User_ID\": 1\n}" }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{BASE_URL}}/update_user_profile?uid=1", "query": [{ "key": "uid", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@example.com\"\n}" }
+          }
+        },
+        {
+          "name": "Get Company List",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/get_company_data" }
+        },
+        {
+          "name": "Get Self AC",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{BASE_URL}}/get_self_ac?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "02 - User Registration",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/register-user",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Rajesh\",\n  \"lastName\": \"Patil\",\n  \"companyName\": \"Patil Traders Pvt Ltd\",\n  \"address\": \"Shop No 5, Market Road\",\n  \"city\": \"Sangli\",\n  \"pinCode\": 416416,\n  \"state\": \"Maharashtra\",\n  \"country\": \"India\",\n  \"mobileNo\": \"9876543210\",\n  \"email\": \"rajesh.patil@example.com\",\n  \"password\": \"Test@1234\",\n  \"GST_No\": \"27ABCDE1234F1Z5\",\n  \"PAN_No\": \"ABCDE1234F\",\n  \"FSSAI_No\": \"12345678901234\",\n  \"tablePrefixName\": \"PT\",\n  \"isApproved\": \"N\",\n  \"approvedBy\": \"\",\n  \"Remark\": \"New trader registration\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "03 - Company",
+      "item": [
+        { "name": "Get All Companies", "request": { "method": "GET", "url": "{{BASE_URL}}/get_company_data_All" } },
+        { "name": "Get Last Company Code", "request": { "method": "GET", "url": "{{BASE_URL}}/get_last_company_code" } },
+        { "name": "Get Last Company Data", "request": { "method": "GET", "url": "{{BASE_URL}}/get_last_company_data" } },
+        {
+          "name": "Get Company By Code",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_company_by_code?company_code={{Company_Code}}", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }] } }
+        },
+        {
+          "name": "Create Company",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/create_company",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Company_Name\": \"JK India eAgritech Ltd\",\n  \"Address\": \"Pune, Maharashtra\",\n  \"GST_No\": \"27AAECJ8332R1ZV\",\n  \"PAN_No\": \"AAECJ8332R\",\n  \"State_Code\": \"27\",\n  \"Mobile_No\": \"9876543210\",\n  \"Email\": \"info@jkebuysugar.com\"\n}" }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update_company?company_code={{Company_Code}}", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Company_Name\": \"JK India eAgritech Ltd Updated\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Company",
+          "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_company?company_code={{Company_Code}}", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }] } }
+        },
+        { "name": "Get First Company", "request": { "method": "GET", "url": "{{BASE_URL}}/get_first_navigation" } },
+        { "name": "Get Last Company", "request": { "method": "GET", "url": "{{BASE_URL}}/get_last_navigation" } },
+        { "name": "Get Previous Company", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_previous_navigation?current_company_code={{Company_Code}}", "query": [{ "key": "current_company_code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Next Company", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_next_navigation?current_company_code={{Company_Code}}", "query": [{ "key": "current_company_code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Get Accounting Years",
+          "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_accounting_years?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } }
+        },
+        {
+          "name": "Create Accounting Year",
+          "request": {
+            "method": "POST", "url": { "raw": "{{BASE_URL}}/create_accounting_year?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"year\": \"2025-26\",\n  \"Start_Date\": \"2025-04-01\",\n  \"End_Date\": \"2026-03-31\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "04 - Account Master",
+      "item": [
+        { "name": "Get All Accounts", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-accountmaster?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Account By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getaccountmasterByid?Ac_Code=544&Company_Code={{Company_Code}}", "query": [{ "key": "Ac_Code", "value": "544" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Next Ac Code", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getNextAcCode_AccountMaster?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Last Account", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-lastaccountdata?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Insert Account Master",
+          "request": {
+            "method": "POST", "url": { "raw": "{{BASE_URL}}/insert-accountmaster?company_code={{Company_Code}}", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Ac_Code\": 9999,\n  \"Ac_Name_E\": \"Test Party\",\n  \"Short_Name\": \"TEST\",\n  \"Group_Code\": 1,\n  \"Opening_Balance\": 0.0,\n  \"Gst_No\": \"27ABCDE1234F1Z5\",\n  \"TDSApplicable\": \"N\",\n  \"PurchaseTDSApplicable\": \"N\",\n  \"Mobile_No\": \"9876543210\",\n  \"Email\": \"test@example.com\",\n  \"Address\": \"Test Address\",\n  \"State_Code\": \"27\",\n  \"City_Code\": 1,\n  \"PAN_No\": \"ABCDE1234F\",\n  \"Created_By\": \"admin\"\n}" }
+          }
+        },
+        {
+          "name": "Update Account Master",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update-accountmaster?accoid=1", "query": [{ "key": "accoid", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"company_code\": \"{{Company_Code}}\",\n  \"Ac_Code\": 9999,\n  \"Ac_Name_E\": \"Test Party Updated\",\n  \"Group_Code\": 1,\n  \"Opening_Balance\": 0.0,\n  \"TDSApplicable\": \"N\",\n  \"PurchaseTDSApplicable\": \"N\",\n  \"Modified_By\": \"admin\",\n  \"User_Id\": 1\n}" }
+          }
+        },
+        { "name": "Delete Account Master", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_accountmaster?accoid=1&company_code={{Company_Code}}&Ac_Code=9999", "query": [{ "key": "accoid", "value": "1" }, { "key": "company_code", "value": "{{Company_Code}}" }, { "key": "Ac_Code", "value": "9999" }] } } },
+        { "name": "Get Account Address", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/accountmaster-address?ac_code=544&Company_Code={{Company_Code}}", "query": [{ "key": "ac_code", "value": "544" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Check AcCode Usage", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/check-AcCode-usage?Ac_Code=544&Company_Code={{Company_Code}}&accoid=1", "query": [{ "key": "Ac_Code", "value": "544" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "accoid", "value": "1" }] } } },
+        {
+          "name": "Search Taxpayer (GST)",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/search-taxpayer",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"gstNo\": \"27ABCDE1234F1Z5\"\n}" }
+          }
+        },
+        { "name": "Get First Account", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-firstaccount-navigation?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Prev Account", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-previousaccount-navigation?current_ac_code=544&Company_Code={{Company_Code}}", "query": [{ "key": "current_ac_code", "value": "544" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Next Account", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-nextaccount-navigation?current_ac_code=544&Company_Code={{Company_Code}}", "query": [{ "key": "current_ac_code", "value": "544" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } }
+      ]
+    },
+
+    {
+      "name": "05 - Tender Purchase",
+      "item": [
+        { "name": "Get All Tenders", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/all_tender_data?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Tender By No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getTenderByTenderNo?Tender_No=1001&Company_Code={{Company_Code}}", "query": [{ "key": "Tender_No", "value": "1001" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Next Tender No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getNextTenderNo_SugarTenderPurchase?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Self AC", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_SelfAc?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Dispatch Type", "request": { "method": "GET", "url": "{{BASE_URL}}/get_dispatch_type/{{Company_Code}}" } },
+        { "name": "Check Tender Usage", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/check-tender-usage?Tender_No=1001&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Tender_No", "value": "1001" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Check Tender Detail Usage", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/check-tenderdetailid-usage?TenderDetailID=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "TenderDetailID", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Live Tenders", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_live_tenders?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get All Live Tenders", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_live_tendersall?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get eBuy Live Tenders", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_elive_tenders?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Sauda Book Utility", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-sauda-book-utility?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Insert Tender (Head + Detail)",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert_tender_head_detail",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": {\n    \"Tender_No\": 0,\n    \"Company_Code\": \"{{Company_Code}}\",\n    \"Tender_Date\": \"2026-07-21\",\n    \"Lifting_Date\": \"2026-07-25\",\n    \"Mill_Code\": 339,\n    \"mc\": 231,\n    \"Grade\": \"SUPER S1\",\n    \"Quantal\": 1000.0,\n    \"Packing\": 50,\n    \"Bags\": 2000,\n    \"Mill_Rate\": 4200.0,\n    \"Purc_Rate\": 0.0,\n    \"Party_Bill_Rate\": 4200.0,\n    \"Payment_To\": 10175,\n    \"pt\": 9536,\n    \"Tender_From\": 2,\n    \"tf\": 1,\n    \"Tender_DO\": 2,\n    \"td\": 1,\n    \"Voucher_By\": 2,\n    \"vb\": 1,\n    \"Broker\": 2,\n    \"bk\": 1,\n    \"itemcode\": 5,\n    \"ic\": 10,\n    \"gstratecode\": \"1\",\n    \"gstid\": 1,\n    \"type\": \"M\",\n    \"TCS_Rate\": 0.0,\n    \"TCS_Amt\": 0.0,\n    \"TDS_Rate\": 0.0,\n    \"TDS_Amt\": 0.0,\n    \"Excise_Rate\": 0.0,\n    \"Narration\": \"\",\n    \"Year_Code\": \"{{Year_Code}}\",\n    \"Branch_Id\": 1,\n    \"AutoPurchaseBill\": \"Y\",\n    \"Temptender\": \"N\",\n    \"Created_By\": \"admin\"\n  },\n  \"detailData\": [\n    {\n      \"rowaction\": \"add\",\n      \"Buyer\": 2,\n      \"buyerid\": 1,\n      \"ShipTo\": 2,\n      \"shiptoid\": 1,\n      \"Buyer_Party\": 2,\n      \"buyerpartyid\": 1,\n      \"sub_broker\": 2,\n      \"sbr\": 1,\n      \"Buyer_Quantal\": 1000.0,\n      \"Sale_Rate\": 0.0,\n      \"Commission_Rate\": 0.0,\n      \"Sauda_Date\": \"2026-07-21\",\n      \"Lifting_Date\": \"2026-07-25\",\n      \"Narration\": \"\",\n      \"Delivery_Type\": \"C\",\n      \"gradeCode\": \"36\",\n      \"gradeid\": 92,\n      \"Mill_Rate\": 4200.0,\n      \"Purchase_Rate\": 0.0,\n      \"tcs_rate\": 0.0,\n      \"gst_rate\": 5.0,\n      \"tcs_amt\": 0.0,\n      \"gst_amt\": 0.0,\n      \"CashDiff\": 0.0,\n      \"Company_Code\": \"{{Company_Code}}\",\n      \"year_code\": \"{{Year_Code}}\",\n      \"Branch_Id\": 1,\n      \"ID\": 1,\n      \"AutoID\": 1\n    }\n  ],\n  \"gradeRateData\": [\n    { \"gradeCode\": \"36\", \"gradeid\": 92, \"gradeRate\": 4200.0, \"Purchase_Rate\": 4200.0 }\n  ]\n}" }
+          }
+        },
+        {
+          "name": "Update Tender Purchase",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update_tender_purchase?tenderid=9497", "query": [{ "key": "tenderid", "value": "9497" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": {\n    \"Tender_No\": 4467,\n    \"Grade\": \"SUPER S1\",\n    \"Quantal\": 1000.0,\n    \"Mill_Rate\": 4200.0,\n    \"Modified_By\": \"admin\",\n    \"User_Id\": 1\n  },\n  \"detailData\": [],\n  \"gradeRateData\": [\n    { \"gradeCode\": \"36\", \"gradeid\": 92, \"gradeRate\": 4200.0, \"Purchase_Rate\": 4200.0 }\n  ]\n}" }
+          }
+        },
+        { "name": "Delete Tender", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_TenderBytenderid?tenderid=9497&user_id=1", "query": [{ "key": "tenderid", "value": "9497" }, { "key": "user_id", "value": "1" }] } } },
+        {
+          "name": "Add Tender Detail",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/add_tender_detail",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"detailData\": {\n    \"Tender_No\": 4467,\n    \"tenderid\": 9497,\n    \"Company_Code\": \"{{Company_Code}}\",\n    \"year_code\": \"{{Year_Code}}\",\n    \"Buyer\": 544,\n    \"buyerid\": 100,\n    \"ShipTo\": 544,\n    \"shiptoid\": 100,\n    \"Buyer_Party\": 2,\n    \"buyerpartyid\": 1,\n    \"sub_broker\": 2,\n    \"sbr\": 1,\n    \"Buyer_Quantal\": 100.0,\n    \"Sale_Rate\": 4235.0,\n    \"Commission_Rate\": 0.0,\n    \"Sauda_Date\": \"2026-07-21\",\n    \"Lifting_Date\": \"2026-07-24\",\n    \"Narration\": \"SUPER S1\",\n    \"Delivery_Type\": \"C\",\n    \"gradeCode\": \"36\",\n    \"gradeid\": 92,\n    \"Mill_Rate\": 4200.0,\n    \"Purchase_Rate\": 4200.0,\n    \"tcs_rate\": 0.0,\n    \"gst_rate\": 5.0,\n    \"tcs_amt\": 0.0,\n    \"gst_amt\": 210.0,\n    \"CashDiff\": 0.0,\n    \"Branch_Id\": 1,\n    \"EbuySelectedParty\": \"\",\n    \"EbuySelectedAccoid\": \"\",\n    \"EbuySugarLiftingDate\": \"2026-07-24\",\n    \"Payment_To\": 10175,\n    \"pt\": 9536,\n    \"from_software\": \"S\"\n  }\n}" }
+          }
+        },
+        {
+          "name": "Update Tender Detail",
+          "request": {
+            "method": "PUT", "url": "{{BASE_URL}}/update_tender_detail",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"detailData\": {\n    \"tenderdetailid\": 37361,\n    \"Tender_No\": 4467,\n    \"Buyer_Quantal\": 935.0,\n    \"Sale_Rate\": 4500.0,\n    \"Commission_Rate\": 0.0,\n    \"Sauda_Date\": \"2026-07-21\",\n    \"Lifting_Date\": \"2026-07-25\"\n  }\n}" }
+          }
+        },
+        { "name": "Get First Tender", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getfirsttender_record_navigation?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Last Tender", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getlasttender_record_navigation?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Previous Tender", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getprevioustender_navigation?Company_Code={{Company_Code}}&CurrenttenderNo=4467", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "CurrenttenderNo", "value": "4467" }] } } },
+        { "name": "Get Next Tender", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getnexttender_navigation?Company_Code={{Company_Code}}&CurrenttenderNo=4467", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "CurrenttenderNo", "value": "4467" }] } } }
+      ]
+    },
+
+    {
+      "name": "06 - Delivery Order",
+      "item": [
+        { "name": "Get Next DO No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getNextDocNo_DeliveryOrder?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get All DOs", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-DO?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get DO By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/DOByid?doc_no=1&company_code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "doc_no", "value": "1" }, { "key": "company_code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        {
+          "name": "Insert Delivery Order",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert-DeliveryOrder",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": {\n    \"doc_no\": 0,\n    \"Company_Code\": \"{{Company_Code}}\",\n    \"Year_Code\": \"{{Year_Code}}\",\n    \"doc_date\": \"2026-07-21\",\n    \"Tender_No\": 4467,\n    \"tenderid\": 9497,\n    \"tenderdetailid\": 37361,\n    \"Mill_Code\": 339,\n    \"mc\": 231,\n    \"Quantal\": 100.0,\n    \"Grade\": \"SUPER S1\",\n    \"Mill_Rate\": 4200.0,\n    \"Buyer\": 544,\n    \"buyerid\": 100,\n    \"ShipTo\": 544,\n    \"shiptoid\": 100,\n    \"desp_type\": \"C\",\n    \"AutopurchaseBill\": \"Y\",\n    \"Created_By\": \"admin\"\n  },\n  \"new_sale_data\": {\n    \"AutopurchaseBill\": \"Y\",\n    \"desp_type\": \"C\",\n    \"LV_Commision_Amt\": 0.0,\n    \"SB_Ac_Code\": 2,\n    \"SB_Unit_Code\": 1\n  }\n}" }
+          }
+        },
+        {
+          "name": "Update Delivery Order",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update-DeliveryOrder?doid=1", "query": [{ "key": "doid", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": {\n    \"Quantal\": 100.0,\n    \"Grade\": \"SUPER S1\"\n  }\n}" }
+          }
+        },
+        { "name": "Delete Delivery Order", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_data_by_doid?doid=1&company_code={{Company_Code}}&doc_no=1&Year_Code={{Year_Code}}", "query": [{ "key": "doid", "value": "1" }, { "key": "company_code", "value": "{{Company_Code}}" }, { "key": "doc_no", "value": "1" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Pending DOs", "request": { "method": "GET", "url": "{{BASE_URL}}/get-pending-delivery-orders" } },
+        { "name": "Get Pending DO Data", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-Pending_DO?company_code={{Company_Code}}", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }] } } }
+      ]
+    },
+
+    {
+      "name": "07 - Sale Bill",
+      "item": [
+        { "name": "Get Next Doc No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-next-doc-no?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get All Sale Bills", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-SaleBill?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Sale Bill By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/SaleBillByid?saleid=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "saleid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Sale Bill By Doc No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/SaleBillByDocNo?doc_no=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "doc_no", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        {
+          "name": "Insert Sale Bill",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert-SaleBill",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": {\n    \"doc_no\": 0,\n    \"doc_date\": \"2026-07-21\",\n    \"Company_Code\": \"{{Company_Code}}\",\n    \"Year_Code\": \"{{Year_Code}}\",\n    \"ac_code\": 544,\n    \"accoid\": 100,\n    \"Bill_Amount\": 425000.0,\n    \"TCS_Rate\": 0.0,\n    \"TCS_Amt\": 0.0,\n    \"Created_By\": \"admin\"\n  },\n  \"detailData\": [\n    {\n      \"item_code\": 5,\n      \"Quantal\": 100.0,\n      \"Rate\": 4250.0,\n      \"Amount\": 425000.0\n    }\n  ]\n}" }
+          }
+        },
+        {
+          "name": "Update Sale Bill",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update-SaleBill?saleid=1", "query": [{ "key": "saleid", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"headData\": { \"Bill_Amount\": 430000.0 },\n  \"detailData\": []\n}" }
+          }
+        },
+        { "name": "Delete Sale Bill", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_data_by_saleid?saleid=1&Company_Code={{Company_Code}}&doc_no=1&Year_Code={{Year_Code}}&User_Id=1", "query": [{ "key": "saleid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "doc_no", "value": "1" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "User_Id", "value": "1" }] } } },
+        { "name": "Generate Sale Bill Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/generating_saleBill_report?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&doc_no=1", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "doc_no", "value": "1" }] } } },
+        { "name": "Get First Sale Bill", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-firstSaleBill-navigation?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Last Sale Bill", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-lastSaleBill-navigation?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Previous Sale Bill", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-previousSaleBill-navigation?currentDocNo=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "currentDocNo", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Next Sale Bill", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-nextSaleBill-navigation?currentDocNo=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "currentDocNo", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } }
+      ]
+    },
+
+    {
+      "name": "08 - Purchase Bill",
+      "item": [
+        { "name": "Get All Purchase Bills", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-sugarpurchase?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Purchase Bill By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getsugarpurchasebyid?doc_no=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "doc_no", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Next Purchase Doc No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-next-doc-no-purchaseBill?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        {
+          "name": "Insert Sugar Purchase",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert_SugarPurchase",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"doc_no\": 0,\n  \"doc_date\": \"2026-07-21\",\n  \"Company_Code\": \"{{Company_Code}}\",\n  \"Year_Code\": \"{{Year_Code}}\",\n  \"ac_code\": 10175,\n  \"accoid\": 9536,\n  \"Quantal\": 100.0,\n  \"Rate\": 4200.0,\n  \"Bill_Amount\": 420000.0,\n  \"TCS_Rate\": 0.0,\n  \"TCS_Amt\": 0.0,\n  \"GST_Rate\": 5.0,\n  \"Tender_No\": 4467,\n  \"DO_No\": 1,\n  \"Created_By\": \"admin\"\n}" }
+          }
+        },
+        {
+          "name": "Update Sugar Purchase",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update-SugarPurchase?purchaseid=1", "query": [{ "key": "purchaseid", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Bill_Amount\": 422000.0\n}" }
+          }
+        },
+        { "name": "Delete Sugar Purchase", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_data_SugarPurchase?purchaseid=1&Company_Code={{Company_Code}}&doc_no=1&Year_Code={{Year_Code}}&tran_type=P&User_Id=1", "query": [{ "key": "purchaseid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "doc_no", "value": "1" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "tran_type", "value": "P" }, { "key": "User_Id", "value": "1" }] } } },
+        { "name": "Get Purchase Bill Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/generating_purchaseReport_report?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&doc_no=1", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "doc_no", "value": "1" }] } } }
+      ]
+    },
+
+    {
+      "name": "09 - Receipt Payment",
+      "item": [
+        { "name": "Get All Receipt/Payment", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-receiptpayment?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Receipt/Payment By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getreceiptpaymentByid?tranid=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "tranid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get Next Doc No (Payment)", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_next_paymentRecord_docNo?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&tran_type=R", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "tran_type", "value": "R" }] } } },
+        {
+          "name": "Insert Receipt Payment",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert-receiptpayment",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"doc_no\": 0,\n  \"doc_date\": \"2026-07-21\",\n  \"tran_type\": \"R\",\n  \"Company_Code\": \"{{Company_Code}}\",\n  \"Year_Code\": \"{{Year_Code}}\",\n  \"ac_code\": 544,\n  \"accoid\": 100,\n  \"Amount\": 100000.0,\n  \"Narration\": \"Payment received\",\n  \"Created_By\": \"admin\"\n}" }
+          }
+        },
+        {
+          "name": "Update Receipt Payment",
+          "request": {
+            "method": "PUT", "url": "{{BASE_URL}}/update-receiptpayment",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tranid\": 1,\n  \"Amount\": 105000.0\n}" }
+          }
+        },
+        { "name": "Delete Receipt Payment", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_data_by_tranid?tranid=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "tranid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Generate Receipt/Payment Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/generating_RecieptPaymrnt_report?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&doc_no=1&tran_type=R", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "doc_no", "value": "1" }, { "key": "tran_type", "value": "R" }] } } }
+      ]
+    },
+
+    {
+      "name": "10 - UTR Entry",
+      "item": [
+        { "name": "Get All UTRs", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getdata-utr?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get UTR By Id", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getutrByid?utrid=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "utrid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        {
+          "name": "Insert UTR",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert-utr",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"UTR_No\": \"AXIS20260721001\",\n  \"UTR_Date\": \"2026-07-21\",\n  \"Company_Code\": \"{{Company_Code}}\",\n  \"Year_Code\": \"{{Year_Code}}\",\n  \"ac_code\": 10175,\n  \"accoid\": 9536,\n  \"Amount\": 420000.0,\n  \"Tender_No\": 4467,\n  \"tenderid\": 9497,\n  \"Narration\": \"Mill payment\",\n  \"Created_By\": \"admin\"\n}" }
+          }
+        },
+        {
+          "name": "Update UTR",
+          "request": {
+            "method": "PUT", "url": "{{BASE_URL}}/update-utr",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"utrid\": 1,\n  \"Amount\": 422000.0\n}" }
+          }
+        },
+        { "name": "Delete UTR", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_data_by_utrid?utrid=1&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "utrid", "value": "1" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Get UTR Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getUTRReport?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&from_date=2026-04-01&to_date=2026-07-31", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }] } } }
+      ]
+    },
+
+    {
+      "name": "11 - Commission Bill",
+      "item": [
+        { "name": "Get All Commission Bills", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getall-CommissionBill?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&Tran_Type=CB", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "Tran_Type", "value": "CB" }] } } },
+        { "name": "Get Next CommBill Doc No", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-next-doc-no-commissionBill?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&Tran_Type=CB", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "Tran_Type", "value": "CB" }] } } },
+        {
+          "name": "Create Commission Bill",
+          "request": {
+            "method": "POST", "url": { "raw": "{{BASE_URL}}/create-RecordCommissionBill?Company_Code={{Company_Code}}&Tran_Type=CB&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Tran_Type", "value": "CB" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ac_code\": 544,\n  \"accoid\": 100,\n  \"doc_date\": \"2026-07-21\",\n  \"qntl\": 100.0,\n  \"item_code\": 5,\n  \"Rate\": 50.0,\n  \"Bill_Amount\": 5000.0,\n  \"TCS_Net_Payable\": 0.0,\n  \"Narration\": \"Commission bill\"\n}" }
+          }
+        },
+        {
+          "name": "Update Commission Bill",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/update-CommissionBill?Company_Code={{Company_Code}}&Tran_Type=CB&Year_Code={{Year_Code}}&doc_no=1", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Tran_Type", "value": "CB" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "doc_no", "value": "1" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"User_Id\": 1,\n  \"ac_code\": 544,\n  \"TCS_Net_Payable\": 0.0,\n  \"item_code\": 5,\n  \"qntl\": 100.0\n}" }
+          }
+        },
+        { "name": "Delete Commission Bill", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete-CommissionBill?Company_Code={{Company_Code}}&Tran_Type=CB&Year_Code={{Year_Code}}&doc_no=1&User_Id=1", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Tran_Type", "value": "CB" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "doc_no", "value": "1" }, { "key": "User_Id", "value": "1" }] } } }
+      ]
+    },
+
+    {
+      "name": "12 - Ledger & Reports",
+      "item": [
+        { "name": "Get G-Ledger", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getall-Gledger?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&AC_CODE=544", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "AC_CODE", "value": "544" }] } } },
+        { "name": "Ledger AC Wise", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_gLedgerReport_AcWise?Company_Code={{Company_Code}}&from_date=2026-04-01&to_date=2026-07-31&Accode=544", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Accode", "value": "544" }] } } },
+        { "name": "Multiple Ledger", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/MultipleLedger?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&ac_codes=544,151", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "ac_codes", "value": "544,151" }] } } },
+        { "name": "Day Book", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_DayBook?company_code={{Company_Code}}&year_code={{Year_Code}}&from_date=2026-07-21&to_date=2026-07-21", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }, { "key": "year_code", "value": "{{Year_Code}}" }, { "key": "from_date", "value": "2026-07-21" }, { "key": "to_date", "value": "2026-07-21" }] } } },
+        { "name": "Trial Balance", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/TrialBalance-Report?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&groupType=ALL&Year_Code={{Year_Code}}", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "groupType", "value": "ALL" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Profit & Loss", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ProfitLoss_Report?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Balance Sheet", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/Balancesheet_Report?to_date=2026-07-31&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Bank Book", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-bank-book?Ac_Code=1&fromDate=2026-04-01&toDate=2026-07-31&Company_Code={{Company_Code}}", "query": [{ "key": "Ac_Code", "value": "1" }, { "key": "fromDate", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Ledger Month Wise", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ledger-monthwise?Company_Code={{Company_Code}}&Ac_code=544&from_date=2026-04-01&to_date=2026-07-31", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Ac_code", "value": "544" }, { "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }] } } },
+        { "name": "Get Account Balance", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_balance?ac_code=544&company_code={{Company_Code}}&year_code={{Year_Code}}", "query": [{ "key": "ac_code", "value": "544" }, { "key": "company_code", "value": "{{Company_Code}}" }, { "key": "year_code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Aging Analysis Debtors", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/AgingAnalysis-Report-Debtors?toDT=2026-07-31&Company_Code={{Company_Code}}&Group_code=D", "query": [{ "key": "toDT", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Group_code", "value": "D" }] } } },
+        { "name": "Aging Analysis Creditors", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/AgingAnalysis-Report-Creditors?toDT=2026-07-31&Company_Code={{Company_Code}}&Group_code=C", "query": [{ "key": "toDT", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Group_code", "value": "C" }] } } }
+      ]
+    },
+
+    {
+      "name": "13 - Stock Reports",
+      "item": [
+        { "name": "Party Wise Stock Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/partywise-stockReport?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Mill Wise Stock Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/millwise-stock-report?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Self Stock Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/self-stock-report?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }] } } },
+        { "name": "Mill Lot Due Summary", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/mill_lot_due_summary?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        { "name": "Dispatch Details Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/DispatchDetailsRegister?Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&fromDate=2026-04-01&toDate=2026-07-31", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "fromDate", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }] } } },
+        { "name": "Tender Balance Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/tender-balance-report?company_code={{Company_Code}}&year_code={{Year_Code}}&tender_no=4467", "query": [{ "key": "company_code", "value": "{{Company_Code}}" }, { "key": "year_code", "value": "{{Year_Code}}" }, { "key": "tender_no", "value": "4467" }] } } },
+        { "name": "Daily Purchase Report", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/dailypurchase-report?Company_Code={{Company_Code}}&Selected_Date=2026-07-21", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Selected_Date", "value": "2026-07-21" }] } } }
+      ]
+    },
+
+    {
+      "name": "14 - Purchase & Sale Register",
+      "item": [
+        { "name": "Purchase Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/Purchase_Register?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&Year_code={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_code", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } },
+        { "name": "Sale Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/Sale_Register?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&Year_code={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_code", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } },
+        { "name": "Sale TDS Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/SaleTDS_Register?from_date=2026-04-01&toDate=2026-07-31&companyCode={{Company_Code}}&YearCode={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }, { "key": "companyCode", "value": "{{Company_Code}}" }, { "key": "YearCode", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } },
+        { "name": "Sale TCS Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/SaleTCS_Register?from_date=2026-04-01&toDate=2026-07-31&companyCode={{Company_Code}}&YearCode={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }, { "key": "companyCode", "value": "{{Company_Code}}" }, { "key": "YearCode", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } },
+        { "name": "Purchase TDS Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/PurchaseTDS_Register?from_date=2026-04-01&toDate=2026-07-31&companyCode={{Company_Code}}&YearCode={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }, { "key": "companyCode", "value": "{{Company_Code}}" }, { "key": "YearCode", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } },
+        { "name": "Month Sale Wise Register", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/MonthSaleWise_Register?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&Year_code={{Year_Code}}&acCode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_code", "value": "{{Year_Code}}" }, { "key": "acCode", "value": "0" }] } } }
+      ]
+    },
+
+    {
+      "name": "15 - GST Utilities",
+      "item": [
+        { "name": "Sale Bill Summary", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/salebill-summary?fromDate=2026-04-01&toDate=2026-07-31&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&accode=0", "query": [{ "key": "fromDate", "value": "2026-04-01" }, { "key": "toDate", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "accode", "value": "0" }] } } },
+        { "name": "Purchase Bill Summary", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/purchasebill-summary?from_date=2026-04-01&to_date=2026-07-31&Company_Code={{Company_Code}}&Year_Code={{Year_Code}}&accode=0", "query": [{ "key": "from_date", "value": "2026-04-01" }, { "key": "to_date", "value": "2026-07-31" }, { "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "Year_Code", "value": "{{Year_Code}}" }, { "key": "accode", "value": "0" }] } } }
+      ]
+    },
+
+    {
+      "name": "16 - Masters (GST Rate, System, Group)",
+      "item": [
+        { "name": "Get All GST Rates", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getall-GSTRateMaster?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Create GST Rate Master",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/create_GSTRateMaster",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Doc_no\": 0,\n  \"GST_Name\": \"GST 5%\",\n  \"Rate\": 5.0,\n  \"Company_Code\": \"{{Company_Code}}\"\n}" }
+          }
+        },
+        { "name": "Get All System Masters", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getall-SystemMaster?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Create System Master",
+          "request": {
+            "method": "POST", "url": { "raw": "{{BASE_URL}}/create-Record-SystemMaster?Company_Code={{Company_Code}}&System_Type=I", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }, { "key": "System_Type", "value": "I" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"System_Code\": \"99\",\n  \"System_Name_E\": \"SUPER S1\",\n  \"System_Type\": \"I\",\n  \"minRate\": 4000.0,\n  \"maxRate\": 5000.0\n}" }
+          }
+        },
+        { "name": "Get All Financial Groups", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/getall-finicial-groups?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } },
+        {
+          "name": "Create Financial Group",
+          "request": {
+            "method": "POST", "url": { "raw": "{{BASE_URL}}/create-finicial-group?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"group_Code\": \"NEW\",\n  \"group_Name\": \"New Group\",\n  \"Group_Type\": \"A\"\n}" }
+          }
+        },
+        { "name": "Get All GST State Master", "request": { "method": "GET", "url": "{{BASE_URL}}/getall-gststatemaster" } },
+        { "name": "Get Default GST Rate", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_default_gstrate?Company_Code={{Company_Code}}", "query": [{ "key": "Company_Code", "value": "{{Company_Code}}" }] } } }
+      ]
+    },
+
+    {
+      "name": "17 - User Management",
+      "item": [
+        { "name": "Get All Users", "request": { "method": "GET", "url": "{{BASE_URL}}/get-users" } },
+        { "name": "Get Next User Id", "request": { "method": "GET", "url": "{{BASE_URL}}/get-next-user-Id" } },
+        { "name": "Get Program Names", "request": { "method": "GET", "url": "{{BASE_URL}}/getProgramNames" } },
+        { "name": "Get User Permissions", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get_user_permissions?User_Id=1", "query": [{ "key": "User_Id", "value": "1" }] } } },
+        {
+          "name": "Insert User",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/insert-user",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"newuser\",\n  \"password\": \"Pass@1234\",\n  \"User_Name\": \"New User\",\n  \"User_Type\": \"U\",\n  \"Company_Code\": \"{{Company_Code}}\",\n  \"permissions\": []\n}" }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT", "url": "{{BASE_URL}}/update-user",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"User_ID\": 1,\n  \"User_Name\": \"Updated User\",\n  \"permissions\": []\n}" }
+          }
+        },
+        { "name": "Delete User", "request": { "method": "DELETE", "url": { "raw": "{{BASE_URL}}/delete_user?User_ID=1", "query": [{ "key": "User_ID", "value": "1" }] } } }
+      ]
+    },
+
+    {
+      "name": "18 - eBuy Sugar",
+      "item": [
+        { "name": "Get Self Stock", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ebuysugargetSelfStock?CompanyCode={{Company_Code}}", "query": [{ "key": "CompanyCode", "value": "{{Company_Code}}" }] } } },
+        { "name": "Get Self Stock By Tender", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ebuysugargetSelfStockByTender?tenderid=9497", "query": [{ "key": "tenderid", "value": "9497" }] } } },
+        { "name": "Get Users With Null Accoid", "request": { "method": "GET", "url": "{{BASE_URL}}/getAll_UserAccoidNullWise" } },
+        { "name": "eBuySugar Dashboard", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ebuysugar-dashboard?filter=monthly", "query": [{ "key": "filter", "value": "monthly" }] } } }
+      ]
+    },
+
+    {
+      "name": "19 - Axis Bank Integration",
+      "item": [
+        {
+          "name": "Receipt Validation",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/receiptvalidation",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Req_type\": \"VALIDATION\",\n  \"Txn_amnt\": \"420000.00\",\n  \"Corp_code\": \"JKINDETL\",\n  \"Pmode\": \"NEFT\",\n  \"Sndr_acnt\": \"1234567890\",\n  \"Sndr_nm\": \"Sender Name\",\n  \"Tran_id\": \"TXN202607210001\"\n}" }
+          }
+        },
+        {
+          "name": "Transfer Payment",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/transfer-payment",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"TransferPaymentRequest\": {\n    \"Corp_code\": \"JKINDETL\",\n    \"Txn_amnt\": \"420000.00\",\n    \"Ben_acnt\": \"9876543210\",\n    \"Ben_nm\": \"Mill Name\",\n    \"Ben_ifsc\": \"AXIS0001234\",\n    \"Pmode\": \"NEFT\",\n    \"Tran_id\": \"TXN202607210001\",\n    \"Remarks\": \"Mill payment for Tender 4467\"\n  }\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "20 - Email / WhatsApp",
+      "item": [
+        {
+          "name": "Send PDF Email",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/send-pdf-email",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "receiver@example.com", "type": "text" },
+                { "key": "message", "value": "Please find the attached bill", "type": "text" },
+                { "key": "messagebody", "value": "Dear Sir, PFA bill.", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Send WhatsApp",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/send-whatsapp",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"to\": \"919876543210\",\n  \"message\": \"Your delivery order is ready.\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "21 - Utilities",
+      "item": [
+        { "name": "Unlock Delivery Order", "request": { "method": "PUT", "url": "{{BASE_URL}}/unlock-delivery-order" } },
+        { "name": "Unlock Tender Purchase", "request": { "method": "PUT", "url": "{{BASE_URL}}/unlock-tender-purchase" } },
+        { "name": "Database Backup", "request": { "method": "POST", "url": "{{BASE_URL}}/backup" } },
+        { "name": "Get Post Date", "request": { "method": "GET", "url": "{{BASE_URL}}/get-PostDate-Record" } },
+        { "name": "Update Post Date", "request": { "method": "POST", "url": "{{BASE_URL}}/update-post-date" } },
+        { "name": "Get Company Printing Info", "request": { "method": "GET", "url": "{{BASE_URL}}/get-company-printing-info" } },
+        {
+          "name": "Tender Settlement",
+          "request": {
+            "method": "POST", "url": "{{BASE_URL}}/tender_settlement",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Tender_No\": 4467,\n  \"tenderid\": 9497,\n  \"Company_Code\": \"{{Company_Code}}\",\n  \"Year_Code\": \"{{Year_Code}}\"\n}" }
+          }
+        },
+        {
+          "name": "Record Lock",
+          "request": {
+            "method": "PUT", "url": { "raw": "{{BASE_URL}}/record-lock?id=9497&tran_type=tender_purchase&company_code={{Company_Code}}&year_code={{Year_Code}}&model_type=tender", "query": [{ "key": "id", "value": "9497" }, { "key": "tran_type", "value": "tender_purchase" }, { "key": "company_code", "value": "{{Company_Code}}" }, { "key": "year_code", "value": "{{Year_Code}}" }, { "key": "model_type", "value": "tender" }] },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"LockedRecord\": true,\n  \"LockedUser\": \"admin\"\n}" }
+          }
+        },
+        { "name": "Company Logs", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/get-company-logs?fromDate=2026-07-01&toDate=2026-07-21&tranType=all&companyCode={{Company_Code}}&acNameE=", "query": [{ "key": "fromDate", "value": "2026-07-01" }, { "key": "toDate", "value": "2026-07-21" }, { "key": "tranType", "value": "all" }, { "key": "companyCode", "value": "{{Company_Code}}" }, { "key": "acNameE", "value": "" }] } } },
+        { "name": "GA4 Analytics", "request": { "method": "GET", "url": { "raw": "{{BASE_URL}}/ga4-analytics?range=30days&site=chinimandi", "query": [{ "key": "range", "value": "30days" }, { "key": "site", "value": "chinimandi" }] } } }
+      ]
+    }
+
+  ]
+}

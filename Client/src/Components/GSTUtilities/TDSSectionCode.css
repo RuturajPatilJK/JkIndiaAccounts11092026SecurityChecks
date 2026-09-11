@@ -1,0 +1,20 @@
+
+.section-header td {
+    background: #d1c4e9 !important;
+    color: #1a237e;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px;
+    border-top: 2px solid #7e57c2;
+}
+
+.section-total td {
+    background: #fff3cd !important;
+    font-weight: 700;
+    border-top: 1px solid #fbc02d;
+    border-bottom: 2px solid #fbc02d;
+}
+
+.section-total td.num {
+    text-align: right;
+}

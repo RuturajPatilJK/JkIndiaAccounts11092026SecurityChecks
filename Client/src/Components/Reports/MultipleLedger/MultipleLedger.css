@@ -1,0 +1,98 @@
+.multi-ledger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 25vh; /* Adjusted to ensure the form is centrally aligned vertically in the viewport */
+}
+
+.multi-ledger-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow for more depth */
+  padding: 40px; /* Increased padding for better spacing */
+  max-width: 1000px;
+  width: 90%; /* Adjusted to better accommodate various screen sizes */
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.multi-ledger-title {
+  color: #2c3e50;
+  margin-bottom: 30px; /* Increased margin for better visual separation */
+  font-size: 28px; /* Increased size for better visibility */
+  font-weight: 700; /* Bolder for emphasis */
+}
+
+.multi-ledger-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Increased gap for visual clarity */
+}
+
+.multi-ledger-form-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Increased gap for clarity */
+  align-items: center; /* Added alignment for form elements */
+}
+
+.multi-ledger-form-label {
+  color: #34495e;
+  font-weight: 600; /* Made font weight bolder */
+  flex: 0 0 80px; /* Adjusted label width for alignment */
+  text-align: right; /* Right-align text for a cleaner line */
+}
+
+.multi-ledger-form-input {
+  padding: 5px; /* Increased padding for better touch interaction */
+  border: 2px solid #ddd; /* Thicker border for better visibility */
+  border-radius: 8px; /* Increased radius for modern look */
+  font-size: 16px; /* Larger font size for readability */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.multi-ledger-form-input:focus {
+  border-color: #3498db; /* Highlight color */
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+  outline: none;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center; /* Center align the checkbox and label vertically */
+  justify-content: flex-end; /* Align the checkbox and label to the right */
+  margin-left: auto; /* Pushes the container to the right */
+  width: fit-content; /* Minimizes the width to the content size */
+}
+
+
+.multi-ledger-submit-button {
+  background-color: #3498db;
+  color: white;
+  padding: 5px 10px; 
+  border-radius: 8px; /* Consistent with input fields */
+  font-size: 18px; /* Larger font for button */
+  width: auto; /* Adjust width to content size */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  align-self: center; /* Center align the button */
+}
+
+.multi-ledger-submit-button:hover {
+  background-color: #2980b9; /* Darker shade on hover */
+  transform: translateY(-3px); /* More noticeable movement */
+}
+
+.multi-ledger-submit-button:active {
+  transform: translateY(1px); /* Slight push on active */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px); /* Start higher for more dramatic effect */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

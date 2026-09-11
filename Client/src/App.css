@@ -1,0 +1,187 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.form-labels {
+  font-weight: bold;
+  color: blue;
+  display: flex;
+  flex-direction: row;
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.marked-for-deletion {
+  background-color: red;
+
+}
+
+.selected-row {
+  background-color: orange;
+}
+
+.App {
+  display: block;
+  flex-direction: row;
+  align-items: center;
+  padding: 30px;
+  margin-top: -25px;
+}
+
+.post-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.post-table th,
+.post-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.row-item:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.row-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+
+.row-item:hover {
+  background-color: #f0f0f0;
+}
+
+.row-item.active {
+  background-color: #d3d3d3;
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+
+.full-screen-modal {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+.selected-row {
+  background-color: orange;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.custom-table th {
+  background-color: #f0f0f0;
+}
+
+.custom-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+
+.redBackground {
+  background-color: red;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  z-index: 1000;
+  border: 1px solid #ddd;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup button {
+  margin-top: 10px;
+}
+
+
+/* Popup Size Adjustment CSS */
+.custom-small-modal {
+  max-width: 600px !important;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.custom-small-modal .modal-content {
+  border-radius: 10px;
+  padding: 15px;
+
+}
+
+.custom-small-dialog .modal-content{
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.custom-small {
+  max-width: 600px !important; 
+  margin: auto;
+  text-align: middle;
+  vertical-align: middle;
+}
+
+.custom-small-table th,
+.custom-small-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}

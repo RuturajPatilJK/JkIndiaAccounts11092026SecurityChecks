@@ -1,0 +1,103 @@
+.bankBook-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+
+  }
+  
+  .bankBook-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .bankBook-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .dayBookDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 20%;
+    margin-left: 40px;
+  }
+  
+  .bankBookform-group {
+    display: flex;
+    align-items: center; 
+    gap: 10px; 
+  }
+  
+  .bankBookform-label {
+    font-size: 14px;
+    color: #34495e;
+    font-weight: 500;
+    flex: 0 0 100px;
+  }
+  
+  .bankBookform-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    flex: 1;
+  }
+  
+  .bankBookform-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+  }
+  
+  .bankBookaccount-help-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .bankBooksubmit-button {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 30%;
+    text-align: center;
+    align-items: center;
+    margin-top: 5%;
+  }
+  .bankBooksubmit-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+  }
+  
+  .bankBooksubmit-button:active {
+    transform: translateY(0);
+  }
+  
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

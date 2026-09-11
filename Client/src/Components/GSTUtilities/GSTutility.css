@@ -1,0 +1,46 @@
+.GSTUtilities-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.GSTUtilitieslabel {
+    flex-shrink: 0;
+    width: 100px;
+    text-align: right;
+    white-space: nowrap;
+    margin-bottom: 10px;
+}
+
+input[type="date"] {
+    width: 180px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.form-select{
+    width: 130px;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.form-control {
+    width: 150px;
+    padding: 5px;
+}
+
+#gst-tabs .nav-link:hover {
+    background-color: #f0f0f0;
+    color: #007bff;
+    border-color: #007bff;
+    cursor: pointer;
+}
+
+#gst-tabs .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+#gst-tabs .nav-link {
+    transition: all 0.3s ease;
+}

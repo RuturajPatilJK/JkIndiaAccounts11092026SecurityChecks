@@ -1,0 +1,218 @@
+.mobile-only {
+  display: none;
+}
+
+.do-button-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.mobile-only {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center;
+  gap: 8px;
+  width: 50%;
+}
+
+.do-audit-group {
+  width: 100%;
+}
+
+.do-action-group {
+  width: 50%;
+  margin-top: 50px;
+}
+
+.do-nav-group {
+  width: 100%;
+}
+
+
+@media (max-width: 768px) {
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block !important;
+  }
+
+  body {
+    font-size: 13px;
+  }
+
+  .MuiCardContent-root {
+    padding: 20px !important;
+  }
+
+  .MuiGrid-container {
+    flex-wrap: wrap !important;
+  }
+
+  .MuiGrid-item {
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    padding: 4px 0 !important;
+  }
+
+  .DeliveryOrderMainDiv {
+    display: flex;
+    flex-wrap: wrap !important;
+    flex-direction: row !important;  /* column → row */
+    align-items: center !important;  /* add this */
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column ;
+    gap: 6px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .MuiBox-root {
+    flex-wrap: wrap !important;
+  }
+
+  .MuiOutlinedInput-root,
+  .MuiInputBase-root {
+    height: 36px !important;
+    font-size: 13px !important;
+  }
+
+  /* Labels */
+  .DeliveryOrderLabel {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Balance & GST */
+  .mill-balance-container .balance-value,
+  .gst-container .gst-text {
+    font-size: 10px;
+  }
+
+  .do-button-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+    width: 100% !important;
+  }
+
+  .do-audit-group {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .do-audit-group > div,
+  .do-audit-group .audit-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .do-audit-group input,
+  .do-audit-group .MuiInputBase-root {
+    border: none !important;
+    border-bottom: 1px solid #ccc !important;
+    border-radius: 0 !important;
+    font-size: 12px !important;
+    height: 28px !important;
+    background: transparent !important;
+    padding: 0 4px !important;
+    box-shadow: none !important;
+  }
+
+  /* Action Group - one row inline */
+  .do-action-group {
+    width: 100% !important;
+    margin-top: 50px !important;
+    padding: 0 4px !important;
+  }
+
+  .do-action-group > div,
+  .do-action-group > * {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    width: 100% !important;
+    align-items: center !important;
+  }
+
+  .do-action-group button,
+  .do-action-group .MuiButton-root,
+  .do-action-group .MuiButtonBase-root {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    font-size: 10px !important;
+    padding: 4px 4px !important;
+    height: 30px !important;
+    white-space: nowrap !important;
+    max-width: calc(33.33% - 4px) !important;
+  }
+
+  .do-nav-group {
+    width: 100%;
+  }
+
+  .do-nav-group > div,
+  .do-nav-group > * {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+
+  .do-nav-group button,
+  .do-nav-group .MuiButton-root,
+  .do-nav-group .MuiButtonBase-root {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 14px !important;
+    padding: 4px !important;
+    height: 34px !important;
+    white-space: nowrap !important;
+  }
+
+  .mt-4 table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .deliverorder-modal-dialog {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    margin: 8px auto !important;
+  }
+
+  .deliverorder-modal-content {
+    border-radius: 8px;
+  }
+
+  .sb-generate-button {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .form-group > button,
+  .form-group > .MuiButton-root,
+  .form-group > .MuiButtonBase-root {
+    width: 100%;
+    margin-bottom: 4px !important;
+  }
+
+}

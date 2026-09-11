@@ -1,0 +1,77 @@
+.companyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 50%;
+  max-width: 400px;
+  align-items: center;
+  position: relative;
+  padding: 20px;
+}
+
+/* Watermark logo */
+.companyList::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background-image: url('../../Assets/jkIndia.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media screen and (max-width: 1200px) {
+  .companyList::before {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .companyList::before {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .companyList::before {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .companyList::before {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.companyItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.companyItem span {
+  font-weight: bold;
+  color: #3F7C13;
+}
+
+.required-star {
+  color: red;
+}
+
+.swal2-container {
+  z-index: 9999 !important; /* Ensure SweetAlert2 is above the dialog */
+}

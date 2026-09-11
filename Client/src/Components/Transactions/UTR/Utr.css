@@ -1,0 +1,114 @@
+.UtrEntrymodal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    outline: 0;
+  }
+  
+  .UtrEntry-dialog {
+    background: #fff;
+    border-radius: 10px;
+    width: 100%; 
+    max-width: 1500px; 
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-out;
+    max-height: 100vh;
+    margin: 0; 
+    overflow: hidden; 
+  }
+  
+  .UtrEntry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+  }
+  
+  .UtrEntry-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    color: rgb(12, 14, 177);
+  }
+  
+
+.utr-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.utr-form-group {
+  display: flex;
+  align-items: center; 
+  width: 80%;
+}
+
+.utr-form-group label {
+  font-weight: bold;
+  margin-right: 10px; 
+  width: 150px; 
+  font-size: 16px;
+}
+
+.utr-form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease-in-out;
+}
+
+.utr-form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.utr-input {
+  width: 60%;
+  box-sizing: border-box;
+}
+
+.utr-mt-10 {
+  margin-top: 10px !important;
+}
+
+.utr-mt-20 {
+  margin-top: 10px !important;
+}
+
+.utr-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.utr-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+@media (min-width: 576px) {
+  .utr-form-group.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 575px) {
+  .utr-form-group.col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

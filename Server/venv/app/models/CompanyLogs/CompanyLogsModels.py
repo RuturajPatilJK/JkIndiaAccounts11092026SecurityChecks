@@ -1,0 +1,33 @@
+from app import db
+
+class CompanyLogs(db.Model):
+    __tablename__ = 'CompanyLogs'
+
+    id = db.Column(db.Integer, nullable=False, primary_key=True)  
+    Doc_No = db.Column(db.Integer, nullable=False)
+    Doc_Date = db.Column(db.Date, nullable=False)
+    Ac_Code = db.Column(db.Integer, nullable=False)
+    Item_Code = db.Column(db.Integer, nullable=False)
+    Value = db.Column(db.Numeric(18, 2), nullable=False)
+    Company_Code = db.Column(db.Integer, nullable=False)
+    Year_Code = db.Column(db.Integer, nullable=False)
+    Record_Type = db.Column(db.String, nullable=False)
+    Record_Date = db.Column(db.Date, nullable=False)
+    Record_No = db.Column(db.Integer, nullable=False)
+    User_Id = db.Column(db.Integer, nullable=False)
+    Tran_Type = db.Column(db.String(2), nullable=False)
+    Bank_Ac = db.Column(db.Integer, nullable=False)
+    Updated_Time = db.Column(db.DateTime, nullable=False)
+    Created_by = db.Column(db.Integer, nullable=False)
+    Modified_by = db.Column(db.Integer, nullable=False)
+    Narration = db.Column(db.String(255), nullable=False)
+    Updated_Doc_Date = db.Column(db.Date, nullable=False)
+    Quintal = db.Column(db.DECIMAL)
+    Sale_Rate = db.Column(db.Numeric(18, 2), nullable=False)
+    Purchase_Rate = db.Column(db.Numeric(18, 2), nullable=False)
+    Sale_TDS = db.Column(db.Numeric(18, 2), nullable=False)
+    Purchase_TDS = db.Column(db.Numeric(18, 2), nullable=False)
+    DO_No = db.Column(db.Integer, nullable=False)
+    Rate = db.Column(db.Numeric(18, 2), nullable=False)
+    SaleTDSApplicable = db.Column(db.String(1), nullable=True)
+    PurchaseTDSApplicable = db.Column(db.String(1), nullable=True)

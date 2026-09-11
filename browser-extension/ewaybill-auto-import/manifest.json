@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "EWayBill Auto Import",
+  "version": "1.0.0",
+  "description": "Automatically scrapes new E-Way Bills from the government portal and imports them into your EWayBill screen.",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_title": "EWayBill Auto Import"
+  },
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://ewaybillgst.gov.in/*",
+    "http://localhost:3000/*",
+    "https://accounts.ebuysugar.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://ewaybillgst.gov.in/Reports/*"],
+      "js": ["scraper-gov-portal.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "http://localhost:3000/ewaybill*",
+        "https://accounts.ebuysugar.com/ewaybill*"
+      ],
+      "js": ["injector-app.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

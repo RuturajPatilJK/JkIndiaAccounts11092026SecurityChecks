@@ -1,0 +1,42 @@
+.gst-rate-master-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-titlegstratemaster {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+.form-groupgstratemaster {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  justify-content: space-between;
+}
+
+.form-labelgstratemaster {
+  font-weight: 600;
+  margin-right: 10px;
+  display: inline-block;
+  font-size: 16px;
+  color: rgb(27, 25, 25);
+  margin-left: 10px;
+  width: 30%;
+}
+
+.form-inputgstratemaster {
+  width: 40%; 
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  margin-top: 5px;
+}

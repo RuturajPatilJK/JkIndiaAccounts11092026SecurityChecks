@@ -1,0 +1,58 @@
+# Python virtual environments
+venv/
+*/venv/
+**/venv/
+env/
+.venv/
+
+# ...EXCEPT Server/venv/app - despite the folder name, that subtree is the
+# actual Flask application source (Controllers, models, etc.), not installed
+# packages. The blanket venv/ rules above were silently swallowing every new
+# file created under it (e.g. SaudaShiftingController.py, DSCSignController.py
+# and others were never tracked at all because of this). Git won't apply a
+# negation to a path whose parent dir is itself excluded, so each ancestor
+# needs its own un-ignore line - but un-ignoring Server/venv/ this way also
+# uncovers its OTHER children (installed packages, secrets), so those are
+# explicitly re-excluded right after.
+!Server/
+!Server/venv/
+!Server/venv/app/
+!Server/venv/app/**
+Server/venv/Lib/
+Server/venv/Scripts/
+Server/venv/Include/
+Server/venv/__pycache__/
+Server/venv/Uploads/
+Server/venv/pyvenv.cfg
+Server/venv/.env
+Server/venv/*.zip
+
+# Environment/secret files
+.env
+*.env
+**/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Exclude node_modules directory
+node_modules/
+
+# Exclude logs and other generated files
+*.log
+*.lock
+.DS_Store
+
+# Exclude editor-specific files
+.vscode/
+.idea/
+*.bak
+
+# Credential/service-account JSON (be explicit for this project)
+Server/venv/app/Common/WhatsApp/*.json
+
+# DSC signing certificate + private key - must never be committed
+Server/venv/app/Common/DSCSign/*.pfx
+Server/venv/app/Common/DSCSign/*.p12

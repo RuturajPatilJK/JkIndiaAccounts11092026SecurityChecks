@@ -1,0 +1,195 @@
+.ServiceBill-col-Text {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+  width: 130px;
+}
+
+.ServiceBill-col-Ewaybillno {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+  width: 200px;
+}
+
+.ServiceBill-form-group-type {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+  width: 250px;
+}
+
+
+.ServiceBill-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: -10px;
+
+}
+
+.ServiceBill-col {
+  flex: 0 0 auto;
+  padding: 0px;
+  margin-left: 10px;
+}
+
+.ServiceBill-form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+}
+
+.ServiceBill-form-label {
+  margin-bottom: .5rem;
+  font-weight: bold;
+  margin-left: -40px;
+  white-space: nowrap;
+}
+
+.ServiceBill-form-otherlabels {
+  margin-bottom: .5rem;
+  font-weight: bold;
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+
+.ServiceBill-custom-select,
+.ServiceBill-form-control {
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.ServiceBill-form-control[disabled],
+.ServiceBill-form-control[readonly] {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+
+}
+
+#IsmillName {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  color: blue;
+  font-weight: bold;
+}
+
+/* PopUp Style */
+.ServiceBillModel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: 0;
+}
+
+.ServiceBillModel-dialog {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-out;
+  max-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.ServiceBillModel-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 150px);
+}
+
+.ServiceBillModel-header,
+.ServiceBillModel-footer {
+  width: 100%;
+}
+
+.ServiceBillModel-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  color: rgb(12, 14, 177);
+}
+
+.ServiceBill-form-label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.ServiceBill-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ServiceBill-form-group input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.ServiceBill-col-Ewaybillno {
+  display: flex;
+  flex-direction: column;
+}
+
+.ServiceBillModel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.ServiceBillModel-footer button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.ServiceBillModel-footer button.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+}
+
+.ServiceBillModel-footer button.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+}
+
+.ServiceBillModel-header button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}

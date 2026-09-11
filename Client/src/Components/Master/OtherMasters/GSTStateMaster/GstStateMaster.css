@@ -1,0 +1,99 @@
+.state-master-form {
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.state-master-title {
+  font-size: 24px;
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+
+}
+
+.form-groupstatemaster {
+  display: flex;
+  align-items: center;
+ 
+}
+
+.change-no-label,
+.state-code-label,
+.state-name-label {
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+  margin-right: 10px;
+  width: 50%;
+  white-space: nowrap;
+}
+
+.change-no-input,
+.state-code-input,
+.state-name-input {
+  width: 100%; 
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.change-no-input:disabled,
+.state-code-input:disabled,
+.state-name-input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.change-no-input:focus,
+.state-code-input:focus,
+.state-name-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.change-no-group,
+.state-code-group,
+.state-name-group {
+  margin-bottom: 20px;
+}
+
+.state-code-group input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.state-name-group {
+  margin-bottom: 30px;
+}
+
+.custom-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.custom-btn:hover {
+  background-color: #0056b3;
+}
+
+.custom-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

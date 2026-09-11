@@ -1,0 +1,50 @@
+from app import db
+
+
+class PendingDeliveryOrder(db.Model):
+    __tablename__ = 'nt_1_PendingDeliveryOrder'
+
+    pendingDoid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    tenderdetailid = db.Column(db.Integer, nullable=True)
+    tenderid = db.Column(db.Integer, nullable=True)
+    ebuyUserID = db.Column(db.Integer, nullable=True)
+    company_code = db.Column(db.Integer, nullable=True)
+    DOc_Date = db.Column(db.DateTime, nullable=True)
+    Sauda_Date = db.Column(db.DateTime, nullable=True)
+    Lifting_Date = db.Column(db.DateTime, nullable=True)
+    Grade = db.Column(db.String(100), nullable=True)
+    Season = db.Column(db.String(50), nullable=True)
+    Sale_Rate = db.Column(db.Numeric(18, 2), nullable=True)
+    Purchase_Quintal = db.Column(db.Numeric(18, 2), nullable=True)
+    Lifting_Quintal = db.Column(db.Numeric(18, 2), nullable=True)
+    Adj_Quintal = db.Column(db.Numeric(18, 2), nullable=True)
+    Amount = db.Column(db.Numeric(18, 2), nullable=True)
+    Narration = db.Column(db.String(500), nullable=True)
+    BillTo_Ac_Code = db.Column(db.Integer, nullable=True)
+    BillTo_Accoid = db.Column(db.Integer, nullable=True)
+    ShipTo_Ac_Code = db.Column(db.Integer, nullable=True)
+    ShipTo_Accoid = db.Column(db.Integer, nullable=True)
+    Created_Date = db.Column(db.DateTime, nullable=True)
+    gradeid = db.Column(db.Integer, nullable=True)
+    gradeCode = db.Column(db.String(50), nullable=True)
+    MillRate = db.Column(db.Numeric(18, 2), nullable=True)
+    TruckNo = db.Column(db.String(20), nullable=True)
+    DriverMobileNo = db.Column(db.String(15), nullable=True)
+    Item_Code = db.Column(db.Integer, nullable=True)
+    ic = db.Column(db.Integer, nullable=True)
+    Gst_Code = db.Column(db.Integer, nullable=True)
+    Mill_Code = db.Column(db.Integer, nullable=True)
+    mc = db.Column(db.Integer, nullable=True)
+    Approved = db.Column(db.String(1), nullable=True)
+    Year_Code = db.Column(db.Integer, nullable=True)
+    Payment_Details = db.Column(db.String, nullable=True)
+    AdminUserID = db.Column(db.Integer, nullable=True)
+    doid = db.Column(db.Integer, nullable=True)
+    do_no = db.Column(db.Integer, nullable=True)
+    isLocked = db.Column(db.Boolean, nullable=False, default=False)
+    isDeleted = db.Column(db.Boolean, nullable=False, default=False)
+    PersonId = db.Column(db.Integer, nullable=True)
+    Third_Party_Do = db.Column(db.Integer, nullable=True)
+
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}

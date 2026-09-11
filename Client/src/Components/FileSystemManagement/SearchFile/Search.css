@@ -1,0 +1,47 @@
+.popup-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    max-width: 90%;
+    z-index: 9999;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.popup-header {
+    background-color: #3904fc;
+    color: #0dc1f8;
+    padding: 10px;
+    position: relative;
+}
+
+.popup-title {
+    margin: 0;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 24px;
+    color: black;
+}
+
+.record-details {
+    padding: 20px;
+}
+
+.detail-label {
+    font-weight: bold;
+}
+
+.detail-value {
+    color: #007bff;
+}

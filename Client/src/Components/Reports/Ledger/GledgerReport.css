@@ -1,0 +1,69 @@
+.ledger-report-container {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 2500px;
+  margin-top: -50px;
+}
+
+.ledger-report-container h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ledger-report-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.ledger-report-container th,
+.ledger-report-container td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.ledger-report-container th {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+}
+
+.ledger-report-container td {
+  color: #555;
+}
+
+.ledger-report-container tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.ledger-report-container tr:hover {
+  background-color: #ecee45;
+  cursor: pointer;
+}
+
+.ledger-report-container p {
+  text-align: center;
+  font-size: 18px;
+  color: #777;
+}
+
+.loading-message {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+.no-data-message {
+  font-size: 16px;
+  color: #888;
+  text-align: center;
+}

@@ -1,0 +1,70 @@
+.sugarsalereturnpurchaseModel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  outline: 0;
+}
+
+.sugarsalereturnpurchase-dialog {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 800px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-out;
+  max-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.sugarsalereturnpurchase-body {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 150px);
+}
+
+.sugarsalereturnpurchase-header,
+.sugarsalereturnpurchase-footer {
+  width: 100%;
+}
+
+.sugarsalereturnpurchase-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin-top: 30px;
+  color: rgb(12, 14, 177);
+}
+
+.sugarsalereturnpurchaseDiv {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sugarsalereturnpurchaseLabel {
+  font-weight: bold;
+  margin-right: 16px;
+  min-width: 100px;
+  margin-top: -10px;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.SugarSaleReturnPurchase-form-label {
+  font-weight: 700;
+  margin-right: 16px;
+  min-width: 100px;
+  margin-top: -10px;
+}
+

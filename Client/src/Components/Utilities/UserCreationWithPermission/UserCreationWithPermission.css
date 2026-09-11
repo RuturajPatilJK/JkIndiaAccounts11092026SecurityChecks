@@ -1,0 +1,36 @@
+/* Basic table styles */
+.custom-table1 {
+    width: 600px; /* Increased width */
+    max-width: 100%; /* Ensure it doesn't exceed container */
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling table cells */
+.custom-table1 th, .custom-table1 td {
+    padding: 1px 5px; /* Reduced padding for smaller row height */
+    border: 1px solid #ddd;
+    font-size: 15px; /* Optional: Adjust font size if needed */
+    line-height: 1.2; /* Optional: Adjust line-height for more compact rows */
+}
+
+/* Table header */
+.custom-table1 th {
+    background-color: #007bff;
+    color: white;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+/* Alternating row color */
+.custom-table1 tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover effect for table rows */
+.custom-table1 tr:hover {
+    background-color: #e9ecef;
+    transition: background-color 0.3s ease;
+}
