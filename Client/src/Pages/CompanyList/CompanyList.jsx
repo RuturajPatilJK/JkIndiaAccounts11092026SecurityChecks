@@ -126,7 +126,7 @@ const CompanyList = () => {
         confirmButtonText: 'OK',
         allowOutsideClick: false,
       }).then(() => {
-        axios.post(`${API_URL}/logout`).catch(() => {});
+        axios.post(`${API_URL}/logout`).catch(() => { });
         sessionStorage.clear();
         navigate('/');
       });

@@ -24,7 +24,7 @@ import Swal from "sweetalert2";
 
 const ALL_TRANS_TYPES = [
   "BP", "BR", "CP", "CS", "CN", "CR", "DN", "DS",
-  "DO", "JV", "CV", "LV", "XP", "PS", "PR", "RB", "SB", "UI"
+  "DO", "JV", "CV", "LV", "XP", "PS", "PR", "RB", "SB", "UI","SO"
 ];
 
 const TRANS_GROUPS = [
@@ -41,6 +41,7 @@ const TRANS_GROUPS = [
     label: "Sales & Purchase",
     types: [
       { code: "SB", label: "Sale Bill" },
+      { code: "SO", label: "Other Sale Bills" },
       { code: "PS", label: "Purchase Bill" },
       { code: "PR", label: "Purchase Return" },
       { code: "RB", label: "Service Bill" },

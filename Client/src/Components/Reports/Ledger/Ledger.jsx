@@ -299,6 +299,7 @@ const Ledger = () => {
                   <MenuItem value="PR">Purchase Return</MenuItem>
                   <MenuItem value="RB">Service Bill</MenuItem>
                   <MenuItem value="SB">Sale Bill</MenuItem>
+                  <MenuItem value="SO">Other Sale Bills</MenuItem>
                   <MenuItem value="UI">UTR Entry</MenuItem>
 
                 </Select>
@@ -376,7 +377,7 @@ const Ledger = () => {
           )}
         </button>
 
-         <button
+        <button
           type="submit"
           className="submit-button"
           onClick={handleMultipleSBPrint}

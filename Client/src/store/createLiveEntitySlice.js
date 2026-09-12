@@ -3,13 +3,6 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API;
 
-/**
- * Builds a small Redux Toolkit slice for a single module's list data:
- * an entity adapter keyed by `idField`, a thunk that fetches `fetchUrl`
- * (Company_Code/Year_Code appended as query params, same as the module's
- * existing TableUtility-driven fetch), and add/update/delete reducers
- * meant to be driven by socket events rather than more HTTP calls.
- */
 export default function createLiveEntitySlice({ name, idField, fetchUrl }) {
   const adapter = createEntityAdapter({
     selectId: (record) => record[idField],

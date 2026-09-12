@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -68,7 +65,6 @@ function TableUtility({
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
 
-    // ✅ Fetch permissions and data
     useEffect(() => {
         const checkPermissions = async () => {
             try {
@@ -112,7 +108,6 @@ function TableUtility({
         checkPermissions();
     }, [apiUrl, JSON.stringify(queryParams)]);
 
-    // ✅ Single debounced search — no focus loss
     useEffect(() => {
         const delay = setTimeout(() => {
             const filtered = fetchedData.filter(post => {

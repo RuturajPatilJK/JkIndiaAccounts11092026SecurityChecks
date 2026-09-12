@@ -4255,8 +4255,8 @@ const DeliveryOrder = () => {
         ...prev,
         Buyer: record.BillTo_Ac_Code,
         buyername: record.BillTo_Name,
-        Buyer_Party: record.BillTo_Ac_Code ,
-        buyerpartyname: record.BillTo_Name ,
+        Buyer_Party: record.BillTo_Ac_Code,
+        buyerpartyname: record.BillTo_Name,
       }));
 
       // Quantal from pending DO's Lifting_Quintal; recalculate bags; set bill to/ship to in formData
@@ -4271,7 +4271,7 @@ const DeliveryOrder = () => {
           driver_no: record.DriverMobileNo || prev.driver_no,
           quantal: finalQtl,
           bags: bags,
-          SaleBillTo: record.BillTo_Ac_Code ,
+          SaleBillTo: record.BillTo_Ac_Code,
           sb: record.BillTo_Accoid || prev.sb,
           voucher_by: record.ShipTo_Ac_Code || "",
           vb: record.ShipTo_Accoid || "",
@@ -4954,7 +4954,7 @@ const DeliveryOrder = () => {
                focus:outline-none focus:ring-2 focus:ring-green-400/50"
               >
                 <LockOpenIcon className="text-sm md:text-base transition-transform duration-200 group-hover:rotate-12" />
-                <span className="whitespace-nowrap">Unlock Record</span>
+                {/* <span className="whitespace-nowrap">Unlock Record</span> */}
               </button>
 
               {/* ── ebuy Pending DO ── */}
@@ -5632,7 +5632,7 @@ const DeliveryOrder = () => {
                 </span>
               </div>
 
-           
+
 
               <div className="form-group  mobile-hidden">
                 <div className="DeliveryOrderMainDiv">
@@ -6029,7 +6029,7 @@ const DeliveryOrder = () => {
               </div>
 
 
-                 <div className="form-group mobile-hidden">
+              <div className="form-group mobile-hidden">
                 <div style={{ display: "flex", flexDirection: "column", width: "60%" }}>
                   <label htmlFor="ebuy_narration" className="DeliveryOrderLabel" style={{ marginBottom: "4px" }}>
                     Shipping Details:

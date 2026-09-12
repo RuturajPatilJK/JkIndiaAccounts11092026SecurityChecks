@@ -102,60 +102,6 @@ const JVReport = () => {
         XLSX.writeFile(wb, 'JVReport.xlsx');
     };
 
-
-    // const handlePrint = () => {
-    //     const printContent = document.getElementById('reportTable').outerHTML;
-    //     const win = window.open('', '', 'height=700,width=900');
-
-    //     win.document.write(`
-    //         <html>
-    //             <head>
-    //                 <title>Print Report</title>
-    //                 <style>
-    //                     body {
-    //                         font-family: Arial, sans-serif;
-    //                         margin: 20px;
-    //                     }
-    //                     .company-name {
-    //                         text-align: center;
-    //                         font-size: 24px;
-    //                         font-weight: bold;
-    //                         margin-bottom: 20px;
-    //                         color: #333;
-    //                     }
-    //                     table {
-    //                         width: 100%;
-    //                         border-collapse: collapse;
-    //                         margin-bottom: 20px;
-    //                     }
-    //                     th, td {
-    //                         border: 1px solid #ddd;
-    //                         padding: 8px;
-    //                         text-align: left;
-    //                     }
-    //                     th {
-    //                         background-color: #f2f2f2;
-    //                         font-weight: bold;
-    //                     }
-    //                     tr:nth-child(even) {
-    //                         background-color: #f9f9f9;
-    //                     }
-    //                     .total-row {
-    //                         background-color: #e0f7fa;
-    //                         font-weight: bold;
-    //                     }
-    //                 </style>
-    //             </head>
-    //             <body>
-    //                 <div class="company-name">${Company_Name}</div>
-    //                 ${printContent}
-    //             </body>
-    //         </html>
-    //     `);
-    //     win.document.close();
-    //     win.print();
-    // };
-
     const handlePrint = () => {
         const printContent = document.getElementById('reportTable').outerHTML;
     

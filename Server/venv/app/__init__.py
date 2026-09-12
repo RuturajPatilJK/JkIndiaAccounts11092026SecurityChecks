@@ -33,17 +33,11 @@ db = SQLAlchemy(app)
 
 # Initialize JWTManager with your app
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-
-# Accept the JWT from either the Authorization header (existing @jwt_required() routes)
-# or an httpOnly cookie (new default for the frontend) so nothing already relying on
-# the header breaks.
 app.config['JWT_TOKEN_LOCATION'] = ['headers', 'cookies']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
 app.config['JWT_COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'False') == 'True'
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
-# Double-submit CSRF protection: the CSRF cookies stay JS-readable (by design) so the
-# frontend can mirror them into a header; the actual access/refresh token cookies stay httpOnly.
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_REFRESH_COOKIE_PATH'] = os.getenv('API_URL', '/api/sugarian') + '/refresh'
 jwt = JWTManager(app)
@@ -52,16 +46,10 @@ jwt = JWTManager(app)
 def _auth_error_response(*_args):
     return jsonify({"code": 401, "message": "Not authenticated. Please login."}), 401
 
-
 jwt.unauthorized_loader(_auth_error_response)   # no/missing token, missing CSRF header
 jwt.invalid_token_loader(_auth_error_response)  # malformed/invalid token
 jwt.expired_token_loader(_auth_error_response)  # expired token
 
-
-# Almost none of the ~800 routes below carry their own @jwt_required(), so without this
-# gate they're wide open to anyone who knows the URL. This enforces the token check
-# globally instead of editing every controller. Only the handful of endpoints that must
-# work before a session exists are exempt.
 PUBLIC_ENDPOINTS = {'login', 'refresh', 'logout', 'register_user', 'static'}
 
 

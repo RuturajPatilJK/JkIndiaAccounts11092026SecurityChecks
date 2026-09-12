@@ -23,16 +23,6 @@ const CarporateRegister = () => {
 
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (AccountYear) {
-  //     const dates = AccountYear.split(" - ");
-  //     if (dates.length === 2) {
-  //       setFromDate(dates[0]);
-  //       setToDate(dates[1]);
-  //     }
-  //   }
-  // }, [AccountYear]);
-
   const handleAcCode = (code, accoid, name) => {
     setAcCode(code);
     setAccoid(accoid);

@@ -24,7 +24,7 @@ const routes = [
     element: CreateAccountYearData
   },
   {
-    path:'/create-company',
+    path: '/create-company',
     element: CreateCompany
   }
 

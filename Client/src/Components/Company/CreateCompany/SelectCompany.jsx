@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const SelectCompany = () => {
 
     const API_URL = process.env.REACT_APP_API;
@@ -12,10 +10,10 @@ const SelectCompany = () => {
     const [selectedCompany, setSelectedCompany] = useState(null);
     const companyRefs = useRef([]);
     const navigate = useNavigate();
-    const [selectedIndex, setSelectedIndex] = useState(0); 
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     useEffect(() => {
-       
+
         const fetchCompanies = async () => {
             try {
                 const response = await axios.get(`${API_URL}/get_company_data_All`);
@@ -28,7 +26,7 @@ const SelectCompany = () => {
         if (companies.length > 0 && companyRefs.current[0]) {
             companyRefs.current[0].focus();
         }
-      
+
     }, []);
 
     // Handle showing and hiding the popup

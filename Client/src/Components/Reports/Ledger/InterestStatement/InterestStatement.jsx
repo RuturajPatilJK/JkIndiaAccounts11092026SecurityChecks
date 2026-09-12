@@ -41,41 +41,6 @@ const InterestStatement = () => {
     setAcName(name);
   };
 
-  // const handleGetReportClick = (e) => {
-  //   e.preventDefault();
-  //   navigate(`/interest-statement-report`, {
-  //     state: {
-  //       acCode,
-  //       fromDate,
-  //       toDate,
-  //       email,
-  //       interestRate,
-  //       interestDays,
-  //       acname,
-  //       filter: "All",
-  //     },
-  //   });
-  // };
-
-  // const handleOnlyDrClick = (e) => {
-  //   e.preventDefault();
-  //   navigate(`/interest-statement-report`, {
-  //     state: {
-  //       acCode,
-  //       fromDate,
-  //       toDate,
-  //       email,
-  //       interestRate,
-  //       interestDays,
-  //       acname,
-  //       filter: "OnlyDr",
-  //     },
-  //   });
-  // };
-
-
-
-
   const handleGetReportClick = (e) => {
     e.preventDefault();
     const params = new URLSearchParams({

@@ -62,17 +62,6 @@ const Navbar = () => {
     }
   };
 
-  // const handleMouseLeave = (event) => {
-  //   if (window.innerWidth > 768) {
-  //     if (navbarRef.current && !navbarRef.current.contains(event.target)) {
-  //       setActiveMenu("");
-  //       setActiveSubMenu("");
-  //       setHoveredSubMenuItem("");
-  //     }
-  //   }
-  // };
-
-
 
   const handleMouseLeave = () => {
     if (window.innerWidth > 768 && !clickedMenu) {
@@ -499,12 +488,12 @@ const Navbar = () => {
           subItems: [
             { to: "/AccountMaster-utility", icon: UserCircleIcon, text: "Account Master" },
             { action: handleRiskManagementClicked, icon: CursorArrowRaysIcon, text: "Risk Management" },
-            { to: "/CustomerLimit", icon: CursorArrowRaysIcon, text: "Customer Limits" },
+            // { to: "/CustomerLimit", icon: CursorArrowRaysIcon, text: "Customer Limits" },
             { to: "/financial-groups-utility", icon: BuildingLibraryIcon, text: "Financial Groups" },
             { to: "/city-master-utility", icon: MapPinIcon, text: "City Master" },
             { to: "/PartyUnitMaster-utility", icon: BuildingLibraryIcon, text: "Corporate Customer Unit/Godown" },
             { to: "/ac-master-declaration", icon: DocumentTextIcon, text: "TDS Declaration" },
-             { to: "/employee-management-utility", icon: UserGroupIcon, text: "Employee Management" },
+            { to: "/employee-management-utility", icon: UserGroupIcon, text: "Employee Management" },
             { to: "/bank-details", icon: BanknotesIcon, text: "Bank Details" }
           ]
         },

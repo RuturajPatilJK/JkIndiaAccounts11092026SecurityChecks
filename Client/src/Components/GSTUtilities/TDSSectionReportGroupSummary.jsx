@@ -1,292 +1,3 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import * as XLSX from 'xlsx';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import { formatReadableAmount } from "../../Common/FormatFunctions/FormatAmount"
-// import { CircularProgress } from '@mui/material';
-// import Swal from 'sweetalert2';
-
-// const API_URL = process.env.REACT_APP_API;
-
-// const TDSSectionwiseReport = ({ fromDate, toDate, companyCode, yearCode,accode, Section_Id,sectionName }) => {
-//     const [data, setData] = useState([]);
-//     const [loading, setLoading] = useState(false);
-//     const [error, setError] = useState('');
-//     const [isDataFetched, setIsDataFetched] = useState(false);
-
-//     const fetchOtherPurchaseSummary = async () => {
-//         try {
-//             setLoading(true);
-//             setError('');
-//             const response = await axios.get(`${API_URL}/OtherPurchase-summary-TDSSectionwise`, {
-//                 params: {
-//                     from_date: fromDate,
-//                     to_date: toDate,
-//                     Company_Code: companyCode,
-//                     Year_Code: yearCode,
-//                     accode: accode,
-//                     Section_Id:Section_Id
-//                 },
-//             });
-//              if (response.data.length === 0) {
-//                             Swal.fire({
-//                                 icon: 'error',
-//                                 title: 'Data Not Found.!',
-//                                 text: 'No Other Purchase data found for the selected date range.',
-//                             });
-//                             return;
-//                         }
-//             setData(response.data);
-//             setIsDataFetched(true);
-//             openInNewTab(response.data);
-//         } catch (err) {
-//             setError('Failed to fetch data');
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const openInNewTab = (data) => {
-//         const newWindow = window.open('', '_blank');
-//         if (!newWindow) return;
-
-//         const columns = [
-//             'SR_No',
-//             'Invoice_No',
-//             'Section_Code',
-//             'Nature_of_Payment',
-//             'PartyGSTNo',
-//             'PartyCode',
-//             'PartyName',
-//             'PartyStateCode',
-//             'Invoice_Date',
-//             'TaxableAmount',
-//             'CGST',
-//             'SGST',
-//             'IGST',
-//             'Bill_Amount',
-//             'BillNo',
-//             'TDSAmount',
-//             'Narration',
-
-//         ];
-
-//         const totals = calculateTotals(data);
-
-//         newWindow.document.write(`
-//             <html>
-//                 <head>
-//                     <title>Other Purchase Summary</title>
-//                     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-//                    <style>
-//                     body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-//                     h2 { text-align: center; margin-top: 0; }
-//                     .table-container {
-//                         max-height: 500px;
-//                         overflow-y: auto;
-//                         margin: 20px auto;
-//                         width: 90%;
-//                     }
-//                     table {
-//                         width: 100%;
-//                         border-collapse: collapse;
-//                     }
-//                     th, td {
-//                         border: 1px solid #ddd;
-//                         padding: 6px 8px;
-//                         text-align: left;
-//                         white-space: nowrap;
-//                     }
-//                     th {
-//                         background-color:rgb(206, 200, 243);
-//                         position: sticky;
-//                         top: 0;
-//                         z-index: 2;
-//                         font-weight: bold;
-//                         font-size: 20px;
-//                         height: 50px;
-//                         text-align: center;
-//                     }
-//                     .export-btn {
-//                         padding: 10px 20px;
-//                         font-size: 16px;
-//                         background-color: green;
-//                         color: white;
-//                         border: none;
-//                         cursor: pointer;
-//                         margin-bottom: 20px;
-//                         margin-top: 20px;
-//                     }
-//                     .total-row {
-//                         background-color: yellow;
-//                         font-weight: bold;
-//                     }
-//                 </style>
-//                 </head>
-//                 <body>
-//                 <h2>Other Purchase Summary Report - ${ sectionName }</h2>
-//                     <div class="container">
-//                         <button class="export-btn" onclick="window.exportToXlsx()">Export to XLSX</button>
-//                     </div>
-//                     <table>
-//                         <thead>
-//                             <tr>
-//                                 ${columns.map((column) => `<th style="text-align: center;">${column}</th>`).join('')}
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             ${data.map(row => {
-//             return `
-//                                     <tr>
-//                                          ${columns.map(column => {
-//                 if (['TaxableAmount', 'CGST', 'SGST', 'IGST', 'TDSAmount', 'Bill_Amount'].includes(column)) {
-//                     return `<td style="text-align: right;">${formatReadableAmount(row[column] || 0)}</td>`;
-//                 } else {
-//                     return `<td>${row[column] || ''}</td>`;
-//                 }
-//                             }).join('')}
-//                                                     </tr>
-//                                                 `;
-//                         }).join('')}
-//                         </tbody>
-//                         <tfoot>
-//                             <tr>
-//                                 <td colspan="6" style="font-weight: bold; background-color: yellow;"></td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;"></td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;">${formatReadableAmount(totals.TaxableAmount.toFixed(2))}</td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;">${formatReadableAmount(totals.CGST.toFixed(2))}</td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;">${formatReadableAmount(totals.SGST.toFixed(2))}</td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;">${formatReadableAmount(totals.IGST.toFixed(2))}</td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;">${formatReadableAmount(totals.Bill_Amount.toFixed(2))}</td>
-//                                 <td style="font-weight: bold; background-color: yellow; text-align: right;"></td>
-//                             </tr>
-//                         </tfoot>
-//                     </table>
-//                     <script>
-
-//                       window.exportToXlsx = function() {
-//                     const data = ${JSON.stringify(data)};
-//                      const columnOrder = ['SR_No','Invoice_No','Section_Code','Nature_of_Payment','PartyGSTNo','PartyCode','PartyName','PartyStateCode','Invoice_Date','TaxableAmount','CGST','SGST','IGST','Bill_Amount','BillNo','TDSAmount','Narration'];
-
-//                     const formattedData = data.map(row => {
-//                         return {
-//                             ...row,
-//                             TaxableAmount: parseFloat(row.TaxableAmount || 0),
-//                             CGST: parseFloat(row.CGST || 0),
-//                             SGST: parseFloat(row.SGST || 0),
-//                             IGST: parseFloat(row.IGST || 0),
-//                             Bill_Amount: parseFloat(row.Bill_Amount || 0),
-//                             TDSAmount: parseFloat(row.TDSAmount || 0),
-//                             Quintal: parseFloat(row.Quintal || 0),
-//                             Rate: parseFloat(row.Rate || 0)
-//                         };
-//                     });
-
-//                     const totals = formattedData.reduce((acc, row) => {
-//                         acc.Quintal += row.Quintal || 0;
-//                         acc.TaxableAmount += row.TaxableAmount || 0;
-//                         acc.CGST += row.CGST || 0;
-//                         acc.SGST += row.SGST || 0;
-//                         acc.IGST += row.IGST || 0;
-//                         acc.Bill_Amount += row.Bill_Amount || 0;
-//                         acc.TDSAmount += row.TDSAmount || 0;
-//                         return acc;
-//                     }, {
-//                         Quintal: 0,
-//                         TaxableAmount: 0,
-//                         CGST: 0,
-//                         SGST: 0,
-//                         IGST: 0,
-//                         Bill_Amount: 0,
-//                         TDSAmount: 0
-//                     });
-
-//                     formattedData.push({
-//                         SR_No: 'Totals',
-//                         Quintal: totals.Quintal.toFixed(2),
-//                         TaxableAmount: totals.TaxableAmount.toFixed(2),
-//                         CGST: totals.CGST.toFixed(2),
-//                         SGST: totals.SGST.toFixed(2),
-//                         IGST: totals.IGST.toFixed(2),
-//                         Bill_Amount: totals.Bill_Amount.toFixed(2),
-//                         TDSAmount: totals.TDSAmount.toFixed(2)
-//                     });
-
-//                     const ws = XLSX.utils.json_to_sheet(formattedData, { header: columnOrder, skipHeader: false });
-//                     const wb = XLSX.utils.book_new();
-//                     XLSX.utils.book_append_sheet(wb, ws, 'OtherPurchaseSummary');
-
-//                     XLSX.writeFile(wb, 'OtherPurchaseSummary.xlsx');
-//                 };
-
-//                     </script>
-//                 </body>
-//             </html>
-//         `);
-//         newWindow.document.close();
-//     };
-
-//     const calculateTotals = (data) => {
-//         let totals = {
-//             TaxableAmount: 0,
-//             CGST: 0,
-//             SGST: 0,
-//             IGST: 0,
-//             Bill_Amount: 0,
-//         };
-
-//         data.forEach(row => {
-//             totals.TaxableAmount += parseFloat(row.TaxableAmount || 0);
-//             totals.CGST += parseFloat(row.CGST || 0);
-//             totals.SGST += parseFloat(row.SGST || 0);
-//             totals.IGST += parseFloat(row.IGST || 0);
-//             totals.Bill_Amount += parseFloat(row.Bill_Amount || 0);
-//         });
-
-//         return totals;
-//     };
-
-//     return (
-//         <div className="d-flex flex-column align-items-center" style={{ marginTop: '5px' }}>
-//             <button
-//                 variant="contained"
-//                 color="primary"
-//                 onClick={fetchOtherPurchaseSummary}
-//                 disabled={loading}
-//                 style={{
-//                     width: '20%',  
-//                     height: '60px',  
-//                 }}
-//             >
-//                 {loading ? <CircularProgress size={24} /> : 'TDS Sectionwise Report'}
-//             </button>
-
-//             {error && <div className="alert alert-danger">{error}</div>}
-//         </div>
-//     );
-// };
-
-// export default TDSSectionwiseReport;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -384,109 +95,144 @@ const TDSSectionGroupwiseReport = ({ fromDate, toDate, companyCode, yearCode, ac
     };
 
 
-const handleGeneratePDF = () => {
+    const handleGeneratePDF = () => {
 
-    if (data.length === 0) {
-        return;
-    }
-
-    setIsPrinting(true);
-
-    // --------------------------------------------------
-    // GROUP DATA BY SECTION CODE
-    // --------------------------------------------------
-
-    const groupedData = {};
-
-    data.forEach(row => {
-
-        const sectionCode =
-            row.Section_Code || 'Without Section';
-
-        if (!groupedData[sectionCode]) {
-            groupedData[sectionCode] = [];
+        if (data.length === 0) {
+            return;
         }
 
-        groupedData[sectionCode].push(row);
+        setIsPrinting(true);
 
-    });
+        const groupedData = {};
 
+        data.forEach(row => {
 
-    // --------------------------------------------------
-    // HELPER : SECTION TOTAL
-    // --------------------------------------------------
+            const sectionCode =
+                row.Section_Code || 'Without Section';
 
-    const getSectionTotal = (rows, key) => {
+            if (!groupedData[sectionCode]) {
+                groupedData[sectionCode] = [];
+            }
 
-        return rows.reduce(
-            (total, row) =>
-                total + parseFloat(row[key] || 0),
-            0
-        );
+            groupedData[sectionCode].push(row);
 
-    };
+        });
 
 
-    // --------------------------------------------------
-    // PDF ROWS
-    // --------------------------------------------------
+        const getSectionTotal = (rows, key) => {
 
-    const pdfRows = [];
+            return rows.reduce(
+                (total, row) =>
+                    total + parseFloat(row[key] || 0),
+                0
+            );
 
-
-    // --------------------------------------------------
-    // SECTION CODE WISE ROWS
-    // --------------------------------------------------
-
-    Object.keys(groupedData)
-        .sort()
-        .forEach(sectionCode => {
-
-            const sectionRows =
-                groupedData[sectionCode];
+        };
 
 
-            // ------------------------------------------
-            // SECTION HEADER
-            // ------------------------------------------
 
-            pdfRows.push([
-                {
-                    content:
-                        'TDS SECTION CODE : ' +
-                        sectionCode,
+        const pdfRows = [];
 
-                    colSpan: PRINT_COLUMNS.length,
 
-                    styles: {
-                        fontStyle: 'bold',
-                        fillColor: [225, 218, 245],
-                        textColor: [26, 35, 126],
-                        halign: 'left',
-                        fontSize: 9
+
+        Object.keys(groupedData)
+            .sort()
+            .forEach(sectionCode => {
+
+                const sectionRows =
+                    groupedData[sectionCode];
+
+
+                pdfRows.push([
+                    {
+                        content:
+                            'TDS SECTION CODE : ' +
+                            sectionCode,
+
+                        colSpan: PRINT_COLUMNS.length,
+
+                        styles: {
+                            fontStyle: 'bold',
+                            fillColor: [225, 218, 245],
+                            textColor: [26, 35, 126],
+                            halign: 'left',
+                            fontSize: 9
+                        }
                     }
-                }
-            ]);
+                ]);
 
 
-            // ------------------------------------------
-            // DETAIL ROWS
-            // ------------------------------------------
 
-            sectionRows.forEach(row => {
+                sectionRows.forEach(row => {
+
+                    pdfRows.push(
+                        PRINT_COLUMNS.map(col => {
+
+                            if (col.numeric) {
+
+                                return formatReadableAmount(
+                                    row[col.key] || 0
+                                );
+
+                            }
+
+                            return row[col.key] || '';
+
+                        })
+                    );
+
+                });
+
+
 
                 pdfRows.push(
-                    PRINT_COLUMNS.map(col => {
+                    PRINT_COLUMNS.map((col, index) => {
 
-                        if (col.numeric) {
+                        if (index === 0) {
 
-                            return formatReadableAmount(
-                                row[col.key] || 0
-                            );
+                            return {
+                                content:
+                                    'SECTION ' +
+                                    sectionCode +
+                                    ' TOTAL',
+
+                                styles: {
+                                    fontStyle: 'bold',
+                                    fillColor: [255, 243, 205],
+                                    halign: 'left'
+                                }
+                            };
 
                         }
 
-                        return row[col.key] || '';
+
+                        if (col.isTotal) {
+
+                            return {
+                                content:
+                                    formatReadableAmount(
+                                        getSectionTotal(
+                                            sectionRows,
+                                            col.key
+                                        )
+                                    ),
+
+                                styles: {
+                                    fontStyle: 'bold',
+                                    fillColor: [255, 243, 205],
+                                    halign: 'right'
+                                }
+                            };
+
+                        }
+
+
+                        return {
+                            content: '',
+                            styles: {
+                                fillColor: [255, 243, 205]
+                            }
+                        };
 
                     })
                 );
@@ -494,160 +240,95 @@ const handleGeneratePDF = () => {
             });
 
 
-            // ------------------------------------------
-            // SECTION TOTAL
-            // ------------------------------------------
-
-            pdfRows.push(
-                PRINT_COLUMNS.map((col, index) => {
-
-                    if (index === 0) {
-
-                        return {
-                            content:
-                                'SECTION ' +
-                                sectionCode +
-                                ' TOTAL',
-
-                            styles: {
-                                fontStyle: 'bold',
-                                fillColor: [255, 243, 205],
-                                halign: 'left'
-                            }
-                        };
-
-                    }
 
 
-                    if (col.isTotal) {
+        pdfRows.push(
+            PRINT_COLUMNS.map((col, index) => {
 
-                        return {
-                            content:
-                                formatReadableAmount(
-                                    getSectionTotal(
-                                        sectionRows,
-                                        col.key
-                                    )
-                                ),
-
-                            styles: {
-                                fontStyle: 'bold',
-                                fillColor: [255, 243, 205],
-                                halign: 'right'
-                            }
-                        };
-
-                    }
-
+                if (index === 0) {
 
                     return {
-                        content: '',
+                        content: 'GRAND TOTAL',
+
                         styles: {
-                            fillColor: [255, 243, 205]
+                            fontStyle: 'bold',
+                            fillColor: [255, 249, 196],
+                            halign: 'left'
                         }
                     };
 
-                })
-            );
+                }
+
+
+                if (col.isTotal) {
+
+                    return {
+                        content:
+                            formatReadableAmount(
+                                grandTotals[col.key] || 0
+                            ),
+
+                        styles: {
+                            fontStyle: 'bold',
+                            fillColor: [255, 249, 196],
+                            halign: 'right'
+                        }
+                    };
+
+                }
+
+
+                return {
+                    content: '',
+                    styles: {
+                        fillColor: [255, 249, 196]
+                    }
+                };
+
+            })
+        );
+
+
+        generateReportPDF({
+
+            title: 'TDS Section Code Wise Report',
+
+            subtitle:
+                FormaDateBalanceSheet(fromDate) +
+                ' to ' +
+                FormaDateBalanceSheet(toDate),
+
+            columns:
+                PRINT_COLUMNS.map(c => c.label),
+
+            rows: pdfRows,
+
+            footerRow: [],
+
+            headerImgSrc: HeaderJK,
+
+            footerImgSrc: FooterJK,
+
+            numericCols:
+                PRINT_COLUMNS
+                    .map((c, i) =>
+                        c.numeric ? i : null
+                    )
+                    .filter(i => i !== null),
+
+            orientation: 'landscape',
+
+            onComplete: (url) => {
+
+                setPdfPreview(url);
+
+                setIsPrinting(false);
+
+            }
 
         });
 
-
-    // --------------------------------------------------
-    // GRAND TOTAL
-    // --------------------------------------------------
-
-    pdfRows.push(
-        PRINT_COLUMNS.map((col, index) => {
-
-            if (index === 0) {
-
-                return {
-                    content: 'GRAND TOTAL',
-
-                    styles: {
-                        fontStyle: 'bold',
-                        fillColor: [255, 249, 196],
-                        halign: 'left'
-                    }
-                };
-
-            }
-
-
-            if (col.isTotal) {
-
-                return {
-                    content:
-                        formatReadableAmount(
-                            grandTotals[col.key] || 0
-                        ),
-
-                    styles: {
-                        fontStyle: 'bold',
-                        fillColor: [255, 249, 196],
-                        halign: 'right'
-                    }
-                };
-
-            }
-
-
-            return {
-                content: '',
-                styles: {
-                    fillColor: [255, 249, 196]
-                }
-            };
-
-        })
-    );
-
-
-    // --------------------------------------------------
-    // GENERATE PDF
-    // --------------------------------------------------
-
-    generateReportPDF({
-
-        title: 'TDS Section Code Wise Report',
-
-        subtitle:
-            FormaDateBalanceSheet(fromDate) +
-            ' to ' +
-            FormaDateBalanceSheet(toDate),
-
-        columns:
-            PRINT_COLUMNS.map(c => c.label),
-
-        rows: pdfRows,
-
-        footerRow: [],
-
-        headerImgSrc: HeaderJK,
-
-        footerImgSrc: FooterJK,
-
-        numericCols:
-            PRINT_COLUMNS
-                .map((c, i) =>
-                    c.numeric ? i : null
-                )
-                .filter(i => i !== null),
-
-        orientation: 'landscape',
-
-        onComplete: (url) => {
-
-            setPdfPreview(url);
-
-            setIsPrinting(false);
-
-        }
-
-    });
-
-};
+    };
 
 
     const openInNewWindow = (reportData) => {
@@ -1197,18 +878,18 @@ render(RAW);
     };
 
     const groupBySectionCode = (rows) => {
-    return rows.reduce((groups, row) => {
-        const sectionCode = row.Section_Code || 'Without Section';
+        return rows.reduce((groups, row) => {
+            const sectionCode = row.Section_Code || 'Without Section';
 
-        if (!groups[sectionCode]) {
-            groups[sectionCode] = [];
-        }
+            if (!groups[sectionCode]) {
+                groups[sectionCode] = [];
+            }
 
-        groups[sectionCode].push(row);
+            groups[sectionCode].push(row);
 
-        return groups;
-    }, {});
-};
+            return groups;
+        }, {});
+    };
 
     return (
         <div style={{ padding: '5px', textAlign: 'center' }}>

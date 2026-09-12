@@ -13,118 +13,32 @@ except ImportError:
 
 API_URL = os.getenv('API_URL')
 
-# ─── Service Account Keys ────────────────────────────────────────────────────
-
-CHINIMANDI_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCyFRp07kJU7TPj
-uY8wibc+KM5I2XyInbIH7zNf3sPtNMsGHgHEPAHc5wUpC/oEJKKxqHft++EMpQO9
-jfM31qyT4d2nTGd/Gp2xi+GA4kGlVSDhX02PCUzhQ7gt3AcUoZ+nNC+KWNub0xNG
-NxJPMzoiUb783HNm1EvEhLPH7Wr6jNfSWRoEZ+hmQEowjwUmmvyfBKtzY8jGanxi
-IWj4e6dEsbX7Z3S7MQ9qH8ojvF3dvM4w1HZmPaDkW5YRCRP5xf29PfRa0oERCN41
-JpcND7eC3YaKgTGnpfsXDWLbrzO4Iu3AeTfIZ8ZsYSMvJFgOfaQqnuMBQ21vhR1X
-OSghfiEJAgMBAAECggEACMl5SXlDLSEaLRuoGNdGwyqsyRPwLOaJFRKkuI+Ln935
-wZbD9AyY8+8zRjv4zXEIVRdQuZ2y1FalGVqSfHgbgl2D/CANQEyOKOdTzHH9lryd
-V3mGIG9vS3M1uI+Rit9RuyScTumFBoqS+iU4Ak/vB6f8ckonaJTDm1IH8+6/V1b8
-LWsp5xi9TXTHjM4sYDL5ycni/xhd+BwcSLm9HHKZw9hXOOCnWw5LRtqH8iAJ2jh0
-vOIN44pSXC1684W9GWennau3NU92NVaLhJ+cT+1Oz3HynXdbSrshwDT3FAyRgQxF
-Ml+urKjildUS/Lbvb/YwuNCEjkmsvMcnlt8tDbvh7QKBgQDeieQoVuBdZgmv74SK
-cItk8dQ4Jg4subk4WquJ6npC15/4S5vVPqg9SWKNlNd9Dd2EYXzlxMbrzHGxFPW3
-oSMwgue57eGXeyppGjt7b/jNPsfOzdlRouGw+EU/elP6uCT8OWpLTwmCnQK2oOX+
-Qv+PvDkNiqSZRubrv96f2w6CZQKBgQDM2/lDRsMQM0m9ft72u7ujkecuLDHhmRDJ
-alsHCcDbHlnf8qj9Vv+U5t1u2u7vFK6LtTHIHjD9m9C1tAAnUGcHyMSiK1bgJBvI
-PCNCwf2fdGoaWAT49+2iimO7/VbnaUKANg/t5EuzeZS0uzcnjZNIEPbLmlhernR7
-9vbKTlFn1QKBgQDKXYJI3Jey1zM/9gMFEUrxRKfDV3fUXB9+i5UqGTuMxSAHXlob
-FJtRAAbK0OsUISOrWiuFled+Ta+lZHX9wl6JosCuZw+Z/LqYUO5+VVhe7BQujypr
-/j5V+66dBtSPThzz8BIk4X64c6cgBDiherODNZp8IfOEHuGmyBfeLgmHsQKBgQDA
-a+aoELFsaCBdg+v+KbxIGeXh8tUvqEyiQ+oYpEqoBsw4lH+y5qLOxEM9uxsvKmgB
-BkMqS2GM9WyHH/n884KzRxubj8XcZ05JOGOOcxS9T+XRtNeG26o0QHUJwR594tr5
-/s3bj9KjVBIf6LIXzt2GlZibCfDzjj4PqpuIzyObuQKBgQCb6saUHD15kjCBjA15
-fTAu/z/zhckiOEtde5sl8KaxB/ZqLeaXL/By/fD7H9VvnUUsa/PwS5ZCEcUg0aJS
-FmRxFv2IsvdKn8gLFblCjXmJ0g3BteineOpWIZYZAe5L2ahgiBchN/7jG2K/lAaj
-E1rqQI/FoSvfwoMK/Pnr4MuJUw==
------END PRIVATE KEY-----"""
-
-AGRIINSITE_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCgqH74tXWUZ2xL
-fkTPiAsdQgpFN9Lxx05M/MTSSD538KRYTl/stcj1jMFpbD4hc7f9lHplBYdJw60Q
-rOyrplIuJXQxKdU6FBeSMD5EtDlwROHaZqZcExSryBU4GcWZAw5KUSD1UjLFaUKS
-tf8Vi428SAJILfcLzAuBFYr92TOXqDA0T7gVHoWUuB4ZpfBfN7lTpOohGEfZxV43
-TxOj7ancs3otH9n4S5GvRgvF7d5wTGviMO5a6MPLzocUyQ6m2Lx4nWlXMBdLGxTO
-PwfwCxzMT7Q2akfit/qLGDJSybidR1O/G36FsiK3rLWgHzVv9Ry44ptgTaSiVKdN
-+6parbE9AgMBAAECgf8sP/T1daqIfn2TZkiNm9OEXeSaEH0uhijrOlCYnVAeRVQ+
-EY8+ofx0WyA/0cujK8dA2G7Hrqa8iAkTxydoqV/gcXX2jbRHO71YS1R4Kcs/o65J
-0sqLvb3qJy22gSuipWT+hsKGRZ2YBBS+xNALIH8Oije5F9Gn4ycAczTAjQCZrQN0
-IIYTOrOqCwgg1Uzh/BwvRnL0eoRMSDNnJG9x5F/vHbOXMeML0jHis8yKYc0kvrwW
-6wjtWy1dTXqM4r9S2VjrqQJtDdA9jj+kMmScZt7FEK4yflZW2x7ODxeqoKDqquHN
-anj2aG/JVEQ6RQahgzkhhk832lEAvkQDjikf/kMCgYEA0JUpyCsn2dPTJSyNA26N
-v2Kvmyj+7GQdQqNrkKrQ70HLLeAYICa+ASRzb8OcYny88cgmUh5yNr9asd6m9TcK
-jmlPlw8u1feplhuFeHrsxlyFBiX3LlYrlNuaPfKBYf3jZtfOOtLFDzMIhw0+HHii
-NDcCbxZ/aUUJO8gPMILVmVsCgYEAxS5Ibrii3PpocqIz7T/GwTT9oFmgzxDYj1dD
-pcWzD3GtKznn/ZMOq7SE2zrLh2UJCcz9N5awJTQXhx7AumqTWgPqi3ujZPQ2vdTZ
-GKf4YcJ1NVvO1XxtLQCH31DOL8tE4NUe8RWQN2liHGPXpaJkDJrg5ZrAA1wGJUuB
-2cWPy0cCgYBTRKkYavoOwLyTI5Tr4M+frtLx+0zBrDnuJ3VCnJ6qVTa6irK26yCB
-Lj8TSCD/RFLdpwx9TgBEkOGxDnTSgfWp4qrOYFZPPv6pmTUQYupxSfAlAzUJf4cI
-dx69SjmSmBuXK+H9o7Tdm371Azlffl0qwScsl+unZ9MG1ZgSwrho7wKBgAJREuTK
-Io+6GXQPV9DXyPwIJVq28t678e9tNQxDkGEEEubJHWKrUabOzijNPgrvMvX8hJUc
-niExxXz+7YDDM8wA88aDw12ySNpeH9bcUlzDriDcXUfA2H+I3A/RoTqKhtqlZmGq
-wTEFefOfcK8vg0FqqG3KLatcb24Mvw/R9GiNAoGBAKen0vQe1rcyGq7AJScbLHaq
-9dzXNP5xiQ7bsLVpCtrlDo8/jtBYJ6GA8g7DRVhCAKhl2JycunqhYQCrCsA4t/1k
-8X1CGnxtGMvya3eu1F58rhVoI/s/dqH73NMzgeXAa/0DsVRcsuYjVu02pElij7fo
-bLlFtVZyDrCSHra7M4a0
------END PRIVATE KEY-----"""
-
-BIOENERGY_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQDT9TEZIDMnQkqQ
-4I2bCn00b70B52KIymtfGMkTu1xwMeDf3utfJQD6s+BIvcB39ZTZEwdr1P8lDeqm
-kWIar3wuD3O2LD8LRmEqLD3N8g2iDBWihS9e+NRiBPPn3wrShbqmk3f/WyUnU5QO
-pbTCj+BqOso5a8K/MgXQhAUI+HEpGAvaIp2dXq9eB3gHqn/8E2bAUoK20PzgbsGi
-oYpfP1hUnFE6fGe7HJfBvfZptRUO9QSqIRWR8/dn6SuLvieId5nKx9k+2T/vI46Q
-c+yVbQrJaDKglBEx4UcjepHmo/qkGVIRTr4Pis9B92K7KBtw97XFKsyf3EyJlQxJ
-g35HYA4BAgMBAAECgf8XjsTqOf31exS2jX6voLbRwSmMsJ7u/TB53VNb8hMQFTsd
-JrWaWY6GTr+61fwyWQU2KztD7OR+xdEyui3hMWfn5qfBs6E+K5BZE5m67hA91oIB
-EjR1pcpVKp/BQbT+OQbJxNIte3/hoxRtnFU+2qbip64aO7PldDXZOxMkMBjDrEij
-njckTFsDNv3V/6bpBktCdTBgj0wcjecDIMZaHD07bY4OymFryoplsDaQw19QjtgR
-0yGeuj9KdqqOI1IpfTZeIItYBxKLrevDP4CtGf8bXIMJAsOgfK+5b5tDkdUyu0XY
-nO5R5aN4vpwmVx9gpojYO+RwlsiuyUggRqsPGsECgYEA991BdiN/WIEsDYehZkyk
-6LbMO8ZsJwBEB+uAzSSelT2fJPsXO7ng+eehC8gpoF013pYwh6IiXE5VYpCD4XV1
-sGyGRJs2cyWx0QCwoMlrHa31yhQvPq4jTwdjTGKbeR0g5zzJkWe/mowCQD2/jWGz
-OUSQ3uJGia6Rsh41jqBWY8ECgYEA2uo468fpxEAtnp8NSS2hy3i1jbsf7Tetw2EZ
-YHvoV2plkrhHyGV4IW3F4yVXuAkc5Rr/McpJu4ylLnQP8q47aiojccE2vhHT4upS
-1UPUgseIZULyXbebGO5s3IemWkj1BeVu3ACko2fcgF2FmFSB3kAMVr0MyhxQkezt
-qSiXOkECgYAY72BDg0SvYadN4SQih3lbk/At30NIFSXC6jU17gYqG13kOYJX1tZE
-LcIszkEpyda+grt1GaF9ScAbP1CVINzrF6/WPQsYQGWIEhqywjCNds+wOaGbG6ef
-rq2VpKHhaEXEHYBlqVtEL+uWDOA1V+vQyg4M7hSMi0xK7/ERXR3zwQKBgQDIROxr
-70iRrDDP4yvxXVid30Egdyb/CifiDMt9c/2bMw/XSNUKpKFg257kbX4xM80GX0tF
-Do2jkUhwFeedGP3r4r7oS108Ruzzs3Cx/8rDFa1XDgbR661tAnn+ye5KvGHD0iA4
-DjKP9u1HVcdpEy5311oyY+L2Zy7iQMEvNp4awQKBgGBofRBGwNcXdK+w86YOJRlF
-aMyPpIDzbwT8cXNjrB590VefY74ol5NMfKlNYlUrQE/Onh1AfR9ER5cbD2mM8KuX
-WW55zN5PenT41x8dRgY9GqP5rjGSIjGnm75xKq1UFFuVJ220ksMSYXF4UWZuMmrV
-/Fnzc0fbQUpbCkPGObpJ
------END PRIVATE KEY-----"""
+def _ga_private_key(env_var):
+    return os.getenv(env_var, '').replace('\\n', '\n')
 
 SITES = {
     'chinimandi': {
-        'client_email': 'analytics-reader@newsroom-insights.iam.gserviceaccount.com',
-        'property_id': '382590087',
-        'private_key': CHINIMANDI_KEY,
+        'client_email': os.getenv('GA_CHINIMANDI_CLIENT_EMAIL'),
+        'property_id': os.getenv('GA_CHINIMANDI_PROPERTY_ID'),
+        'private_key': _ga_private_key('GA_CHINIMANDI_PRIVATE_KEY'),
     },
     'bioenergy': {
-        'client_email': 'bioenergytimes-analytics@newsroom-insights.iam.gserviceaccount.com',
-        'property_id': '430109102',
-        'private_key': BIOENERGY_KEY,
+        'client_email': os.getenv('GA_BIOENERGY_CLIENT_EMAIL'),
+        'property_id': os.getenv('GA_BIOENERGY_PROPERTY_ID'),
+        'private_key': _ga_private_key('GA_BIOENERGY_PRIVATE_KEY'),
     },
     'agriinsite': {
-        'client_email': 'agriinsite-analytics@newsroom-insights.iam.gserviceaccount.com',
-        'property_id': '434291573',
-        'private_key': AGRIINSITE_KEY,
+        'client_email': os.getenv('GA_AGRIINSITE_CLIENT_EMAIL'),
+        'property_id': os.getenv('GA_AGRIINSITE_PROPERTY_ID'),
+        'private_key': _ga_private_key('GA_AGRIINSITE_PRIVATE_KEY'),
     },
 }
 
 # ─── WordPress Newsroom API URLs ─────────────────────────────────────────────
 
 NEWSROOM_URLS = {
-    'chinimandi': 'https://www.chinimandi.com/wp-json/newsroom-insights/v1/counts',
-    'bioenergy':  'https://bioenergytimes.com/wp-json/newsroom-insights/v1/counts',
+    'chinimandi': os.getenv('NEWSROOM_CHINIMANDI_URL'),
+    'bioenergy':  os.getenv('NEWSROOM_BIOENERGY_URL'),
 }
 
 
@@ -301,7 +215,7 @@ def ga4_analytics():
 
 # ─── eBuySugar Dashboard Route ───────────────────────────────────────────────
 
-EBUYSUGAR_URL = 'https://ebuysugar.com/login/Masteradmin/API/Dashboard/index'
+EBUYSUGAR_URL = os.getenv('EBUYSUGAR_DASHBOARD_URL')
 
 @app.route(API_URL + '/ebuysugar-dashboard', methods=['GET'])
 def ebuysugar_dashboard():
@@ -328,7 +242,7 @@ def ebuysugar_dashboard():
 
 # ─── eTrack (JK HRMS) Dashboard Route ────────────────────────────────────────
 
-ETRACK_BASE_URL = 'https://jkhrms.vaniasolutions.com:9093/api/JKDashboard'
+ETRACK_BASE_URL = os.getenv('ETRACK_BASE_URL')
 
 ETRACK_COMPANIES = [
     {'id': 9,  'name': 'JK India eAgriTech Ltd'},

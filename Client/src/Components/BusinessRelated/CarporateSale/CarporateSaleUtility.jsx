@@ -19,8 +19,6 @@ const CarporateSaleUtility = ({includeYearCode =true}) => {
         
     ];
 
-
-
      const getRowStyle = (row) => {
         if (row.IsDeleted === 0) {
             return { backgroundColor: '#ffcccc' };
