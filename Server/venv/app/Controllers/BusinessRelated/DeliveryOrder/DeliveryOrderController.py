@@ -10,8 +10,10 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 import os
+import json
 import requests
 import logging
+from datetime import datetime
 
 from app.models.BusinessReleted.TenderPurchase.TenderPurchaseModels import (
     TenderHead, TenderDetails,
@@ -352,6 +354,137 @@ def getDOByid():
             "balance_data": balances,
         }), 200
     except Exception as e:
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Mark Unapproved DO (ebuy customer-change flow)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@app.route(API_URL + "/UnapprovedDO", methods=["PUT"])
+def unapproved_DO():
+    try:
+        data = request.get_json() or {}
+        doc_no = data.get('doc_no')
+        company_code = data.get('company_code')
+        Year_Code = data.get('Year_Code')
+        narration_text = (data.get('narration') or '').strip()
+        user_name = data.get('User_Id') or ''
+
+        if not all([doc_no, company_code, Year_Code]) or not narration_text:
+            return jsonify({"error": "Missing required parameters"}), 400
+
+        DO_head = DeliveryOrderHead.query.filter_by(
+            doc_no=doc_no, company_code=company_code, Year_Code=Year_Code
+        ).first()
+        if not DO_head:
+            return jsonify({"error": "Delivery Order not found"}), 404
+
+        try:
+            existing_narration = json.loads(DO_head.Unapproved_Donarration) if DO_head.Unapproved_Donarration else []
+            if not isinstance(existing_narration, list):
+                existing_narration = []
+        except (ValueError, TypeError):
+            existing_narration = []
+
+        existing_narration.append({
+            "text": narration_text,
+            "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "user": user_name,
+        })
+
+        DO_head.Unapproved_DO = 'Y'
+        DO_head.Unapproved_Donarration = json.dumps(existing_narration)
+        db.session.commit()
+
+        socketio.emit('delivery_order_updated', {
+            'doid':         DO_head.doid,
+            'company_code': str(company_code),
+            'year_code':    str(Year_Code),
+        })
+
+        return jsonify({
+            "message": "Delivery Order marked as unapproved",
+            "Unapproved_DO": DO_head.Unapproved_DO,
+            "Unapproved_Donarration": existing_narration,
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+
+
+@app.route(API_URL + "/getdata-UnapprovedDO", methods=["GET"])
+def getdata_UnapprovedDO():
+    try:
+        company_code = request.args.get('Company_Code')
+        year_code = request.args.get('Year_Code')
+        if not company_code or not year_code:
+            return jsonify({"error": "Missing 'Company_Code' or 'Year_Code' parameter"}), 400
+
+        query = '''
+            SELECT dbo.nt_1_deliveryorder.doc_no, dbo.nt_1_deliveryorder.doc_date,
+                   dbo.nt_1_deliveryorder.truck_no, dbo.nt_1_deliveryorder.doid,
+                   dbo.nt_1_deliveryorder.SB_No, dbo.nt_1_deliveryorder.purc_no,
+                   dbo.nt_1_deliveryorder.quantal, dbo.nt_1_deliveryorder.grade,
+                   dbo.nt_1_deliveryorder.sale_rate, dbo.nt_1_deliveryorder.mill_rate,
+                   dbo.nt_1_deliveryorder.Unapproved_DO, dbo.nt_1_deliveryorder.Unapproved_Donarration,
+                   mill.Short_Name AS millName, saleBillTo.Short_Name AS saleBillName
+            FROM dbo.nt_1_deliveryorder
+            INNER JOIN dbo.nt_1_accountmaster AS mill ON dbo.nt_1_deliveryorder.mc = mill.accoid
+            LEFT OUTER JOIN dbo.qrymstaccountmaster AS saleBillTo ON dbo.nt_1_deliveryorder.sb = saleBillTo.accoid
+            WHERE dbo.nt_1_deliveryorder.company_code = :company_code
+              AND dbo.nt_1_deliveryorder.Year_Code = :year_code
+              AND dbo.nt_1_deliveryorder.Unapproved_DO = 'Y'
+            ORDER BY doc_no DESC
+        '''
+        rows = db.session.execute(
+            text(query), {"company_code": company_code, "year_code": year_code}
+        ).fetchall()
+        all_data = [dict(r._mapping) for r in rows]
+        for d in all_data:
+            if d.get('doc_date'):
+                d['doc_date'] = d['doc_date'].strftime('%Y-%m-%d')
+            try:
+                d['Unapproved_Donarration'] = json.loads(d['Unapproved_Donarration']) if d.get('Unapproved_Donarration') else []
+            except (ValueError, TypeError):
+                d['Unapproved_Donarration'] = []
+        return jsonify({"all_data": all_data}), 200
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+
+
+@app.route(API_URL + "/ApproveDO", methods=["PUT"])
+def approve_DO():
+    try:
+        data = request.get_json() or {}
+        doc_no = data.get('doc_no')
+        company_code = data.get('company_code')
+        Year_Code = data.get('Year_Code')
+
+        if not all([doc_no, company_code, Year_Code]):
+            return jsonify({"error": "Missing required parameters"}), 400
+
+        DO_head = DeliveryOrderHead.query.filter_by(
+            doc_no=doc_no, company_code=company_code, Year_Code=Year_Code
+        ).first()
+        if not DO_head:
+            return jsonify({"error": "Delivery Order not found"}), 404
+
+        DO_head.Unapproved_DO = 'N'
+        db.session.commit()
+
+        socketio.emit('delivery_order_updated', {
+            'doid':         DO_head.doid,
+            'company_code': str(company_code),
+            'year_code':    str(Year_Code),
+        })
+
+        return jsonify({
+            "message": "Delivery Order approved",
+            "Unapproved_DO": DO_head.Unapproved_DO,
+        }), 200
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
 

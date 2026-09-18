@@ -28,7 +28,12 @@ def userlogin():
     if not bcrypt.checkpw(password.encode('utf-8'), user.User_Password.encode('utf-8')):
         return jsonify({'error': 'Invalid login credentials'}), 401
 
-    return jsonify({'message': 'Login successful', 'user_id': user.uid,'User_ID':user.User_Id}), 200
+    return jsonify({
+        'message': 'Login successful',
+        'user_id': user.uid,
+        'User_ID': user.User_Id,
+        'User_Type': user.User_Type,
+    }), 200
 
 
 @app.route(API_URL+'/get_self_ac', methods=['GET'])

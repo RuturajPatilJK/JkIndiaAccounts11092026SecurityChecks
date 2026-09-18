@@ -39,6 +39,8 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
 app.config['JWT_COOKIE_SECURE'] = os.getenv('COOKIE_SECURE', 'False') == 'True'
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+
+app.config['JWT_COOKIE_DOMAIN'] = os.getenv('COOKIE_DOMAIN') or None
 app.config['JWT_REFRESH_COOKIE_PATH'] = os.getenv('API_URL', '/api/sugarian') + '/refresh'
 jwt = JWTManager(app)
 

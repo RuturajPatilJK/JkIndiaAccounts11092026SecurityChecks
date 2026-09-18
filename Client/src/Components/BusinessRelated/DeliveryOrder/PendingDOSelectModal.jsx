@@ -22,7 +22,24 @@ const FMT_NUM = (v, dec = 2) => {
   return isNaN(n) ? v : n.toFixed(dec);
 };
 
+const FMT_DATETIME = (d) => {
+  if (!d || d === "-") return "-";
+  try {
+    const dt = new Date(String(d).replace(" ", "T"));
+    if (isNaN(dt.getTime())) return d;
+    const dd = String(dt.getDate()).padStart(2, "0");
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const yyyy = dt.getFullYear();
+    let h = dt.getHours();
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    const min = String(dt.getMinutes()).padStart(2, "0");
+    return `${dd}-${mm}-${yyyy} ${String(h).padStart(2, "0")}:${min} ${ampm}`;
+  } catch { return d; }
+};
+
 const COLS = [
+  { key: "Created_Date", label: "Created Date", align: "left" },
   { key: "Tender_No", label: "Tender No", align: "left" },
   { key: "Party", label: "Party Name", align: "left" },
   { key: "doname", label: "DO Name", align: "left" },
@@ -41,31 +58,26 @@ const COLS = [
   { key: "Approved", label: "Status", align: "left" },
 ];
 
-function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
+function PendingDOSelectModal({
+  open, onClose, data = [], onSelect, loading,
+  unapprovedData = [], unapprovedLoading = false, onApproveDO,
+}) {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [sortCol, setSortCol] = useState("Tender_No");
   const [sortAsc, setSortAsc] = useState(false);
   // use index into filtered[] — guarantees uniqueness even for rows with identical field values
   const [selectedIdx, setSelectedIdx] = useState(null);
 
+  const [activeTab, setActiveTab] = useState("pending");
+  const [unapprovedSearch, setUnapprovedSearch] = useState("");
+  const [approvingDocNo, setApprovingDocNo] = useState(null);
+
   const containerRef = useRef(null);
   const rowRefs = useRef([]);
   const searchRef = useRef(null);
 
-  const counts = useMemo(() => ({
-    total: data.length,
-    approved: data.filter((r) => r.Approved === "Y").length,
-    pending: data.filter((r) => r.Approved !== "Y").length,
-  }), [data]);
-
   const filtered = useMemo(() => {
     let list = data;
-
-    if (statusFilter !== "all")
-      list = list.filter((r) =>
-        statusFilter === "Y" ? r.Approved === "Y" : r.Approved !== "Y"
-      );
 
     if (search.trim()) {
       const s = search.trim().toLowerCase();
@@ -87,10 +99,22 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
     });
 
     return list;
-  }, [data, search, statusFilter, sortCol, sortAsc]);
+  }, [data, search, sortCol, sortAsc]);
+
+  const filteredUnapproved = useMemo(() => {
+    let list = unapprovedData;
+    if (unapprovedSearch.trim()) {
+      const s = unapprovedSearch.trim().toLowerCase();
+      list = list.filter((r) =>
+        [r.doc_no, r.truck_no, r.millName, r.saleBillName]
+          .some((v) => String(v || "").toLowerCase().includes(s))
+      );
+    }
+    return list;
+  }, [unapprovedData, unapprovedSearch]);
 
   // reset selection when the visible list changes
-  useEffect(() => { setSelectedIdx(null); }, [search, statusFilter, sortCol, sortAsc]);
+  useEffect(() => { setSelectedIdx(null); }, [search, sortCol, sortAsc]);
 
   // focus the container when modal opens; reset state when it closes
   useEffect(() => {
@@ -99,9 +123,10 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
     } else {
       setSelectedIdx(null);
       setSearch("");
-      setStatusFilter("all");
       setSortCol("Tender_No");
       setSortAsc(false);
+      setActiveTab("pending");
+      setUnapprovedSearch("");
     }
   }, [open]);
 
@@ -118,7 +143,24 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
     setSelectedIdx(null);
   }, [onSelect]);
 
+  const handleApproveClick = async (row) => {
+    if (!onApproveDO) return;
+    setApprovingDocNo(row.doc_no);
+    try {
+      await onApproveDO(row);
+    } finally {
+      setApprovingDocNo(null);
+    }
+  };
+
   const handleKeyDown = useCallback((e) => {
+    if (activeTab !== "pending") {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+      return;
+    }
     if (!filtered.length) return;
 
     if (e.key === "ArrowDown") {
@@ -142,7 +184,7 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
       e.preventDefault();
       onClose();
     }
-  }, [filtered, selectedIdx, confirmSelect, onClose]);
+  }, [activeTab, filtered, selectedIdx, confirmSelect, onClose]);
 
   const toggleSort = (key) => {
     if (sortCol === key) setSortAsc((p) => !p);
@@ -152,6 +194,12 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
   const cellContent = (col, row) => {
     const bal = Number(row.BALANCE || 0);
     switch (col.key) {
+      case "Created_Date":
+        return (
+          <span style={{ color: "#475569" }}>
+            {FMT_DATETIME(row.Created_Date)}
+          </span>
+        );
       case "Tender_No":
         return (
           <span style={{ fontWeight: 600, color: "#1d4ed8" }}>
@@ -333,9 +381,21 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
                 Pending Delivery Orders
               </div>
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
-                {loading
-                  ? "Loading..."
-                  : `${counts.total} record${counts.total !== 1 ? "s" : ""} · Click or ↑↓ to select · Enter to fill form · Esc to close`}
+                {activeTab === "pending" ? (
+                  loading ? "Loading..." : (
+                    <>
+                      <span style={{ color: "#1d4ed8", fontWeight: 700 }}>{data.length}</span>
+                      {` record${data.length !== 1 ? "s" : ""} · Click or ↑↓ to select · Enter to fill form · Esc to close`}
+                    </>
+                  )
+                ) : (
+                  unapprovedLoading ? "Loading..." : (
+                    <>
+                      <span style={{ color: "#1d4ed8", fontWeight: 700 }}>{unapprovedData.length}</span>
+                      {` unapproved record${unapprovedData.length !== 1 ? "s" : ""} · Check a row to mark it approved · Esc to close`}
+                    </>
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -354,192 +414,363 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
           </button>
         </div>
 
-        {/* ── Toolbar ── */}
+        {/* ── Tabs ── */}
         <div style={{
-          display: "flex", flexWrap: "wrap", alignItems: "center",
-          gap: 8, padding: "10px 18px", background: "#f8fafc",
-          borderBottom: "1px solid #e2e8f0", flexShrink: 0,
+          display: "flex", gap: 4, padding: "8px 18px 0",
+          background: "#f8fafc", borderBottom: "1px solid #e2e8f0", flexShrink: 0,
         }}>
           {[
-            { label: "All", val: "all", count: counts.total, bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
-            { label: "Pending", val: "N", count: counts.pending, bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" },
-            { label: "Approved", val: "Y", count: counts.approved, bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
-          ].map(({ label, val, count, bg, color, border }) => (
+            { key: "pending", label: "Pending DO" },
+            { key: "unapproved", label: `Unapproved DO${unapprovedData.length ? ` (${unapprovedData.length})` : ""}` },
+          ].map((t) => (
             <button
-              key={val}
-              onClick={() => setStatusFilter(val)}
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
               style={{
-                padding: "4px 12px", borderRadius: 50, fontSize: 11,
-                fontWeight: 500, cursor: "pointer",
-                border: `1px solid ${statusFilter === val ? border : "#e2e8f0"}`,
-                background: statusFilter === val ? bg : "transparent",
-                color: statusFilter === val ? color : "#64748b",
-                transition: "all 0.15s",
+                padding: "8px 16px", fontSize: 12, fontWeight: 600,
+                border: "none",
+                borderBottom: activeTab === t.key ? "2px solid #dc2626" : "2px solid transparent",
+                background: "transparent",
+                color: activeTab === t.key ? "#dc2626" : "#64748b",
+                cursor: "pointer",
               }}
             >
-              {label} ({count})
+              {t.label}
             </button>
           ))}
+        </div>
 
-          <div style={{ flex: 1, position: "relative", minWidth: 220 }}>
-            <svg style={{
-              position: "absolute", left: 9, top: "50%",
-              transform: "translateY(-50%)", width: 14, height: 14,
-              pointerEvents: "none",
-            }} fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              ref={searchRef}
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tender, party, grade, mill, truck…"
-              onKeyDown={(e) => {
-                // let arrow keys and Enter pass through to the table nav handler
-                // but stop the outer div from stealing focus-related events
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Enter") {
-                  e.stopPropagation();
-                  // Enter from search: move focus back to container so arrow/Enter work
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    containerRef.current?.focus();
+        {/* ── Toolbar ── */}
+        {activeTab === "pending" && (<>
+          <div style={{
+            display: "flex", flexWrap: "wrap", alignItems: "center",
+            gap: 8, padding: "10px 18px", background: "#f8fafc",
+            borderBottom: "1px solid #e2e8f0", flexShrink: 0,
+          }}>
+            <div style={{ flex: 1, position: "relative", minWidth: 220 }}>
+              <svg style={{
+                position: "absolute", left: 9, top: "50%",
+                transform: "translateY(-50%)", width: 14, height: 14,
+                pointerEvents: "none",
+              }} fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                ref={searchRef}
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search tender, party, grade, mill, truck…"
+                onKeyDown={(e) => {
+                  // let arrow keys and Enter pass through to the table nav handler
+                  // but stop the outer div from stealing focus-related events
+                  if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Enter") {
+                    e.stopPropagation();
+                    // Enter from search: move focus back to container so arrow/Enter work
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      containerRef.current?.focus();
+                    }
                   }
-                }
-              }}
-              style={{
-                width: "100%", padding: "6px 30px 6px 30px", fontSize: 12,
-                border: "1px solid #e2e8f0", borderRadius: 8,
-                background: "white", color: "#1e293b", outline: "none",
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => { setSearch(""); containerRef.current?.focus(); }}
-                style={{
-                  position: "absolute", right: 8, top: "50%",
-                  transform: "translateY(-50%)", background: "none",
-                  border: "none", cursor: "pointer",
                 }}
-              >
-                <svg style={{ width: 14, height: 14 }} fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+                style={{
+                  width: "100%", padding: "6px 30px 6px 30px", fontSize: 12,
+                  border: "1px solid #e2e8f0", borderRadius: 8,
+                  background: "white", color: "#1e293b", outline: "none",
+                }}
+              />
+              {search && (
+                <button
+                  onClick={() => { setSearch(""); containerRef.current?.focus(); }}
+                  style={{
+                    position: "absolute", right: 8, top: "50%",
+                    transform: "translateY(-50%)", background: "none",
+                    border: "none", cursor: "pointer",
+                  }}
+                >
+                  <svg style={{ width: 14, height: 14 }} fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            <span style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>
+              {filtered.length} / {data.length} rows
+            </span>
+
+            {/* keyboard hint */}
+            <span style={{
+              fontSize: 10, color: "#94a3b8", whiteSpace: "nowrap",
+              background: "#f1f5f9", borderRadius: 6, padding: "3px 8px",
+            }}>
+              ↑↓ navigate &nbsp;·&nbsp; Enter select &nbsp;·&nbsp; Esc close
+            </span>
           </div>
 
-          <span style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>
-            {filtered.length} / {data.length} rows
-          </span>
-
-          {/* keyboard hint */}
-          <span style={{
-            fontSize: 10, color: "#94a3b8", whiteSpace: "nowrap",
-            background: "#f1f5f9", borderRadius: 6, padding: "3px 8px",
-          }}>
-            ↑↓ navigate &nbsp;·&nbsp; Enter select &nbsp;·&nbsp; Esc close
-          </span>
-        </div>
-
-        {/* ── Table ── */}
-        <div style={{ flex: 1, overflowY: "auto" }}>
-          {loading ? (
-            <div style={{
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              padding: "60px 0", gap: 12,
-            }}>
+          {/* ── Table ── */}
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {loading ? (
               <div style={{
-                width: 36, height: 36, borderRadius: "50%",
-                border: "3px solid #dbeafe", borderTopColor: "#2563eb",
-                animation: "spin 0.8s linear infinite",
-              }} />
-              <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-              <span style={{ fontSize: 13, color: "#64748b" }}>Loading delivery orders…</span>
-            </div>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 1100 }}>
-              <thead>
-                <tr>
-                  {COLS.map((col) => (
-                    <th
-                      key={col.key}
-                      onClick={() => toggleSort(col.key)}
-                      style={{
-                        position: "sticky", top: 0, zIndex: 5,
-                        padding: "9px 10px", fontWeight: 600, fontSize: 11,
-                        color: sortCol === col.key ? "#1d4ed8" : "#475569",
-                        background: "#f1f5f9",
-                        borderBottom: "1px solid #e2e8f0",
-                        whiteSpace: "nowrap", cursor: "pointer",
-                        userSelect: "none",
-                        textAlign: col.align,
-                      }}
-                    >
-                      {col.label}
-                      <span style={{ marginLeft: 4, fontSize: 10, opacity: sortCol === col.key ? 1 : 0.3 }}>
-                        {sortCol === col.key ? (sortAsc ? "↑" : "↓") : "↕"}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                padding: "60px 0", gap: 12,
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: "50%",
+                  border: "3px solid #dbeafe", borderTopColor: "#2563eb",
+                  animation: "spin 0.8s linear infinite",
+                }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+                <span style={{ fontSize: 13, color: "#64748b" }}>Loading delivery orders…</span>
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 1100 }}>
+                <thead>
                   <tr>
-                    <td colSpan={COLS.length} style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
-                      <svg style={{ width: 40, height: 40, margin: "0 auto 10px", display: "block" }}
-                        fill="none" stroke="#cbd5e1" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <div style={{ fontSize: 13 }}>No records found</div>
-                      {search && <div style={{ fontSize: 11, marginTop: 4 }}>Try clearing the search filter</div>}
-                    </td>
+                    {COLS.map((col) => (
+                      <th
+                        key={col.key}
+                        onClick={() => toggleSort(col.key)}
+                        style={{
+                          position: "sticky", top: 0, zIndex: 5,
+                          padding: "9px 10px", fontWeight: 600, fontSize: 11,
+                          color: sortCol === col.key ? "#1d4ed8" : "#475569",
+                          background: "#f1f5f9",
+                          borderBottom: "1px solid #e2e8f0",
+                          whiteSpace: "nowrap", cursor: "pointer",
+                          userSelect: "none",
+                          textAlign: col.align,
+                        }}
+                      >
+                        {col.label}
+                        <span style={{ marginLeft: 4, fontSize: 10, opacity: sortCol === col.key ? 1 : 0.3 }}>
+                          {sortCol === col.key ? (sortAsc ? "↑" : "↓") : "↕"}
+                        </span>
+                      </th>
+                    ))}
                   </tr>
-                ) : filtered.map((row, idx) => {
-                  const isSelected = idx === selectedIdx;
-                  return (
-                    <tr
-                      key={`${row.tenderdetailid ?? ""}-${idx}`}
-                      ref={(el) => { rowRefs.current[idx] = el; }}
-                      onClick={() => setSelectedIdx(idx)}
-                      onDoubleClick={() => confirmSelect(row)}
-                      onMouseEnter={(e) => {
-                        if (!isSelected) e.currentTarget.style.background = "#f8fafc";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isSelected) e.currentTarget.style.background = idx % 2 === 0 ? "white" : "#fafafa";
-                      }}
-                      style={{
-                        borderBottom: "1px solid #f1f5f9",
-                        background: isSelected ? "#eff6ff" : idx % 2 === 0 ? "white" : "#fafafa",
-                        cursor: "pointer", transition: "background 0.1s",
-                        outline: isSelected ? "2px solid #3b82f6" : "none",
-                        outlineOffset: -2,
-                      }}
-                    >
-                      {COLS.map((col) => (
-                        <td
-                          key={col.key}
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan={COLS.length} style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
+                        <svg style={{ width: 40, height: 40, margin: "0 auto 10px", display: "block" }}
+                          fill="none" stroke="#cbd5e1" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <div style={{ fontSize: 13 }}>No records found</div>
+                        {search && <div style={{ fontSize: 11, marginTop: 4 }}>Try clearing the search filter</div>}
+                      </td>
+                    </tr>
+                  ) : filtered.map((row, idx) => {
+                    const isSelected = idx === selectedIdx;
+                    return (
+                      <tr
+                        key={`${row.tenderdetailid ?? ""}-${idx}`}
+                        ref={(el) => { rowRefs.current[idx] = el; }}
+                        onClick={() => setSelectedIdx(idx)}
+                        onDoubleClick={() => confirmSelect(row)}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.background = "#f8fafc";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) e.currentTarget.style.background = idx % 2 === 0 ? "white" : "#fafafa";
+                        }}
+                        style={{
+                          borderBottom: "1px solid #f1f5f9",
+                          background: isSelected ? "#eff6ff" : idx % 2 === 0 ? "white" : "#fafafa",
+                          cursor: "pointer", transition: "background 0.1s",
+                          outline: isSelected ? "2px solid #3b82f6" : "none",
+                          outlineOffset: -2,
+                        }}
+                      >
+                        {COLS.map((col) => (
+                          <td
+                            key={col.key}
+                            style={{
+                              padding: "8px 10px",
+                              whiteSpace: "nowrap",
+                              textAlign: col.align,
+                            }}
+                          >
+                            {cellContent(col, row)}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>)}
+
+        {/* ── Unapproved DO toolbar + table ── */}
+        {activeTab === "unapproved" && (
+          <>
+            <div style={{
+              display: "flex", flexWrap: "wrap", alignItems: "center",
+              gap: 8, padding: "10px 18px", background: "#f8fafc",
+              borderBottom: "1px solid #e2e8f0", flexShrink: 0,
+            }}>
+              <div style={{ flex: 1, position: "relative", minWidth: 220 }}>
+                <svg style={{
+                  position: "absolute", left: 9, top: "50%",
+                  transform: "translateY(-50%)", width: 14, height: 14,
+                  pointerEvents: "none",
+                }} fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={unapprovedSearch}
+                  onChange={(e) => setUnapprovedSearch(e.target.value)}
+                  placeholder="Search doc no, truck no, mill, party…"
+                  style={{
+                    width: "100%", padding: "6px 30px 6px 30px", fontSize: 12,
+                    border: "1px solid #e2e8f0", borderRadius: 8,
+                    background: "white", color: "#1e293b", outline: "none",
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>
+                {filteredUnapproved.length} / {unapprovedData.length} rows
+              </span>
+            </div>
+
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {unapprovedLoading ? (
+                <div style={{
+                  display: "flex", flexDirection: "column",
+                  alignItems: "center", justifyContent: "center",
+                  padding: "60px 0", gap: 12,
+                }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: "50%",
+                    border: "3px solid #fecaca", borderTopColor: "#dc2626",
+                    animation: "spin 0.8s linear infinite",
+                  }} />
+                  <span style={{ fontSize: 13, color: "#64748b" }}>Loading unapproved delivery orders…</span>
+                </div>
+              ) : (
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 1300 }}>
+                  <thead>
+                    <tr>
+                      {[
+                        { label: "Tender No", align: "left" },
+                        { label: "DO No", align: "left" },
+                        { label: "Date", align: "left" },
+                        { label: "Vehicle No", align: "left" },
+                        { label: "Qty", align: "right" },
+                        { label: "Grade", align: "left" },
+                        { label: "Mill Rate", align: "right" },
+                        { label: "Sale Rate", align: "right" },
+                        { label: "Mill Name", align: "left" },
+                        { label: "Party Name", align: "left" },
+                        { label: "Unapproved", align: "left" },
+                        { label: "DO Narration", align: "left" },
+                        { label: "DO Approved", align: "center" },
+                      ].map((col) => (
+                        <th
+                          key={col.label}
                           style={{
-                            padding: "8px 10px",
-                            whiteSpace: "nowrap",
-                            textAlign: col.align,
+                            position: "sticky", top: 0, zIndex: 5,
+                            padding: "9px 10px", fontWeight: 600, fontSize: 11,
+                            color: "#475569", background: "#f1f5f9",
+                            borderBottom: "1px solid #e2e8f0",
+                            whiteSpace: "nowrap", textAlign: col.align,
                           }}
                         >
-                          {cellContent(col, row)}
-                        </td>
+                          {col.label}
+                        </th>
                       ))}
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
+                  </thead>
+                  <tbody>
+                    {filteredUnapproved.length === 0 ? (
+                      <tr>
+                        <td colSpan={13} style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
+                          <div style={{ fontSize: 13 }}>No unapproved delivery orders</div>
+                        </td>
+                      </tr>
+                    ) : filteredUnapproved.map((row, idx) => {
+                      const narrationEntries = Array.isArray(row.Unapproved_Donarration)
+                        ? row.Unapproved_Donarration
+                        : [];
+                      const lastNarration = narrationEntries.length
+                        ? narrationEntries[narrationEntries.length - 1]
+                        : null;
+                      const fullNarration = narrationEntries.map((n) => n.text).join("\n");
+                      return (
+                        <tr
+                          key={`${row.doc_no}-${idx}`}
+                          style={{
+                            borderBottom: "1px solid #f1f5f9",
+                            background: idx % 2 === 0 ? "white" : "#fafafa",
+                          }}
+                        >
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap", textAlign: "left" }}>{row.purc_no || "-"}</td>
+                          <td style={{ padding: "8px 10px", fontWeight: 600, textAlign: "left", color: "#1d4ed8" }}>
+                            #{row.doc_no}
+                          </td>
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap", textAlign: "left" }}>{FMT_DATE(row.doc_date)}</td>
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap", textAlign: "left", color: "#1e40af", fontWeight: 500 }}>
+                            {row.truck_no || "-"}
+                          </td>
+                          <td style={{ padding: "8px 10px", textAlign: "right" }}>{FMT_NUM(row.quantal, 3)}</td>
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap" }}>{row.grade || "-"}</td>
+                          <td style={{ padding: "8px 10px", textAlign: "right" }}>{FMT_NUM(row.mill_rate)}</td>
+                          <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 500, color: "#15803d" }}>
+                            {FMT_NUM(row.sale_rate)}
+                          </td>
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap", textAlign: "left" }}>
+                            {row.millName || "-"}
+                          </td>
+                          <td style={{ padding: "8px 10px", whiteSpace: "nowrap", textAlign: "left" }}>
+                            {row.saleBillName || "-"}
+                          </td>
+                          <td style={{ padding: "8px 10px" }}>
+                            <span style={{
+                              display: "inline-flex", alignItems: "center", gap: 4,
+                              padding: "2px 8px", borderRadius: 50, fontSize: 10,
+                              fontWeight: 600, background: "#fef2f2", color: "#991b1b",
+                            }}>
+                              {row.Unapproved_DO || "Y"}
+                            </span>
+                          </td>
+                          <td
+                            title={fullNarration}
+                            style={{
+                              padding: "8px 10px", maxWidth: 260, overflow: "hidden",
+                              textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#475569",
+                              textAlign: "left",
+                            }}
+                          >
+                            {lastNarration?.text || "-"}
+                          </td>
+                          <td style={{ padding: "8px 10px", textAlign: "center" }}>
+                            <input
+                              type="checkbox"
+                              checked={false}
+                              disabled={approvingDocNo === row.doc_no}
+                              onChange={() => handleApproveClick(row)}
+                              style={{ width: 16, height: 16, cursor: "pointer" }}
+                              title="Check to mark this DO as approved (sets Unapproved_DO = N)"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
 
         {/* ── Footer ── */}
         <div style={{
@@ -549,19 +780,29 @@ function PendingDOSelectModal({ open, onClose, data = [], onSelect, loading }) {
           borderRadius: "0 0 16px 16px", flexShrink: 0,
         }}>
           <span style={{ fontSize: 11, color: "#94a3b8" }}>
-            <strong style={{ color: "#1d4ed8" }}>{filtered.length}</strong>{" "}
-            record{filtered.length !== 1 ? "s" : ""} shown
-            {selectedRow
-              ? <span style={{ marginLeft: 8, color: "#1d4ed8", fontWeight: 600 }}>
-                  · Selected: #{selectedRow.Tender_No} — {selectedRow.Party} &nbsp;|&nbsp;
-                  Balance: {FMT_NUM(selectedRow.BALANCE, 3)} Qntl &nbsp;|&nbsp;
-                  {FMT_DATE(selectedRow.Lifting_Date)}
-                  <span style={{ marginLeft: 6, fontWeight: 400, color: "#60a5fa" }}>
-                    — Press Enter or double-click to fill form
+            {activeTab === "pending" ? (
+              <>
+                <strong style={{ color: "#1d4ed8" }}>{filtered.length}</strong>{" "}
+                record{filtered.length !== 1 ? "s" : ""} shown
+                {selectedRow
+                  ? <span style={{ marginLeft: 8, color: "#1d4ed8", fontWeight: 600 }}>
+                    · Selected: #{selectedRow.Tender_No} — {selectedRow.Party} &nbsp;|&nbsp;
+                    Balance: {FMT_NUM(selectedRow.BALANCE, 3)} Qntl &nbsp;|&nbsp;
+                    {FMT_DATE(selectedRow.Lifting_Date)}
+                    <span style={{ marginLeft: 6, fontWeight: 400, color: "#60a5fa" }}>
+                      — Press Enter or double-click to fill form
+                    </span>
                   </span>
-                </span>
-              : <span style={{ marginLeft: 8 }}>· Click a row or use ↑↓ to select, Enter to fill</span>
-            }
+                  : <span style={{ marginLeft: 8 }}>· Click a row or use ↑↓ to select, Enter to fill</span>
+                }
+              </>
+            ) : (
+              <>
+                <strong style={{ color: "#dc2626" }}>{filteredUnapproved.length}</strong>{" "}
+                unapproved record{filteredUnapproved.length !== 1 ? "s" : ""} shown
+                <span style={{ marginLeft: 8 }}>· Check a row to mark it approved</span>
+              </>
+            )}
           </span>
           <button
             onClick={onClose}

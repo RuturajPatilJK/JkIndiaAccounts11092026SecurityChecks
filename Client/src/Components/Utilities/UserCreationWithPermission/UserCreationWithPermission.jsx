@@ -84,8 +84,13 @@ const UserCreationWithPermission = () => {
     axios
       .get(`${API_URL}/getProgramNames`)
       .then((response) => {
-        const programNames = [...new Set(response.data.programNames)];
-        const menuNames = [...new Set(response.data.menuNames)];
+        // programNames/menuNames come from the backend already paired 1:1 by
+        // index (menuNames[i] is derived directly from programNames[i]) — do
+        // NOT dedupe them independently with separate Set()s: two different
+        // paths can format to the same display name, which shortens menuNames
+        // relative to programNames and shifts every later row's name by index.
+        const programNames = response.data.programNames || [];
+        const menuNames = response.data.menuNames || [];
 
         const maxLength = Math.max(programNames.length, menuNames.length);
         const permissionsList = Array.from(
@@ -336,12 +341,13 @@ const UserCreationWithPermission = () => {
           ...data.lastUserData,
         }));
 
-        const distinctProgramNames = [...new Set(programNames)];
+        // Same as fetchProgramNames: programNames/menuNames are already paired
+        // 1:1 by index — don't dedupe each independently, it breaks the pairing.
+        const distinctProgramNames = programNames;
         const permissions = data.lastUserPermissionData || [];
 
-        const distinctMenuNames = [...new Set(menuNames)];
-        const defaultMenuNames = distinctMenuNames.length
-          ? distinctMenuNames
+        const defaultMenuNames = menuNames.length
+          ? menuNames
           : distinctProgramNames.map(() => "No Menu");
 
         const combinedPermissions = distinctProgramNames.map(
@@ -408,8 +414,9 @@ const UserCreationWithPermission = () => {
 
     try {
       const programMenuResponse = await axios.get(`${API_URL}/getProgramNames`);
-      const programNames = [...new Set(programMenuResponse.data.programNames)];
-      const menuNames = [...new Set(programMenuResponse.data.menuNames)];
+      // Same as fetchProgramNames: already paired 1:1 by index, don't dedupe separately.
+      const programNames = programMenuResponse.data.programNames || [];
+      const menuNames = programMenuResponse.data.menuNames || [];
       const defaultMenuNames = menuNames.length
         ? menuNames
         : programNames.map(() => "No Menu");

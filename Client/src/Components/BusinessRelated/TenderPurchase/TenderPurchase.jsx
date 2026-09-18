@@ -4312,8 +4312,8 @@ const TenderPurchase = () => {
                                   style: { fontSize: "12px", height: "35px" },
                                 }}
                               >
-                                <MenuItem value="F">Flexible</MenuItem>
-                                <MenuItem value="X">Fix</MenuItem>
+                                <MenuItem value="F">Partial Lot</MenuItem>
+                                <MenuItem value="X">Only Full Lot</MenuItem>
                               </TextField>
                             </Grid>
 

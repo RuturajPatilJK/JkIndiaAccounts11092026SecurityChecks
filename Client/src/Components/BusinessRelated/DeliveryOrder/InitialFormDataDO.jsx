@@ -204,6 +204,8 @@ export const initialFormData = {
     gradeCode:'',
   gradeid:0,
   ebuy_narration: "",
+  Unapproved_DO: "N",
+  Unapproved_Donarration: "",
 };
 
 export const checkMatchStatus = async (ac_code, company_code, year_code) => {

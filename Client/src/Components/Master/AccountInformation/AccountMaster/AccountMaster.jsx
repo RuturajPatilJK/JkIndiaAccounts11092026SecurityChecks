@@ -163,6 +163,8 @@ const AccountMaster = () => {
   const socketURL = process.env.REACT_APP_API_URL;
   const username = sessionStorage.getItem("username");
   const User_Id = sessionStorage.getItem("User_ID");
+  // Only an admin (User_Type "A") may create, edit, or delete a Staff account (Ac_type "Z").
+  const isAdminUser = sessionStorage.getItem("User_Type") === "A";
 
   const [updateButtonClicked, setUpdateButtonClicked] = useState(false);
   const [saveButtonClicked, setSaveButtonClicked] = useState(false);
@@ -1280,6 +1282,16 @@ const AccountMaster = () => {
   };
 
   const handleEdit = () => {
+    if (formData.Ac_type === "Z" && !isAdminUser) {
+      Swal.fire({
+        title: "Permission Denied",
+        text: "eBuySugar Management accounts can only be edited by an administrator. Please contact your admin for changes.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
     setIsEditMode(true);
     setAddOneButtonEnabled(false);
     setSaveButtonEnabled(true);
@@ -1351,6 +1363,16 @@ const AccountMaster = () => {
   };
 
   const handleDelete = async () => {
+    if (formData.Ac_type === "Z" && !isAdminUser) {
+      Swal.fire({
+        title: "Permission Denied",
+        text: "eBuySugar Management accounts can only be deleted by an administrator. Please contact your admin for changes.",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
     try {
       const usageCheckUrl = `${API_URL}/check-AcCode-usage?Ac_Code=${formData.Ac_Code}&Company_Code=${companyCode}&accoid=${newAccoid}`;
       const usageCheckResponse = await axios.get(usageCheckUrl);
@@ -1837,7 +1859,7 @@ const AccountMaster = () => {
                     <MenuItem value="CR">Cash Retail Party</MenuItem>
                     <MenuItem value="CP">Capital</MenuItem>
                     <MenuItem value="SP">Farmer</MenuItem>
-                    <MenuItem value="Z">Staff</MenuItem>
+                    {isAdminUser && <MenuItem value="Z">eBuySugar Management</MenuItem>}
                   </Select>
                 </FormControl>
 
@@ -1912,7 +1934,7 @@ const AccountMaster = () => {
                   size="small"
                   autoComplete="off"
                   disabled
-                  sx={{ width: "15%" }}
+                  sx={{ width: "12%" }}
                   InputLabelProps={{ shrink: true }}
                 />
 
@@ -2033,63 +2055,84 @@ const AccountMaster = () => {
                   </Select>
                 </FormControl>
 
-                <label htmlFor="Our_Party" style={{ marginTop: "5px" }}>Our Party :</label>
-                <Checkbox
-                  sx={{
-                    color: "primary.main",
-                    "&.Mui-checked": {
-                      color: "secondary.main",
-                    },
+              <Box
+                sx={{
+                  display: "inline-block",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "6px",
+                  padding: "6px 14px 8px",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    color: "#1565c0",
+                    letterSpacing: "0.3px",
+                    marginBottom: "2px",
+                    textAlign: "center",
                   }}
-                  id="Our_Party"
-                  name="Our_Party"
-                  checked={formData.Our_Party === "Y"}
-                  onChange={(e) => handleCheckbox(e, "string")}
-                  disabled={
-                    !isFieldEnabled("Our_Party") ||
-                    (!isEditing && addOneButtonEnabled)
-                  }
-                />
+                >
+                  eBuySugar Use Only
+                </div>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <label htmlFor="Our_Party" style={{ marginTop: "5px" }}>Our Party :</label>
+                  <Checkbox
+                    sx={{
+                      color: "primary.main",
+                      "&.Mui-checked": {
+                        color: "secondary.main",
+                      },
+                    }}
+                    id="Our_Party"
+                    name="Our_Party"
+                    checked={formData.Our_Party === "Y"}
+                    onChange={(e) => handleCheckbox(e, "string")}
+                    disabled={
+                      !isFieldEnabled("Our_Party") ||
+                      (!isEditing && addOneButtonEnabled)
+                    }
+                  />
 
-                <label htmlFor="Show_Ledger" style={{ marginTop: "5px" }}>Show Ledger :</label>
-                <Checkbox
-                  sx={{
-                    color: "primary.main",
-                    "&.Mui-checked": {
-                      color: "secondary.main",
-                    },
-                  }}
-                  id="Show_Ledger"
-                  name="Show_Ledger"
-                  checked={formData.Show_Ledger === "Y"}
-                  onChange={(e) => handleCheckbox(e, "string")}
-                  disabled={
-                    !isFieldEnabled("Show_Ledger") ||
-                    (!isEditing && addOneButtonEnabled)
-                  }
-                />
+                  <label htmlFor="Show_Ledger" style={{ marginTop: "5px" }}>Show Ledger :</label>
+                  <Checkbox
+                    sx={{
+                      color: "primary.main",
+                      "&.Mui-checked": {
+                        color: "secondary.main",
+                      },
+                    }}
+                    id="Show_Ledger"
+                    name="Show_Ledger"
+                    checked={formData.Show_Ledger === "Y"}
+                    onChange={(e) => handleCheckbox(e, "string")}
+                    disabled={
+                      !isFieldEnabled("Show_Ledger") ||
+                      (!isEditing && addOneButtonEnabled)
+                    }
+                  />
 
-                <label htmlFor="Customer_Select_Party" style={{ marginTop: "5px" }}>Customer Select Party :</label>
-                <Checkbox
-                  sx={{
-                    color: "primary.main",
-                    "&.Mui-checked": {
-                      color: "secondary.main",
-                    },
-                  }}
-                  id="Customer_Select_Party"
-                  name="Customer_Select_Party"
-                  checked={formData.Customer_Select_Party === "Y"}
-                  onChange={(e) => handleCheckbox(e, "string")}
-                  disabled={
-                    !isFieldEnabled("Customer_Select_Party") ||
-                    (!isEditing && addOneButtonEnabled)
-                  }
-                />
-
+                  <label htmlFor="Customer_Select_Party" style={{ marginTop: "5px" }}>Customer Select Party :</label>
+                  <Checkbox
+                    sx={{
+                      color: "primary.main",
+                      "&.Mui-checked": {
+                        color: "secondary.main",
+                      },
+                    }}
+                    id="Customer_Select_Party"
+                    name="Customer_Select_Party"
+                    checked={formData.Customer_Select_Party === "Y"}
+                    onChange={(e) => handleCheckbox(e, "string")}
+                    disabled={
+                      !isFieldEnabled("Customer_Select_Party") ||
+                      (!isEditing && addOneButtonEnabled)
+                    }
+                  />
+                </Box>
               </Box>
 
-
+              </Box>
 
 
 

@@ -210,6 +210,8 @@ class DeliveryOrderHead(db.Model):
     gradeid = db.Column(db.Integer, nullable=True)
     pendingDoid = db.Column(db.Integer, nullable=True)
     ebuy_narration = db.Column(db.String(500), nullable=True)
+    Unapproved_DO = db.Column(db.String(1), nullable=True)
+    Unapproved_Donarration = db.Column(db.Text, nullable=True)
 
 
     details = db.relationship('DeliveryOrderDetail', backref='Doid', lazy=True)

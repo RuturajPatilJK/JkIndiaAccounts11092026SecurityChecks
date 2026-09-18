@@ -10,7 +10,7 @@ class TblUser(db.Model):
     User_Id = db.Column(db.Integer, nullable=False)
     User_Name = db.Column(db.String(50), nullable=True)
     User_Type = db.Column(db.String(1), nullable=True)
-    Password = db.Column(db.String(50), nullable=True)
+    Password = db.Column(db.String(255), nullable=True)
     EmailId = db.Column(db.String(50), nullable=True)
     EmailPassword = db.Column(db.String(500), nullable=True)
     smtpServerPort = db.Column(db.String(50), nullable=True)
@@ -28,7 +28,7 @@ class TblUser(db.Model):
     User_Security = db.Column(db.String(1), nullable=True)
     Bank_Security = db.Column(db.String(1), nullable=True)
     PaymentsPassword = db.Column(db.String(500), nullable=True)
-    User_Password = db.Column(db.String(50), nullable=True)
+    User_Password = db.Column(db.String(255), nullable=True)
     
     details = relationship('TblUserDetail', backref='user', lazy=True)
 

@@ -21,6 +21,8 @@ import PartyBillDoReport from './PartyBillDO'
 import SaleBillReport from '../../Outward/SaleBill/CustomizeSBReport'
 import PartyDOReport from "./PartyDOReport";
 import PendingDOSelectModal from "./PendingDOSelectModal";
+import UnapprovedDOModal from "./UnapprovedDOModal";
+import DONarrationHistoryModal from "./DONarrationHistoryModal";
 import { initialFormData, checkMatchStatus, Acname } from './InitialFormDataDO'
 import io from "socket.io-client";
 import {
@@ -53,13 +55,14 @@ import DoUtrNoHelp from "../../../Helper/DoUTRNoHelp";
 import CarporateSaleBillPrint from "../../Outward/SaleBill/CarporateSaleBillPrint"
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import eBuySugarLogo from "../../../Assets/eBuySugarlogo.jpg";
 
 import SaveUpdateSpinner from "../../../Common/Spinners/SaveUpdateSpinner";
 
 
 const API_URL = process.env.REACT_APP_API;
-const WEBSOCKET_URL = process.env.REACT_APP_API_URL;
+const WEBSOCKET_URL = process.env.REACT_APP_API_WEBSOCKET;
 
 // Common style for all table headers
 const headerCellStyle = {
@@ -266,6 +269,13 @@ const DeliveryOrder = () => {
   const [pendingDOCount, setPendingDOCount] = useState(0);
   const pendingDOModalOpenRef = useRef(false);
 
+  const [showUnapprovedDOModal, setShowUnapprovedDOModal] = useState(false);
+  const [unapprovedDOSubmitting, setUnapprovedDOSubmitting] = useState(false);
+  const [showNarrationHistoryModal, setShowNarrationHistoryModal] = useState(false);
+
+  const [unapprovedDOListData, setUnapprovedDOListData] = useState([]);
+  const [unapprovedDOListLoading, setUnapprovedDOListLoading] = useState(false);
+
 
   const [carporatebilltocode, setcarporatebilltocode] = useState("");
   const [carporatebilltocodeacid, setcarporatebilltocodeacid] = useState("");
@@ -303,6 +313,13 @@ const DeliveryOrder = () => {
   const inputRef = useRef(null);
   const quantalRef = useRef(null);
   const shipToRef = useRef(null);
+  // Always-current mirror of formData, for handlers (like the native
+  // refresh_delivery_orders WebSocket listener below) that are registered once
+  // with [] deps and would otherwise only ever see the formData from mount time.
+  const formDataRef = useRef(formData);
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
 
   const addButtonRef = useRef(null);
   const firstInputRef = useRef(null);
@@ -407,7 +424,6 @@ const DeliveryOrder = () => {
       matchStatus,
       Gst_Rate
     );
-
     setFormData(() => ({
       ...updatedFormData,
       [name]: finalValue,
@@ -782,6 +798,17 @@ const DeliveryOrder = () => {
   const handleSBGenerate = async (e) => {
     e.preventDefault();
 
+    // Block if this DO is unapproved and waiting for customer changes
+    if (formData.Unapproved_DO === "Y") {
+      Swal.fire({
+        title: 'Delivery Order Unapproved',
+        text: 'This DO is unapproved and waiting for customer changes. Please resolve it before generating the Sale Bill.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
     // Block if Purchase Eway Bill has not been generated yet
     if (!formData.MillEwayBill || String(formData.MillEwayBill).trim() === '') {
       Swal.fire({
@@ -1139,8 +1166,33 @@ const DeliveryOrder = () => {
     }
   };
 
+  // Refetch + recalculate whatever DO record is currently open, so its Qty and
+  // dependent amount fields stay correct after any external change (another
+  // user, a linked tender, an ebuySugar customer editing Qty/Vehicle No on an
+  // unapproved DO, etc.) — regardless of which real-time channel signalled it.
+  const refreshOpenDORecord = async () => {
+    const current = formDataRef.current;
+    if (!current?.doid || !current?.doc_no) return;
+    try {
+      const response = await axios.get(
+        `${API_URL}/DOByid?company_code=${companyCode}&doc_no=${current.doc_no}&Year_Code=${Year_Code}`
+      );
+      if (response.status === 200) {
+        CommonFeilds(response.data);
+        const headData = response.data?.last_head_data;
+        if (headData) {
+          const recalculated = await calculateDependentValues('quantal', headData.quantal, headData);
+          setFormData((prev) => ({ ...prev, ...recalculated }));
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing open DO record:", error);
+    }
+  };
+
   useEffect(() => {
     refreshPendingDOData();
+    fetchUnapprovedDOList();
 
     let ws;
     let wsReconnectTimer;
@@ -1149,6 +1201,8 @@ const DeliveryOrder = () => {
       ws.onmessage = (event) => {
         if (String(event.data).includes("refresh_delivery_orders")) {
           refreshPendingDOData();
+          fetchUnapprovedDOList();
+          refreshOpenDORecord();
         }
       };
       ws.onclose = () => {
@@ -1167,7 +1221,11 @@ const DeliveryOrder = () => {
   // Separate effect (own connection) so it can depend on formData.doid/doc_no without
   // disturbing the pending-DO badge/native-WebSocket logic above.
   useEffect(() => {
-    const socket = io(WEBSOCKET_URL, {
+    // socket.io-client needs the Flask-SocketIO server's own URL (same one
+    // useLiveSocket.js/AccountMasterContext.jsx use) — NOT WEBSOCKET_URL, which
+    // points at the separate raw-WebSocket "refresh_delivery_orders" broadcaster
+    // used above; that server doesn't speak the socket.io/Engine.IO protocol.
+    const socket = io(process.env.REACT_APP_API_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -1176,27 +1234,26 @@ const DeliveryOrder = () => {
     socket.on("delivery_order_added", (data) => {
       console.log("Delivery Order Added:", data);
       refreshPendingDOData();
+      fetchUnapprovedDOList();
     });
 
     socket.on("delivery_order_updated", (data) => {
       console.log("Delivery Order Updated:", data);
       refreshPendingDOData();
+      fetchUnapprovedDOList();
+      // Whoever changed this DO (another user, a linked tender, an ebuySugar
+      // customer editing Qty/Vehicle No, etc.) may not have recomputed the
+      // dependent amount fields for the new Qty — refreshOpenDORecord refetches
+      // and recalculates them, the same way a manual Tab-press would.
       if (data?.doid && formData.doid && String(data.doid) === String(formData.doid)) {
-        axios.get(`${API_URL}/DOByid?company_code=${companyCode}&doc_no=${formData.doc_no}&Year_Code=${Year_Code}`)
-          .then((response) => {
-            if (response.status === 200) {
-              CommonFeilds(response.data);
-            }
-          })
-          .catch((error) => {
-            console.error("Error refreshing record after live update:", error);
-          });
+        refreshOpenDORecord();
       }
     });
 
     socket.on("delivery_order_deleted", (data) => {
       console.log("Delivery Order Deleted:", data);
       refreshPendingDOData();
+      fetchUnapprovedDOList();
       if (data?.doid && formData.doid && String(data.doid) === String(formData.doid)) {
         toast.warning("This delivery order was deleted by another user.");
       }
@@ -4187,10 +4244,46 @@ const DeliveryOrder = () => {
     navigate("/pending-do")
   }
 
+  const fetchUnapprovedDOList = async () => {
+    setUnapprovedDOListLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/getdata-UnapprovedDO`, {
+        params: { Company_Code: companyCode, Year_Code: Year_Code }
+      });
+      setUnapprovedDOListData(res.data.all_data || []);
+    } catch (err) {
+      console.error("Error fetching unapproved DOs:", err);
+      toast.error("Failed to load unapproved delivery orders");
+    } finally {
+      setUnapprovedDOListLoading(false);
+    }
+  };
+
+  const handleApproveDO = async (row) => {
+    try {
+      const response = await axios.put(`${API_URL}/ApproveDO`, {
+        doc_no: row.doc_no,
+        company_code: companyCode,
+        Year_Code: Year_Code,
+      });
+      if (response.status === 200) {
+        setUnapprovedDOListData((prev) => prev.filter((r) => r.doc_no !== row.doc_no));
+        if (formData.doc_no === row.doc_no) {
+          setFormData((prev) => ({ ...prev, Unapproved_DO: "N" }));
+        }
+        toast.success(`Delivery Order #${row.doc_no} approved.`);
+      }
+    } catch (err) {
+      console.error("Error approving Delivery Order:", err);
+      toast.error("Failed to approve Delivery Order.");
+    }
+  };
+
   const handleOpenPendingDOModal = async () => {
     pendingDOModalOpenRef.current = true;
     setShowPendingDOModal(true);
     setPendingDOLoading(true);
+    fetchUnapprovedDOList();
     try {
       const companyCode = sessionStorage.getItem("Company_Code");
       const res = await axios.get(`${API_URL}/getdata-Pending_DO`, {
@@ -4879,12 +4972,57 @@ const DeliveryOrder = () => {
   }
 
   const isSBGenerated = formData.SB_No !== "" && formData.SB_No !== 0;
+  // Full Unapproved DO narration/correction history — kept available regardless
+  // of current Unapproved_DO flag or whether the Sale Bill has since been
+  // generated, so the history stays viewable even after the DO is resolved.
+  let doNarrationEntries = [];
+  try {
+    const parsedNarration = formData.Unapproved_Donarration
+      ? JSON.parse(formData.Unapproved_Donarration)
+      : [];
+    doNarrationEntries = Array.isArray(parsedNarration) ? parsedNarration : [];
+  } catch {
+    doNarrationEntries = [];
+  }
   const isEwayGenerated = formData.EWay_Bill_No !== "";
   const isEInvoiceGenerated = formData.einvoiceno !== "";
   const isEditingOrNoSB = isEditing || !isSBGenerated;
 
   const isBothNotGenerated = isSBGenerated && !isEwayGenerated && !isEInvoiceGenerated;
 
+  const canMarkUnapprovedDO =
+    formData.pendingDoid !== null &&
+    formData.pendingDoid !== undefined &&
+    formData.pendingDoid !== "" &&
+    formData.pendingDoid !== 0 &&
+    !isSBGenerated;
+
+  const handleMarkUnapprovedDO = async (narrationText) => {
+    setUnapprovedDOSubmitting(true);
+    try {
+      const response = await axios.put(`${API_URL}/UnapprovedDO`, {
+        doc_no: formData.doc_no,
+        company_code: companyCode,
+        Year_Code: Year_Code,
+        narration: narrationText,
+        User_Id: User_Id,
+      });
+      if (response.status === 200) {
+        setFormData((prev) => ({
+          ...prev,
+          Unapproved_DO: response.data.Unapproved_DO,
+          Unapproved_Donarration: JSON.stringify(response.data.Unapproved_Donarration),
+        }));
+        setShowUnapprovedDOModal(false);
+        toast.success("Delivery Order marked as unapproved.");
+      }
+    } catch (error) {
+      console.error("Error marking Delivery Order unapproved:", error);
+      toast.error("Failed to mark Delivery Order as unapproved.");
+    } finally {
+      setUnapprovedDOSubmitting(false);
+    }
+  };
 
   const handleRecordUnlocked = async () => {
     try {
@@ -4942,10 +5080,10 @@ const DeliveryOrder = () => {
               {/* ── Unlock Record ── */}
               <button
                 onClick={() => handleRecordUnlocked()}
-                className="group inline-flex items-center gap-1.5 rounded-lg
+                title="Unlock Delivery Order"
+                className="group inline-flex items-center justify-center rounded-lg
                bg-gradient-to-br from-green-600 to-green-700
-               px-3 py-1.5 md:px-4 md:py-2
-               text-[10px] md:text-[13px] font-semibold tracking-wide text-white
+               w-8 h-8 md:w-9 md:h-9
                shadow-md shadow-green-600/30
                transition-all duration-200 ease-out
                hover:from-green-700 hover:to-green-800
@@ -4953,8 +5091,7 @@ const DeliveryOrder = () => {
                active:translate-y-0 active:shadow-sm
                focus:outline-none focus:ring-2 focus:ring-green-400/50"
               >
-                <LockOpenIcon className="text-sm md:text-base transition-transform duration-200 group-hover:rotate-12" />
-                {/* <span className="whitespace-nowrap">Unlock Record</span> */}
+                <LockOpenIcon className="text-sm transition-transform duration-200 group-hover:rotate-12" />
               </button>
 
               {/* ── ebuy Pending DO ── */}
@@ -4985,18 +5122,55 @@ const DeliveryOrder = () => {
                   <span className="whitespace-nowrap">ebuy Pending DO</span>
                 </button>
 
-                {pendingDOCount > 0 && (
-                  <span
-                    className="absolute -top-2 -right-2 flex h-[18px] min-w-[18px]
-                   items-center justify-center rounded-full border-2 border-white
-                   bg-red-500 px-1 text-[10px] font-bold leading-none text-white
-                   shadow-sm
-                   animate-[badgePulse_2s_ease-in-out_infinite]"
-                  >
-                    {pendingDOCount > 99 ? "99+" : pendingDOCount}
+                {(pendingDOCount > 0 || unapprovedDOListData.length > 0) && (
+                  <span className="absolute -top-2 -right-2 flex items-center gap-1">
+                    {pendingDOCount > 0 && (
+                      <span
+                        title="Pending DO count"
+                        className="flex h-[18px] min-w-[18px]
+                       items-center justify-center rounded-full border-2 border-white
+                       bg-red-500 px-1 text-[10px] font-bold leading-none text-white
+                       shadow-sm
+                       animate-[badgePulse_2s_ease-in-out_infinite]"
+                      >
+                        {pendingDOCount > 99 ? "99+" : pendingDOCount}
+                      </span>
+                    )}
+
+                    {unapprovedDOListData.length > 0 && (
+                      <span
+                        title="Unapproved DO count"
+                        className="flex h-[18px] min-w-[18px]
+                       items-center justify-center rounded-full border-2 border-white
+                       bg-blue-600 px-1 text-[10px] font-bold leading-none text-white
+                       shadow-sm
+                       animate-[badgePulse_2s_ease-in-out_infinite]"
+                      >
+                        {unapprovedDOListData.length > 99 ? "99+" : unapprovedDOListData.length}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
+
+              {/* ── Unapproved DO ── */}
+              {canMarkUnapprovedDO && (
+                <button
+                  onClick={() => setShowUnapprovedDOModal(true)}
+                  title="Mark Delivery Order as Unapproved"
+                  className="group inline-flex items-center justify-center rounded-lg
+                 bg-gradient-to-br from-red-500 to-red-600
+                 w-8 h-8 md:w-9 md:h-9
+                 shadow-md shadow-red-500/30
+                 transition-all duration-200 ease-out
+                 hover:from-red-600 hover:to-red-700
+                 hover:shadow-lg hover:shadow-red-500/40 hover:-translate-y-0.5
+                 active:translate-y-0 active:shadow-sm
+                 focus:outline-none focus:ring-2 focus:ring-red-400/50"
+                >
+                  <ReportProblemIcon className="text-sm transition-transform duration-200 group-hover:rotate-12" />
+                </button>
+              )}
 
               <style>{`
     @keyframes badgePulse {
@@ -5010,6 +5184,45 @@ const DeliveryOrder = () => {
           }
         />
       </div>
+
+      {formData.Unapproved_DO === "Y" && (
+        <div
+          className="mobile-hidden"
+          style={{
+            background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8,
+            padding: "8px 14px", margin: "6px 0", color: "#991b1b",
+            fontSize: 13, fontWeight: 600,
+          }}
+        >
+          This DO is unapproved and waiting for customer changes
+          {(() => {
+            try {
+              const entries = formData.Unapproved_Donarration
+                ? JSON.parse(formData.Unapproved_Donarration)
+                : [];
+              const last = Array.isArray(entries) && entries.length
+                ? entries[entries.length - 1]
+                : null;
+              return last?.text ? ` — ${last.text}` : "";
+            } catch {
+              return "";
+            }
+          })()}
+        </div>
+      )}
+
+      <DONarrationHistoryModal
+        open={showNarrationHistoryModal}
+        onClose={() => setShowNarrationHistoryModal(false)}
+        entries={doNarrationEntries}
+      />
+
+      <UnapprovedDOModal
+        open={showUnapprovedDOModal}
+        onClose={() => setShowUnapprovedDOModal(false)}
+        onConfirm={handleMarkUnapprovedDO}
+        submitting={unapprovedDOSubmitting}
+      />
 
       <div className="mobile-hidden">
         <NavigationButtons
@@ -6029,10 +6242,10 @@ const DeliveryOrder = () => {
               </div>
 
 
-              <div className="form-group mobile-hidden">
+              <div className="form-group mobile-hidden" style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
                 <div style={{ display: "flex", flexDirection: "column", width: "60%" }}>
                   <label htmlFor="ebuy_narration" className="DeliveryOrderLabel" style={{ marginBottom: "4px" }}>
-                    Shipping Details:
+                    Billing & Shipping Details:
                   </label>
                   <textarea
                     id="ebuy_narration"
@@ -6051,6 +6264,20 @@ const DeliveryOrder = () => {
                     }}
                   />
                 </div>
+
+                {doNarrationEntries.length > 0 && (
+                  <button
+                    onClick={() => setShowNarrationHistoryModal(true)}
+                    style={{
+                      flexShrink: 0, padding: "6px 14px", borderRadius: 7,
+                      border: "1px solid #fca5a5", background: "white",
+                      color: "#dc2626", fontSize: 12, fontWeight: 700,
+                      cursor: "pointer", whiteSpace: "nowrap",
+                    }}
+                  >
+                    View Unapproved DO History ({doNarrationEntries.length})
+                  </button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -8777,6 +9004,9 @@ const DeliveryOrder = () => {
         data={pendingDOList}
         onSelect={handleSelectPendingDORecord}
         loading={pendingDOLoading}
+        unapprovedData={unapprovedDOListData}
+        unapprovedLoading={unapprovedDOListLoading}
+        onApproveDO={handleApproveDO}
       />
     </>
   );

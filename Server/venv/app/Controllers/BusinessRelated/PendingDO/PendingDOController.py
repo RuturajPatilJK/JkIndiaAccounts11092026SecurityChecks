@@ -220,10 +220,14 @@ def getdata_Pending_DO():
                 ON dbo.nt_1_PendingDeliveryOrder.ShipTo_Ac_Code = shipTo.Ac_Code
             WHERE (dbo.qrytenderdobalanceview.BALANCE <> 0) AND Approved != 'Y' And isDeleted != '1' And isLocked != '1'
               AND (dbo.qrytenderdobalanceview.Company_Code = :company_code)
-            ORDER BY dbo.qrytenderdobalanceview.Tender_No DESC
+            ORDER BY dbo.nt_1_PendingDeliveryOrder.Created_Date DESC
         """)
         rows = db.session.execute(query, {'company_code': company_code}).fetchall()
-        return jsonify({"all_data": [dict(row._mapping) for row in rows]}), 200
+        all_data = [dict(row._mapping) for row in rows]
+        for row in all_data:
+            if row.get('Created_Date'):
+                row['Created_Date'] = row['Created_Date'].strftime('%Y-%m-%d %H:%M:%S')
+        return jsonify({"all_data": all_data}), 200
     except Exception as e:
         print(traceback.format_exc())
         return jsonify({"error": "Internal server error", "message": str(e)}), 500

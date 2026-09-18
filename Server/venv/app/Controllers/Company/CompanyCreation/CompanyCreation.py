@@ -2,6 +2,8 @@
 from base64 import b64encode
 from flask import jsonify, request
 import werkzeug
+import bcrypt
+import secrets
 from app import app, db
 from app.models.Company.CompanyCreation.CompanyCreationModels import CompanyCreation
 from app.models.Company.CompanyCreation.CompanyCreationSchemas import CompanyCreationSchema
@@ -486,13 +488,20 @@ def create_company():
         db.session.add(new_company)
         db.session.flush()
 
+        generated_admin_password = None
         existing_user = db.session.query(TblUser).filter_by(User_Name='Admin', Company_Code=new_company.Company_Code).first()
         if not existing_user:
+            # Random per-company password, not a fixed literal — a hardcoded
+            # default (even hashed) is the same known credential for every
+            # company, valid for anyone who's seen this source file. Returned
+            # once below so it can be handed to that company's admin directly;
+            # it is never stored or logged in plaintext.
+            generated_admin_password = secrets.token_urlsafe(9)
             default_user = TblUser(
                 User_Id=1,
                 User_Name='Admin',
                 User_Type='A',
-                User_Password='Admin@1234',
+                User_Password=bcrypt.hashpw(generated_admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
                 Company_Code=new_company.Company_Code,
                 Mobile='9999999999',
                 EmailId=email_id,
@@ -761,7 +770,13 @@ def create_company():
 
         db.session.commit()
 
-        return jsonify({"message": "Company created successfully", "Company_Code": new_company.Company_Code}), 201
+        response_body = {"message": "Company created successfully", "Company_Code": new_company.Company_Code}
+        if generated_admin_password:
+            # Only ever exposed here, once, in this response — not logged or
+            # stored anywhere in plaintext. Hand it to the company's admin now.
+            response_body["default_admin_username"] = "Admin"
+            response_body["default_admin_password"] = generated_admin_password
+        return jsonify(response_body), 201
 
     except werkzeug.exceptions.BadRequest as e:
         db.session.rollback()

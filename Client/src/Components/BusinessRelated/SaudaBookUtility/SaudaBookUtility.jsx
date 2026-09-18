@@ -744,8 +744,8 @@ const handleExMillSelectionChange = (e) => {
             </Grid>
             <Grid item xs={12} sm={8}>
               <TextField select size="small" fullWidth name="Sauda_Type" value={formData.Sauda_Type} onChange={handleInputChange}>
-                <MenuItem value="F">Flexible</MenuItem>
-                <MenuItem value="X">Sold Full Quantity</MenuItem>
+                <MenuItem value="F">Partial Lot</MenuItem>
+                <MenuItem value="X">Only Full Lot</MenuItem>
               </TextField>
             </Grid>
 

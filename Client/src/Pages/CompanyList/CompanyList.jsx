@@ -160,6 +160,7 @@ const CompanyList = () => {
         sessionStorage.setItem('Company_PanNo', selectedCompany.Pan_No);
         sessionStorage.setItem('uid', response.data.user_id);
         sessionStorage.setItem('User_ID', response.data.User_ID);
+        sessionStorage.setItem('User_Type', response.data.User_Type || '');
       }
 
       const postDateResponse = await axios.get(`${API_URL}/get-PostDate-Record?Company_Code=${selectedCompany.Company_Code}&Year_Code=${selectedAccountingYear.yearCode}`);

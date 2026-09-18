@@ -7,6 +7,7 @@ import requests
 from sqlalchemy import text, func
 from sqlalchemy.exc import SQLAlchemyError
 import os
+import bcrypt
 
 # Get the base URL from environment variables
 API_URL = os.getenv('API_URL')
@@ -34,6 +35,14 @@ FROM            dbo.tbluser INNER JOIN
                          dbo.tbluserdetail ON dbo.tbluser.uid = dbo.tbluserdetail.uid
 WHERE dbo.tbluser.uid =:uid
 '''
+
+def _hash_password_if_needed(value):
+    # Leave already-hashed bcrypt values untouched (avoids re-hashing a hash on
+    # updates that resubmit the existing value unchanged).
+    if not value or (isinstance(value, str) and value.startswith(('$2a$', '$2b$', '$2y$'))):
+        return value
+    return bcrypt.hashpw(value.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
 
 #     return formatted_data
 def format_dates(data):
@@ -85,6 +94,8 @@ def insert_user_with_permissions():
             user_data['Created_Date'] = datetime.strptime(user_data['Created_Date'], '%Y-%m-%d')
         if 'Modified_Date' in user_data:
             user_data['Modified_Date'] = datetime.strptime(user_data['Modified_Date'], '%Y-%m-%d')
+        if user_data.get('User_Password'):
+            user_data['User_Password'] = _hash_password_if_needed(user_data['User_Password'])
 
         new_user = TblUser(**user_data)
         db.session.add(new_user)
@@ -135,6 +146,8 @@ def update_user():
         for key, value in user_data.items():
             if key in ['Created_Date', 'Modified_Date', "LastActivityDate", "LockedDateTime"] and isinstance(value, str):
                 value = datetime.strptime(value, '%Y-%m-%d')
+            if key == 'User_Password' and value:
+                value = _hash_password_if_needed(value)
             setattr(user, key, value)
 
         for perm_item in permission_data:

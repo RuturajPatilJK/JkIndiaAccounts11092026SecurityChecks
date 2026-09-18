@@ -1,27 +1,27 @@
 import React, { useEffect } from 'react';
 
 const CommonPrintView = ({
-    title = '',
-    subtitle = '',
-    companyName = '',
-    companyGST = '',
-    columns = [],
-    rows = [],
-    rowRenderer = () => [],
-    footerValues = [],
-    amountInWords = '',
-    headerImg = null,
-    footerImg = null,
+  title = '',
+  subtitle = '',
+  companyName = '',
+  companyGST = '',
+  columns = [],
+  rows = [],
+  rowRenderer = () => [],
+  footerValues = [],
+  amountInWords = '',
+  headerImg = null,
+  footerImg = null,
 }) => {
 
-    useEffect(() => {
-        const id = 'cpr-print-style';
-        const existing = document.getElementById(id);
-        if (existing) existing.remove();  
+  useEffect(() => {
+    const id = 'cpr-print-style';
+    const existing = document.getElementById(id);
+    if (existing) existing.remove();
 
-        const style = document.createElement('style');
-        style.id = id;
-        style.textContent = `
+    const style = document.createElement('style');
+    style.id = id;
+    style.textContent = `
       /* ════════════════════════════════════════════════
          SCREEN — hide print root completely
          ════════════════════════════════════════════════ */
@@ -215,92 +215,92 @@ const CommonPrintView = ({
         .no-print { display: none !important; }
       }
     `;
-        document.head.appendChild(style);
-        return () => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        };
-    }, []);
+    document.head.appendChild(style);
+    return () => {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    };
+  }, []);
 
-    // Build cell class from column definition
-    const cellClass = (col) =>
-        col?.numeric ? 'cpr-num' : col?.center ? 'cpr-cen' : 'cpr-lft';
+  // Build cell class from column definition
+  const cellClass = (col) =>
+    col?.numeric ? 'cpr-num' : col?.center ? 'cpr-cen' : 'cpr-lft';
 
-    return (
-        <div id="cpr-root" aria-hidden="true">
+  return (
+    <div id="cpr-root" aria-hidden="true">
 
-            {/* Page number + powered-by — fixed, sits in bottom margin */}
-            <div className="cpr-pgnum" />
-            <div className="cpr-powered">Powered by: Sugarian.app</div>
+      {/* Page number + powered-by — fixed, sits in bottom margin */}
+      <div className="cpr-pgnum" />
+      <div className="cpr-powered">Powered by: Sugarian.app</div>
 
-            {/* ── Header image: page 1 only via DOM flow ── */}
-            {headerImg && (
-                <img src={headerImg} alt="" className="cpr-header-img" />
-            )}
+      {/* ── Header image: page 1 only via DOM flow ── */}
+      {headerImg && (
+        <img src={headerImg} alt="" className="cpr-header-img" />
+      )}
 
-            {/* ── Content ── */}
-            <div className="cpr-wrap">
-                {companyName && <div className="cpr-company">{companyName}</div>}
-                {companyGST && <div className="cpr-gst">GSTN: {companyGST}</div>}
-                {title && <div className="cpr-title">{title}</div>}
-                {subtitle && <div className="cpr-sub">{subtitle}</div>}
+      {/* ── Content ── */}
+      <div className="cpr-wrap">
+        {companyName && <div className="cpr-company">{companyName}</div>}
+        {companyGST && <div className="cpr-gst">GSTN: {companyGST}</div>}
+        {title && <div className="cpr-title">{title}</div>}
+        {subtitle && <div className="cpr-sub">{subtitle}</div>}
 
-                <table className="cpr-table">
-                    <thead>
-                        <tr>
-                            {columns.map((col, i) => (
-                                <th
-                                    key={i}
-                                    className={cellClass(col)}
-                                    style={col.printWidth ? { width: col.printWidth } : col.width ? { width: col.width } : {}}
-                                >
-                                    {col.label}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
+        <table className="cpr-table">
+          <thead>
+            <tr>
+              {columns.map((col, i) => (
+                <th
+                  key={i}
+                  className={cellClass(col)}
+                  style={col.printWidth ? { width: col.printWidth } : col.width ? { width: col.width } : {}}
+                >
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-                    <tbody>
-                        {rows.map((item, idx) => {
-                            const cells = rowRenderer(item, idx);
-                            return (
-                                <tr key={idx}>
-                                    {cells.map((cell, ci) => (
-                                        <td key={ci} className={cellClass(columns[ci])}>
-                                            {cell ?? ''}
-                                        </td>
-                                    ))}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
+          <tbody>
+            {rows.map((item, idx) => {
+              const cells = rowRenderer(item, idx);
+              return (
+                <tr key={idx}>
+                  {cells.map((cell, ci) => (
+                    <td key={ci} className={cellClass(columns[ci])}>
+                      {cell ?? ''}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
 
-                    {footerValues.length > 0 && (
-                        <tfoot>
-                            <tr>
-                                {footerValues.map((val, fi) => (
-                                    <td key={fi} className={cellClass(columns[fi])}>
-                                        {val ?? ''}
-                                    </td>
-                                ))}
-                            </tr>
-                        </tfoot>
-                    )}
-                </table>
+          {footerValues.length > 0 && (
+            <tfoot>
+              <tr>
+                {footerValues.map((val, fi) => (
+                  <td key={fi} className={cellClass(columns[fi])}>
+                    {val ?? ''}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          )}
+        </table>
 
-                {amountInWords && (
-                    <div className="cpr-words">
-                        Total Amount (In Words): {amountInWords}
-                    </div>
-                )}
+        {amountInWords && (
+          <div className="cpr-words">
+            Total Amount (In Words): {amountInWords}
+          </div>
+        )}
 
-                {/* Footer image: end of content = last page */}
-                {footerImg && (
-                    <img src={footerImg} alt="" className="cpr-footer-img" />
-                )}
-            </div>
-        </div>
-    );
+        {/* Footer image: end of content = last page */}
+        {footerImg && (
+          <img src={footerImg} alt="" className="cpr-footer-img" />
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default CommonPrintView;

@@ -288,20 +288,45 @@ function CompanyCreation() {
           ? "Record updated successfully!"
           : "Record created successfully!";
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: successMessage,
-        });
-        setIsEditMode(false);
-        setAddOneButtonEnabled(true);
-        setEditButtonEnabled(true);
-        setDeleteButtonEnabled(true);
-        setBackButtonEnabled(true);
-        setSaveButtonEnabled(false);
-        setCancelButtonEnabled(false);
-        setIsEditing(false);
-        navigate('/company-list');
+        const finishUp = () => {
+          setIsEditMode(false);
+          setAddOneButtonEnabled(true);
+          setEditButtonEnabled(true);
+          setDeleteButtonEnabled(true);
+          setBackButtonEnabled(true);
+          setSaveButtonEnabled(false);
+          setCancelButtonEnabled(false);
+          setIsEditing(false);
+          navigate('/company-list');
+        };
+
+        const adminPassword = response.data?.default_admin_password;
+        if (adminPassword) {
+          // New company: backend generated a random default-admin password
+          // (no hardcoded credential anymore) — show it once here, since this
+          // is the only place it's ever surfaced, then navigate away.
+          Swal.fire({
+            icon: 'success',
+            title: 'Company Created!',
+            html: `
+              <div style="text-align:left; font-size:14px;">
+                <p>${successMessage}</p>
+                <p style="margin-top:10px;">Default admin login for this company:</p>
+                <p><b>Username:</b> ${response.data.default_admin_username || 'Admin'}</p>
+                <p><b>Password:</b> <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${adminPassword}</code></p>
+                <p style="margin-top:8px; color:#dc2626; font-size:12px;">Save this now — it will not be shown again.</p>
+              </div>
+            `,
+            confirmButtonText: "OK, I've saved it",
+          }).then(finishUp);
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: successMessage,
+          });
+          finishUp();
+        }
       })
       .catch((error) => {
         console.error("Error saving/updating data:", error);
