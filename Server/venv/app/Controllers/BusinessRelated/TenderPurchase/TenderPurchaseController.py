@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 from app import app, db, socketio
 from app.utils.CommonGLedgerFunctions import get_accoid
 from app.models.BusinessReleted.TenderPurchase.TenderPurchaseModels import TenderHead, TenderDetails,TenderGradeDetails
+from app.models.Masters.EbuySugarAdditionalLimit.EbuySugarAdditionalLimit import EBuySugarBalanceLimit
 from app.models.Transactions.UTR.UTREntryModels import UTRDetail
 from app.models.BusinessReleted.DeliveryOrder.DeliveryOrderModels import DeliveryOrderHead
 from app.models.Outword.CommissionBill.CommissionBillModel import CommissionBill
@@ -27,6 +28,33 @@ SERVER_NAME = "JK Live Tender Server"
 app.config['SECRET_KEY'] = 'ABCDEFGHIJKLMNOPQRST'
 
 EBUY_SUGAR_AC_CODE = os.getenv('EBUY_SUGAR_AC_CODE')
+
+
+def _create_buy_limit_entry(ac_code, accoid, company_code, amount, drcr, narration, doc_date=None, user_id=None):
+    """BL (Buy Limit) ledger entry for a sauda's buyer (TenderDetails.Buyer —
+    the actual customer, e.g. 151, not an eBuySugar placeholder): DRCR='D'
+    reduces the buyer's available Buy Limit (sauda created / qty increased),
+    DRCR='C' releases it back (sauda deleted / qty decreased). Applies to
+    every sauda with a Buyer account — no eBuySugar-specific gating. Caller
+    is responsible for db.session.commit()."""
+    if not ac_code or not accoid:
+        return None
+    if amount is None or amount <= 0:
+        return None
+    entry = EBuySugarBalanceLimit(
+        Ac_Code=ac_code,
+        accoid=accoid,
+        Doc_Date=doc_date or datetime.now(),
+        Limit=amount,
+        DRCR=drcr,
+        Narration=narration[:500] if narration else None,
+        Company_Code=company_code,
+        User_Id=user_id,
+        Tran_Type='BL',
+    )
+    db.session.add(entry)
+    return entry
+
 
 EBUY_AWAY_QUERY = '''
 SELECT ISNULL(SUM(Buyer_Quantal), 0) AS away_qty
@@ -265,18 +293,62 @@ def insert_tender_head_detail():
                         new_head.details.append(new_detail)
                         createdDetails.append(new_detail)
 
+                        _create_buy_limit_entry(
+                            ac_code=new_detail.Buyer,
+                            accoid=new_detail.buyerid,
+                            company_code=headData.get('Company_Code'),
+                            amount=float(new_detail.Buyer_Quantal or 0),
+                            drcr='D',
+                            narration=f"Sauda added – Tender No: {newTenderNo}, Qty: {new_detail.Buyer_Quantal}",
+                        )
+
                     elif item['rowaction'] == "update":
                         tenderdetailid = item['tenderdetailid']
+
+                        existing_row = db.session.query(TenderDetails).filter(
+                            TenderDetails.tenderdetailid == tenderdetailid
+                        ).first()
+                        old_qty = float(existing_row.Buyer_Quantal or 0) if existing_row else 0.0
+                        row_buyer = existing_row.Buyer if existing_row else item.get('Buyer')
+                        row_buyerid = existing_row.buyerid if existing_row else item.get('buyerid')
+                        row_company_code = existing_row.Company_Code if existing_row else headData.get('Company_Code')
+
                         update_values = {k: v for k, v in item.items() if k not in ('tenderdetailid', 'tenderid')}
-                        del update_values['rowaction']  
+                        del update_values['rowaction']
                         db.session.query(TenderDetails).filter(TenderDetails.tenderdetailid == tenderdetailid).update(update_values)
                         updatedDetails.append(tenderdetailid)
+
+                        new_qty = float(item.get('Buyer_Quantal') if 'Buyer_Quantal' in item else old_qty)
+                        qty_diff = new_qty - old_qty
+                        if abs(qty_diff) > 0.001:
+                            diff_amount = abs(qty_diff)
+                            drcr = 'D' if qty_diff > 0 else 'C'
+                            action = 'increased' if qty_diff > 0 else 'decreased'
+                            _create_buy_limit_entry(
+                                ac_code=row_buyer,
+                                accoid=row_buyerid,
+                                company_code=row_company_code,
+                                amount=diff_amount,
+                                drcr=drcr,
+                                narration=(
+                                    f"Sauda updated – Tender No: {newTenderNo}, Qty {action} by "
+                                    f"{diff_amount} (from {old_qty} to {new_qty})"
+                                ),
+                            )
 
                     elif item['rowaction'] == "delete":
                         tenderdetailid = item['tenderdetailid']
                         detail_to_delete = db.session.query(TenderDetails).filter(TenderDetails.tenderdetailid == tenderdetailid).one_or_none()
-        
+
                         if detail_to_delete:
+                            _create_buy_limit_entry(
+                                ac_code=detail_to_delete.Buyer,
+                                accoid=detail_to_delete.buyerid,
+                                company_code=detail_to_delete.Company_Code,
+                                amount=float(detail_to_delete.Buyer_Quantal or 0),
+                                drcr='C',
+                                narration=f"Sauda deleted – Tender No: {newTenderNo}, Qty released: {detail_to_delete.Buyer_Quantal}",
+                            )
                             db.session.delete(detail_to_delete)
                             deletedDetailIds.append(tenderdetailid)
 
@@ -572,25 +644,71 @@ def update_tender_purchase():
                         max_detail_id = db.session.query(db.func.max(TenderDetails.ID)).filter_by(Tender_No=tender_no).scalar() or 0
                         new_detail_id = max_detail_id + 1
                         item['ID'] = new_detail_id
-                    del item['rowaction'] 
+                    del item['rowaction']
                     new_detail = TenderDetails(**item)
-                    db.session.add(new_detail) 
+                    db.session.add(new_detail)
                     createdDetails.append(item)
+
+                    _create_buy_limit_entry(
+                        ac_code=new_detail.Buyer,
+                        accoid=new_detail.buyerid,
+                        company_code=company_code,
+                        amount=float(new_detail.Buyer_Quantal or 0),
+                        drcr='D',
+                        narration=f"Sauda added – Tender No: {tender_no}, Qty: {new_detail.Buyer_Quantal}",
+                    )
 
                 elif item['rowaction'] == "update":
                     item['Tender_No'] = tender_no
                     item['tenderid'] = tenderid
                     tenderdetailid = item['tenderdetailid']
+
+                    # Fetched before the bulk update below — needed to know the
+                    # pre-update qty/buyer for the Buy Limit delta.
+                    existing_row = db.session.query(TenderDetails).filter(
+                        TenderDetails.tenderdetailid == tenderdetailid
+                    ).first()
+                    old_qty = float(existing_row.Buyer_Quantal or 0) if existing_row else 0.0
+                    row_buyer = existing_row.Buyer if existing_row else item.get('Buyer')
+                    row_buyerid = existing_row.buyerid if existing_row else item.get('buyerid')
+                    row_company_code = existing_row.Company_Code if existing_row else company_code
+
                     update_values = {k: v for k, v in item.items() if k not in ('tenderdetailid', 'tenderid')}
-                    del update_values['rowaction'] 
+                    del update_values['rowaction']
                     db.session.query(TenderDetails).filter(TenderDetails.tenderdetailid == tenderdetailid).update(update_values)
                     updatedDetails.append(tenderdetailid)
+
+                    new_qty = float(item.get('Buyer_Quantal') if 'Buyer_Quantal' in item else old_qty)
+                    qty_diff = new_qty - old_qty
+                    if abs(qty_diff) > 0.001:
+                        diff_amount = abs(qty_diff)
+                        drcr = 'D' if qty_diff > 0 else 'C'
+                        action = 'increased' if qty_diff > 0 else 'decreased'
+                        _create_buy_limit_entry(
+                            ac_code=row_buyer,
+                            accoid=row_buyerid,
+                            company_code=row_company_code,
+                            amount=diff_amount,
+                            drcr=drcr,
+                            narration=(
+                                f"Sauda updated – Tender No: {tender_no}, Qty {action} by "
+                                f"{diff_amount} (from {old_qty} to {new_qty})"
+                            ),
+                        )
 
                 elif item['rowaction'] == "delete":
                     tenderdetailid = item['tenderdetailid']
                     detail_to_delete = db.session.query(TenderDetails).filter(TenderDetails.tenderdetailid == tenderdetailid).one_or_none()
-    
+
                     if detail_to_delete:
+                        _create_buy_limit_entry(
+                            ac_code=detail_to_delete.Buyer,
+                            accoid=detail_to_delete.buyerid,
+                            company_code=detail_to_delete.Company_Code,
+                            amount=float(detail_to_delete.Buyer_Quantal or 0),
+                            drcr='C',
+                            narration=f"Sauda deleted – Tender No: {tender_no}, Qty released: {detail_to_delete.Buyer_Quantal}",
+                        )
                         db.session.delete(detail_to_delete)
                         deletedDetailIds.append(tenderdetailid)
 
@@ -795,6 +913,25 @@ def delete_TenderBytenderid():
             deleted_head = TenderHead.query.filter_by(tenderid=tenderid).first()
 
             if deleted_head:
+                # Credit back each detail row's qty to its buyer's Buy Limit,
+                # before the rows are deleted below.
+                ebuy_rows = TenderDetails.query.filter_by(tenderid=tenderid).all()
+                ebuy_release_totals = {}
+                for row in ebuy_rows:
+                    if not row.Buyer or not row.buyerid:
+                        continue
+                    key = (row.Buyer, row.buyerid, row.Company_Code)
+                    ebuy_release_totals[key] = ebuy_release_totals.get(key, 0) + float(row.Buyer_Quantal or 0)
+                for (buyer_ac_code, buyer_accoid, row_company_code), release_qty in ebuy_release_totals.items():
+                    _create_buy_limit_entry(
+                        ac_code=buyer_ac_code,
+                        accoid=buyer_accoid,
+                        company_code=row_company_code,
+                        amount=release_qty,
+                        drcr='C',
+                        narration=f"Sauda(s) deleted – Tender No: {deleted_head.Tender_No}, Qty released: {release_qty}",
+                    )
+
                 db.session.query(TenderGradeDetails).filter_by(tenderid=tenderid).delete()
                 deleted_user_rows = TenderDetails.query.filter_by(tenderid=tenderid).delete()
                 deleted_task_rows = TenderHead.query.filter_by(tenderid=tenderid).delete()
@@ -1132,6 +1269,45 @@ def add_detail_to_tender():
 
         tenderid = tender_head.tenderid
 
+        # Parse Sauda_Lifting_Date once — used both for the eBuySugar cutoff
+        # check below and to seed EbuySugarLiftingDate.
+        sauda_lifting_date_raw = detail_data.get('Sauda_Lifting_Date')
+        sauda_lifting_date = None
+        if sauda_lifting_date_raw:
+            if isinstance(sauda_lifting_date_raw, str):
+                try:
+                    sauda_lifting_date = datetime.strptime(sauda_lifting_date_raw[:10], '%Y-%m-%d').date()
+                except ValueError:
+                    sauda_lifting_date = None
+            elif isinstance(sauda_lifting_date_raw, date):
+                sauda_lifting_date = sauda_lifting_date_raw
+
+        # A sauda booked against the eBuySugar self-account is subject to the
+        # same daily trading-window cutoff eBuySugar's own portal enforces
+        # (EBUY_SUGAR_EXPIRY_HOUR/MINUTE/SECONDS in .env) — otherwise staff
+        # could add one here after the window the customer-facing side closed.
+        # Computed fresh per-request (not the stale module-level expiry_datetime
+        # above, which is frozen at server-start date).
+        if EBUY_SUGAR_AC_CODE and str(detail_data.get('Buyer')) == str(EBUY_SUGAR_AC_CODE):
+            now_ist = datetime.now(ist)
+            cutoff_today = ist.localize(datetime.combine(
+                now_ist.date(),
+                time(EBUY_SUGAR_EXPIRY_HOUR, EBUY_SUGAR_EXPIRY_MINUTE, EBUY_SUGAR_EXPIRY_SECONDS)
+            ))
+            if sauda_lifting_date:
+                if sauda_lifting_date < now_ist.date():
+                    return jsonify({
+                        "error": "Payment / Lifting Date cannot be in the past. Please select today or a later date."
+                    }), 400
+                if sauda_lifting_date == now_ist.date() and now_ist >= cutoff_today:
+                    return jsonify({
+                        "error": (
+                            f"Today's eBuySugar trading window has closed "
+                            f"(cutoff {cutoff_today.strftime('%H:%M')} IST). "
+                            f"Please select a valid Payment / Lifting Date after today."
+                        )
+                    }), 400
+
         max_detail_id = db.session.query(func.max(TenderDetails.ID)).filter_by(tenderid=tenderid).scalar() or 0
         new_detail_id = max_detail_id + 1
 
@@ -1146,6 +1322,9 @@ def add_detail_to_tender():
         detail_data["buyerpartyid"] = get_accoid(detail_data.get("Buyer_Party"), company_code)
         detail_data["sbr"] = get_accoid(detail_data.get("sub_broker"), company_code)
         detail_data["EbuySugarSaudaExpire_Time"] = expiry_datetime.time()
+        # EbuySugarLiftingDate drives the eBuySugar auto-expiry scheduler — it
+        # must track Sauda_Lifting_Date, not the tender-level Lifting_Date.
+        detail_data["EbuySugarLiftingDate"] = sauda_lifting_date or detail_data.get('Lifting_Date') or tender_head.Lifting_Date
 
         new_detail = TenderDetails(**detail_data)
         db.session.add(new_detail)
@@ -1164,6 +1343,17 @@ def add_detail_to_tender():
                 first_detail.Buyer_Quantal = updated_qty
             except Exception as e:
                 print(f"Error updating quantity: {e}")
+
+        # Debit this sauda's qty from the buyer's Buy Limit. Symmetric with
+        # the credit-back on update/delete below.
+        _create_buy_limit_entry(
+            ac_code=new_detail.Buyer,
+            accoid=new_detail.buyerid,
+            company_code=company_code,
+            amount=float(new_detail.Buyer_Quantal or 0),
+            drcr='D',
+            narration=f"Sauda added – Tender No: {tender_no}, Qty: {new_detail.Buyer_Quantal}",
+        )
 
         db.session.commit()
         socketio.emit("tender_updated", {"tenderid": tenderid, "Tender_No": tender_no})
@@ -1195,6 +1385,9 @@ def Stock_Entry_tender_purchase():
         detailData = data['detailData']
         createdDetails, updatedDetails, deletedDetailIds = [], [], []
 
+        head_for_company = db.session.query(TenderHead).filter_by(tenderid=tenderid).first()
+        fallback_company_code = head_for_company.Company_Code if head_for_company else None
+
         for item in detailData:
             try:
                 if 'Sauda_Date' in item:
@@ -1211,16 +1404,61 @@ def Stock_Entry_tender_purchase():
                         item['ID'] = (db.session.query(db.func.max(TenderDetails.ID)).filter_by(tenderid=tenderid).scalar() or 0) + 1
                     new_detail = TenderDetails(**item)
                     db.session.add(new_detail)
-                    db.session.flush()  
+                    db.session.flush()
                     createdDetails.append(new_detail)
+
+                    _create_buy_limit_entry(
+                        ac_code=new_detail.Buyer,
+                        accoid=new_detail.buyerid,
+                        company_code=new_detail.Company_Code or fallback_company_code,
+                        amount=float(new_detail.Buyer_Quantal or 0),
+                        drcr='D',
+                        narration=f"Sauda added – Tender No: {tender_no}, Qty: {new_detail.Buyer_Quantal}",
+                    )
 
                 elif item['rowaction'] == "update":
                     del item['rowaction']
-                    db.session.query(TenderDetails).filter_by(tenderdetailid=item['tenderdetailid']).update({k: v for k, v in item.items() if k != 'tenderdetailid'})
-                    updatedDetails.append(item['tenderdetailid'])
+                    tenderdetailid = item['tenderdetailid']
+
+                    existing_row = db.session.query(TenderDetails).filter_by(
+                        tenderdetailid=tenderdetailid
+                    ).first()
+                    old_qty = float(existing_row.Buyer_Quantal or 0) if existing_row else 0.0
+                    row_buyer = existing_row.Buyer if existing_row else item.get('Buyer')
+                    row_buyerid = existing_row.buyerid if existing_row else item.get('buyerid')
+                    row_company_code = existing_row.Company_Code if existing_row else fallback_company_code
+
+                    db.session.query(TenderDetails).filter_by(tenderdetailid=tenderdetailid).update({k: v for k, v in item.items() if k != 'tenderdetailid'})
+                    updatedDetails.append(tenderdetailid)
+
+                    new_qty = float(item.get('Buyer_Quantal') if 'Buyer_Quantal' in item else old_qty)
+                    qty_diff = new_qty - old_qty
+                    if abs(qty_diff) > 0.001:
+                        diff_amount = abs(qty_diff)
+                        drcr = 'D' if qty_diff > 0 else 'C'
+                        action = 'increased' if qty_diff > 0 else 'decreased'
+                        _create_buy_limit_entry(
+                            ac_code=row_buyer,
+                            accoid=row_buyerid,
+                            company_code=row_company_code,
+                            amount=diff_amount,
+                            drcr=drcr,
+                            narration=(
+                                f"Sauda updated – Tender No: {tender_no}, Qty {action} by "
+                                f"{diff_amount} (from {old_qty} to {new_qty})"
+                            ),
+                        )
 
                 elif item['rowaction'] == "delete":
                     detail_to_delete = db.session.query(TenderDetails).filter_by(tenderdetailid=item['tenderdetailid']).one()
+                    _create_buy_limit_entry(
+                        ac_code=detail_to_delete.Buyer,
+                        accoid=detail_to_delete.buyerid,
+                        company_code=detail_to_delete.Company_Code or fallback_company_code,
+                        amount=float(detail_to_delete.Buyer_Quantal or 0),
+                        drcr='C',
+                        narration=f"Sauda deleted – Tender No: {tender_no}, Qty released: {detail_to_delete.Buyer_Quantal}",
+                    )
                     db.session.delete(detail_to_delete)
                     deletedDetailIds.append(item['tenderdetailid'])
 
@@ -1817,6 +2055,13 @@ def update_tender_detail():
         new_qty = float(detail_data.get("Buyer_Quantal") or 0)
         qty_diff = new_qty - old_qty
 
+        # Captured before the field-update loop below (in case detail_data
+        # ever includes Buyer) — Buyer is the actual customer whose Buy
+        # Limit ledger this affects.
+        existing_buyer_ac_code = existing_detail.Buyer
+        existing_buyer_accoid = existing_detail.buyerid
+        existing_company_code = existing_detail.Company_Code
+
         # --- Clean and convert date fields ---
         for date_field in ["Sauda_Date", "Lifting_Date"]:
             if date_field in detail_data and detail_data[date_field]:
@@ -1852,6 +2097,24 @@ def update_tender_detail():
                 first_detail.Buyer_Quantal = updated_self_qty
             except Exception as e:
                 print(f"Error adjusting self quantity: {e}")
+
+        # Qty increased -> debit the extra from Buy Limit; qty decreased ->
+        # credit the released amount back. Only when the qty actually changed.
+        if abs(qty_diff) > 0.001:
+            diff_amount = abs(qty_diff)
+            drcr = 'D' if qty_diff > 0 else 'C'
+            action = 'increased' if qty_diff > 0 else 'decreased'
+            _create_buy_limit_entry(
+                ac_code=existing_buyer_ac_code,
+                accoid=existing_buyer_accoid,
+                company_code=existing_company_code,
+                amount=diff_amount,
+                drcr=drcr,
+                narration=(
+                    f"Sauda updated – Tender No: {tender_no}, Qty {action} by "
+                    f"{diff_amount} (from {old_qty} to {new_qty})"
+                ),
+            )
 
         db.session.commit()
 

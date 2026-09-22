@@ -63,7 +63,7 @@ function PendingDOSelectModal({
   unapprovedData = [], unapprovedLoading = false, onApproveDO,
 }) {
   const [search, setSearch] = useState("");
-  const [sortCol, setSortCol] = useState("Tender_No");
+  const [sortCol, setSortCol] = useState("Created_Date");
   const [sortAsc, setSortAsc] = useState(false);
   // use index into filtered[] — guarantees uniqueness even for rows with identical field values
   const [selectedIdx, setSelectedIdx] = useState(null);
@@ -123,7 +123,7 @@ function PendingDOSelectModal({
     } else {
       setSelectedIdx(null);
       setSearch("");
-      setSortCol("Tender_No");
+      setSortCol("Created_Date");
       setSortAsc(false);
       setActiveTab("pending");
       setUnapprovedSearch("");

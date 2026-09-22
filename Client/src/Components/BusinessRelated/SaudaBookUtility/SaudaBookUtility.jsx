@@ -423,7 +423,8 @@ const handleExMillSelectionChange = (e) => {
       await saveTenderDetail(commission);
     } catch (error) {
       console.error("Error submitting form:", error);
-      Swal.fire("Error", "Failed to save Sauda detail", "error");
+      const backendMessage = error.response?.data?.error;
+      Swal.fire("Error", backendMessage || "Failed to save Sauda detail", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -513,7 +514,7 @@ const handleExMillSelectionChange = (e) => {
         year_code: yearCode,
         EbuySelectedParty: formData.EbuySelectedParty,
         EbuySelectedAccoid: formData.EbuySelectedAccoid,
-        EbuySugarLiftingDate: formData.Lifting_Date,
+        EbuySugarLiftingDate: formData.Sauda_Lifting_Date,
         Payment_To: formData.Payment_To,
         pt: formData.pt,
       },
