@@ -291,6 +291,9 @@ import EmployeeManagementUtility from './Master/AccountInformation/EmployeeManag
 import AgingAnalysisReport_Debtors_GST from './Reports/TrialBalance/AgingAnalysisDebtors_GST.jsx';
 import AgingAnalysisReportCreditors_GST from './Reports/TrialBalance/AgingAnalysisGSTwiseGroup.jsx';
 
+import OfflineTender from './Transactions/OfflineTender/OfflineTenders.jsx';
+import OfflineTenderUtility from './Transactions/OfflineTender/OfflineTenderUtility.jsx';
+
 
 const routes = [
   {
@@ -1362,6 +1365,14 @@ const routes = [
   {
     path: '/AgingAnalysisDebtors_GST-Report',
     element: AgingAnalysisReport_Debtors_GST
+  },
+  {
+    path: '/offline-tender',
+    element: OfflineTender
+  },
+  {
+    path: '/OfflineTender_Utility',
+    element: OfflineTenderUtility
   },
   
 

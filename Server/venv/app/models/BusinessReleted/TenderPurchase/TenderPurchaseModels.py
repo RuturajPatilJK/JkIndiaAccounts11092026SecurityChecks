@@ -70,6 +70,7 @@ class TenderHead(db.Model):
     gstid = db.Column(db.Integer)
 
     Remark = db.Column(NVARCHAR(None), nullable=True)
+    customer_sale = db.Column(db.CHAR(1), nullable=True)
 
     details = db.relationship('TenderDetails', backref='head', lazy=True)
  

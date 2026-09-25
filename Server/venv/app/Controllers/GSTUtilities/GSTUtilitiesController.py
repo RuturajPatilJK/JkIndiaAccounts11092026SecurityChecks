@@ -1057,7 +1057,7 @@ def OtherPurchase_Summary():
                 op.SGST_Amount     AS SGST,
                 op.IGST_Amount     AS IGST,
                 op.Bill_Amount,
-                op.Bill_No         AS BillNo,
+                op.billno          AS BillNo,
                 ISNULL(op.TDS, 0)  AS TDSAmount,
                 op.Narration,
                 op.TDS_AcCode,
@@ -1067,7 +1067,7 @@ def OtherPurchase_Summary():
                 tdsAc.Ac_Name_E    AS tdsacname,
                 cutAc.Ac_Name_E    AS tdscutacname,
                 sup.Ac_Name_E      AS suppilername
-            FROM dbo.nt_1_otherpurchase AS op
+            FROM dbo.nt_1_other_purchase AS op
             LEFT JOIN dbo.nt_1_accountmaster AS sup
                 ON  op.Supplier_Code = sup.Ac_Code
                 AND op.Company_Code  = sup.company_code

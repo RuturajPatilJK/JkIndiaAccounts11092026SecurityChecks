@@ -211,6 +211,10 @@ const AccountMaster = () => {
   const ref = useRef(null);
   const inputRef = useRef(null);
   const logoInputRef = useRef(null);
+  // Guards against out-of-order responses when "Change No" is used to fetch
+  // multiple accounts in quick succession - only the latest request's data
+  // is applied to formData, so a slower earlier fetch can't overwrite it.
+  const fetchAccountRequestIdRef = useRef(0);
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState('');
 
@@ -314,7 +318,10 @@ const AccountMaster = () => {
     Modified_Date: null,
     Our_Party: "N",
     Show_Ledger: "Y",
-    Customer_Select_Party: "N"
+    Customer_Select_Party: "N",
+    buying_charges: 0.0,
+    selling_charges: 0.0,
+    gov_millcode: ""
 
     // Insurance: 0.0,
     // MsOms: "",
@@ -1302,9 +1309,17 @@ const AccountMaster = () => {
     setIsEditing(true);
   };
   const handleCancel = () => {
+    const requestId = ++fetchAccountRequestIdRef.current;
     axios
       .get(`${API_URL}/get-lastaccountdata?Company_Code=${companyCode}`)
       .then((response) => {
+        // A newer fetch (e.g. a "Change No" lookup) was started while this
+        // was in flight - discard this stale response instead of
+        // overwriting the newer record's data.
+        if (requestId !== fetchAccountRequestIdRef.current) {
+          return;
+        }
+
         const data = response.data.account_master_data;
         const labels = response.data.account_labels;
         const detailData = response.data.account_detail_data;
@@ -1322,10 +1337,10 @@ const AccountMaster = () => {
         newGroup_Code = convertedData.Group_Code;
         gstStateName = labels.State_Name;
         newGSTStateCode = convertedData.GSTStateCode;
-        setFormData({
-          ...formData,
+        setFormData((prev) => ({
+          ...prev,
           ...convertedData,
-        });
+        }));
         setAccountData(convertedData || {});
         setAccountDetail(detailData || []);
 
@@ -1649,12 +1664,21 @@ const AccountMaster = () => {
 
 
   const fetchAccountData = async (endpoint, params) => {
+    const requestId = ++fetchAccountRequestIdRef.current;
     try {
       const response = await fetch(
         `${API_URL}/${endpoint}?${new URLSearchParams(params)}`
       );
       if (response.ok) {
         const data = await response.json();
+
+        // A newer "Change No" fetch was started while this one was still in
+        // flight - discard this stale response instead of overwriting the
+        // form with an older record's data.
+        if (requestId !== fetchAccountRequestIdRef.current) {
+          return;
+        }
+
         const acData = data.account_master_data;
         const labels = data.account_labels;
         const detailData = data.account_detail_data;
@@ -1673,10 +1697,10 @@ const AccountMaster = () => {
         gstStateName = labels.State_Name;
         newGSTStateCode = convertedData.GSTStateCode;
 
-        setFormData({
-          ...formData,
+        setFormData((prev) => ({
+          ...prev,
           ...convertedData,
-        });
+        }));
         setAccountData(convertedData || {});
         setAccountDetail(detailData || []);
         setSelectedGroups(groupCodes || []);
@@ -2054,83 +2078,6 @@ const AccountMaster = () => {
                     <MenuItem value="N">No Limit</MenuItem>
                   </Select>
                 </FormControl>
-
-              <Box
-                sx={{
-                  display: "inline-block",
-                  border: "1px solid #e0e0e0",
-                  borderRadius: "6px",
-                  padding: "6px 14px 8px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    color: "#1565c0",
-                    letterSpacing: "0.3px",
-                    marginBottom: "2px",
-                    textAlign: "center",
-                  }}
-                >
-                  eBuySugar Use Only
-                </div>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <label htmlFor="Our_Party" style={{ marginTop: "5px" }}>Our Party :</label>
-                  <Checkbox
-                    sx={{
-                      color: "primary.main",
-                      "&.Mui-checked": {
-                        color: "secondary.main",
-                      },
-                    }}
-                    id="Our_Party"
-                    name="Our_Party"
-                    checked={formData.Our_Party === "Y"}
-                    onChange={(e) => handleCheckbox(e, "string")}
-                    disabled={
-                      !isFieldEnabled("Our_Party") ||
-                      (!isEditing && addOneButtonEnabled)
-                    }
-                  />
-
-                  <label htmlFor="Show_Ledger" style={{ marginTop: "5px" }}>Show Ledger :</label>
-                  <Checkbox
-                    sx={{
-                      color: "primary.main",
-                      "&.Mui-checked": {
-                        color: "secondary.main",
-                      },
-                    }}
-                    id="Show_Ledger"
-                    name="Show_Ledger"
-                    checked={formData.Show_Ledger === "Y"}
-                    onChange={(e) => handleCheckbox(e, "string")}
-                    disabled={
-                      !isFieldEnabled("Show_Ledger") ||
-                      (!isEditing && addOneButtonEnabled)
-                    }
-                  />
-
-                  <label htmlFor="Customer_Select_Party" style={{ marginTop: "5px" }}>Customer Select Party :</label>
-                  <Checkbox
-                    sx={{
-                      color: "primary.main",
-                      "&.Mui-checked": {
-                        color: "secondary.main",
-                      },
-                    }}
-                    id="Customer_Select_Party"
-                    name="Customer_Select_Party"
-                    checked={formData.Customer_Select_Party === "Y"}
-                    onChange={(e) => handleCheckbox(e, "string")}
-                    disabled={
-                      !isFieldEnabled("Customer_Select_Party") ||
-                      (!isEditing && addOneButtonEnabled)
-                    }
-                  />
-                </Box>
-              </Box>
 
               </Box>
 
@@ -3015,6 +2962,144 @@ const AccountMaster = () => {
                     shrink: true,
                   }}
                 />
+              </Box>
+
+              {/* eBuySugar Use Only */}
+              <Box sx={{ display: "flex", justifyContent: "flex-start", marginTop: 1.5 }}>
+                <Box
+                  sx={{
+                    display: "inline-block",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: "6px",
+                    padding: "6px 14px 8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      color: "#1565c0",
+                      letterSpacing: "0.3px",
+                      marginBottom: "2px",
+                      textAlign: "left",
+                    }}
+                  >
+                    eBuySugar Use Only
+                  </div>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+                    <label htmlFor="Our_Party" style={{ marginTop: "5px" }}>1. Our Party :</label>
+                    <Checkbox
+                      sx={{
+                        color: "primary.main",
+                        "&.Mui-checked": {
+                          color: "secondary.main",
+                        },
+                      }}
+                      id="Our_Party"
+                      name="Our_Party"
+                      checked={formData.Our_Party === "Y"}
+                      onChange={(e) => handleCheckbox(e, "string")}
+                      disabled={
+                        !isFieldEnabled("Our_Party") ||
+                        (!isEditing && addOneButtonEnabled)
+                      }
+                    />
+
+                    <label htmlFor="Show_Ledger" style={{ marginTop: "5px" }}>2.Show Ledger :</label>
+                    <Checkbox
+                      sx={{
+                        color: "primary.main",
+                        "&.Mui-checked": {
+                          color: "secondary.main",
+                        },
+                      }}
+                      id="Show_Ledger"
+                      name="Show_Ledger"
+                      checked={formData.Show_Ledger === "Y"}
+                      onChange={(e) => handleCheckbox(e, "string")}
+                      disabled={
+                        !isFieldEnabled("Show_Ledger") ||
+                        (!isEditing && addOneButtonEnabled)
+                      }
+                    />
+
+                    <label htmlFor="Customer_Select_Party" style={{ marginTop: "5px" }}>3.Customer Select Party :</label>
+                    <Checkbox
+                      sx={{
+                        color: "primary.main",
+                        "&.Mui-checked": {
+                          color: "secondary.main",
+                        },
+                      }}
+                      id="Customer_Select_Party"
+                      name="Customer_Select_Party"
+                      checked={formData.Customer_Select_Party === "Y"}
+                      onChange={(e) => handleCheckbox(e, "string")}
+                      disabled={
+                        !isFieldEnabled("Customer_Select_Party") ||
+                        (!isEditing && addOneButtonEnabled)
+                      }
+                    />
+
+                    <TextField
+                      label="Buying Charges"
+                      id="buying_charges"
+                      name="buying_charges"
+                      size="small"
+                      value={formData.buying_charges}
+                      autoComplete="off"
+                      onChange={handleChange}
+                      disabled={!isEditing && addOneButtonEnabled}
+                      inputProps={{
+                        sx: { textAlign: "right" },
+                        inputMode: "decimal",
+                        onInput: validateNumericInput,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{ width: "15vh" }}
+                    />
+                    <TextField
+                      label="Selling Charges"
+                      id="selling_charges"
+                      name="selling_charges"
+                      size="small"
+                      value={formData.selling_charges}
+                      autoComplete="off"
+                      onChange={handleChange}
+                      disabled={!isEditing && addOneButtonEnabled}
+                      inputProps={{
+                        sx: { textAlign: "right" },
+                        inputMode: "decimal",
+                        onInput: validateNumericInput,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{ width: "15vh" }}
+                    />
+                    <TextField
+                      label="Gov. Mill Code"
+                      id="gov_millcode"
+                      name="gov_millcode"
+                      size="small"
+                      value={formData.gov_millcode}
+                      autoComplete="off"
+                      onChange={handleChange}
+                      disabled={!isEditing && addOneButtonEnabled}
+                      inputProps={{
+                        sx: { textAlign: "right" },
+                        inputMode: "numeric",
+                        onInput: validateNumericInput,
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      sx={{ width: "15vh" }}
+                    />
+                  </Box>
+                </Box>
               </Box>
 
               {/* Account Logo Upload */}

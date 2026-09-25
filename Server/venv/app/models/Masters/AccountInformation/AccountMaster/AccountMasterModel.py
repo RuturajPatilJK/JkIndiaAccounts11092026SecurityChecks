@@ -80,6 +80,10 @@ class AccountMaster(db.Model):
     Company_Type = Column(String(50), nullable=True)
     Vendor_Approved = Column(String(1), nullable=True)
     Customer_Select_Party = Column(String(1), nullable=True)
+    buying_charges = Column(Numeric(18, 2), nullable=True)
+    selling_charges = Column(Numeric(18, 2), nullable=True)
+    gov_millcode = Column(String(20), nullable=True)
+    
 
 
     contacts = relationship('AccountContact', backref='accountmaster', lazy=True)

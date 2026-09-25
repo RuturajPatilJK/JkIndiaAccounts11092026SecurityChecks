@@ -1022,7 +1022,6 @@ const EWayBills = ({ fromDate }) => {
                     ewbNumbers,
                     {
                         headers: {
-                            Authorization: `Bearer ${token}`,
                             'Content-Type': 'application/json',
                         },
                     }
@@ -1111,7 +1110,6 @@ const EWayBills = ({ fromDate }) => {
                         ewbNumbers,
                         {
                             headers: {
-                                Authorization: `Bearer ${tokenResponse.token}`,
                                 'Content-Type': 'application/json',
                             },
                         }

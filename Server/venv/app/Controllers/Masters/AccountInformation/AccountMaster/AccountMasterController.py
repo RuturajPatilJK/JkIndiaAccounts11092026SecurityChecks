@@ -220,6 +220,42 @@ def update_account_risk_limit():
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
 
+# eBuy Customer Limit screen — Buying/Selling charges shown alongside the Buy
+# Limit / Sell Limit fields, stored directly on AccountMaster (not a ledger
+# entry like the BL/SL balance additions).
+@app.route(API_URL + "/update-account-charges", methods=["PUT"])
+def update_account_charges():
+    try:
+        data = request.get_json() or {}
+        accoid = data.get('accoid')
+        buying_charges = data.get('buying_charges')
+        selling_charges = data.get('selling_charges')
+
+        if not accoid:
+            return jsonify({"error": "Missing 'accoid' parameter"}), 400
+
+        account = AccountMaster.query.filter_by(accoid=accoid).first()
+        if not account:
+            return jsonify({"error": "Account not found"}), 404
+
+        if buying_charges is not None:
+            account.buying_charges = buying_charges
+        if selling_charges is not None:
+            account.selling_charges = selling_charges
+        db.session.commit()
+
+        return jsonify({
+            "message": "Charges updated successfully",
+            "accoid": accoid,
+            "buying_charges": float(account.buying_charges) if account.buying_charges is not None else None,
+            "selling_charges": float(account.selling_charges) if account.selling_charges is not None else None,
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
+
+
 # Our Party Selection (eBuySugar Hub) - looks up accounts by PAN so the user
 # can bulk-toggle Our_Party / Show_Ledger for just those parties. Requires a
 # PAN (full or partial) rather than dumping the whole account master (~20k

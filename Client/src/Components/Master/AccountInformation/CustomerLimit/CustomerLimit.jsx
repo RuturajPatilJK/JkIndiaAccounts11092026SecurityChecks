@@ -29,6 +29,11 @@ const CustomerLimit = () => {
   const [additionalBuyAmount, setAdditionalBuyAmount] = useState("");
   const [additionalSellAmount, setAdditionalSellAmount] = useState("");
 
+  // Buying/Selling charges — stored directly on AccountMaster, not the BL/SL
+  // ledger. Defaults from the selected account's own record; "0" when unset.
+  const [buyingCharges, setBuyingCharges] = useState("0");
+  const [sellingCharges, setSellingCharges] = useState("0");
+
 
   const [entries, setEntries] = useState([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
@@ -198,6 +203,8 @@ const CustomerLimit = () => {
 
     setDailyBuyLimit("");
     setDailySellLimit("");
+    setBuyingCharges("0");
+    setSellingCharges("0");
 
     setSelectedAcCode(code);
     setSelectedAcName(name);
@@ -209,7 +216,38 @@ const CustomerLimit = () => {
     if (ebuySlLimit !== null && ebuySlLimit !== undefined && ebuySlLimit !== "") {
       setDailySellLimit(String(ebuySlLimit));
     }
+
+    if (code) {
+      fetchAccountCharges(code);
+    }
   };
+
+  // Buying_Charges / Selling_Charges live on AccountMaster itself — fetch the
+  // full record for the selected account so these default from whatever is
+  // already saved there (0 if unset).
+  const fetchAccountCharges = async (acCode) => {
+    try {
+      const res = await axios.get(`${API_URL}/getaccountmasterByid`, {
+        params: { Ac_Code: acCode, Company_Code: company_code },
+      });
+      const master = res.data?.account_master_data;
+      if (master) {
+        setBuyingCharges(
+          master.buying_charges !== null && master.buying_charges !== undefined
+            ? String(master.buying_charges)
+            : "0"
+        );
+        setSellingCharges(
+          master.selling_charges !== null && master.selling_charges !== undefined
+            ? String(master.selling_charges)
+            : "0"
+        );
+      }
+    } catch (err) {
+      // Non-critical — fields just stay at their "0" default.
+    }
+  };
+
 
 
   const validateAmount = (val, fieldName) => {
@@ -301,8 +339,44 @@ const CustomerLimit = () => {
       hasAnything = true;
     }
 
+    // Buying/Selling Charges save through the same button — plain
+    // AccountMaster fields, not the BL/SL ledger, so they're independent of
+    // whether the ledger side (hasAnything) has anything to post.
+    const buyChargesVal = parseFloat(buyingCharges);
+    const sellChargesVal = parseFloat(sellingCharges);
+    const chargesValid =
+      !isNaN(buyChargesVal) && !isNaN(sellChargesVal) && buyChargesVal >= 0 && sellChargesVal >= 0;
+    if (!chargesValid) {
+      Swal.fire("Invalid", "Buying/Selling Charges must be valid, non-negative numbers.", "warning");
+      return;
+    }
+
     if (!hasAnything) {
-      Swal.fire("Nothing to Save", "Please enter at least one value.", "info");
+      // Nothing for the ledger — still let the user save just the charges.
+      const confirmChargesOnly = await Swal.fire({
+        title: "Confirm Save",
+        html: `Save Buying/Selling Charges for <b>${selectedAcName}</b>?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Save",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+      });
+      if (!confirmChargesOnly.isConfirmed) return;
+
+      setPosting(true);
+      try {
+        await axios.put(`${API_URL}/update-account-charges`, {
+          accoid: selectedAccoid,
+          buying_charges: buyChargesVal,
+          selling_charges: sellChargesVal,
+        });
+        Swal.fire("Saved!", "Buying/Selling Charges updated.", "success");
+      } catch (err) {
+        Swal.fire("Error", err.response?.data?.error || "Server error.", "error");
+      } finally {
+        setPosting(false);
+      }
       return;
     }
 
@@ -324,6 +398,11 @@ const CustomerLimit = () => {
         payload,
         { params: { company_code } }
       );
+      await axios.put(`${API_URL}/update-account-charges`, {
+        accoid: selectedAccoid,
+        buying_charges: buyChargesVal,
+        selling_charges: sellChargesVal,
+      });
       if (res.data?.success) {
         Swal.fire("Saved!", res.data.message, "success");
         setAdditionalBuyAmount("");
@@ -515,7 +594,17 @@ const CustomerLimit = () => {
 
   return (
     <div style={{ fontFamily: "'Signika', 'Segoe UI', sans-serif", marginTop: "-60px" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500;600;700&display=swap');`}</style>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500;600;700&display=swap');
+        .no-spinner-input::-webkit-outer-spin-button,
+        .no-spinner-input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        .no-spinner-input {
+          -moz-appearance: textfield;
+        }
+      `}</style>
       <ToastContainer autoClose={2000} />
       {pdfPreview && <PdfPreview pdfData={pdfPreview} label="CustomerLedgerBalance" />}
       {isPrinting && (
@@ -596,31 +685,51 @@ const CustomerLimit = () => {
             </div>
 
 
-            <div style={{ marginBottom: "12px" }}>
-              <label style={labelStyle}>Daily Buy Limit</label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={dailyBuyLimit}
-                onChange={(e) => setDailyBuyLimit(e.target.value)}
-                placeholder=""
-                style={inputStyle}
-                disabled={!selectedAccoid}
-              />
+            <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Daily Buy Limit</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  value={dailyBuyLimit}
+                  onChange={(e) => setDailyBuyLimit(e.target.value)}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder=""
+                  style={inputStyle}
+                  className="no-spinner-input"
+                  disabled={!selectedAccoid}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Additional Limit</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  value={additionalBuyAmount}
+                  onChange={(e) => setAdditionalBuyAmount(e.target.value)}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="Multiples of 5 only"
+                  style={inputStyle}
+                  className="no-spinner-input"
+                  disabled={!selectedAccoid}
+                />
+              </div>
             </div>
 
-
             <div style={{ marginBottom: "12px" }}>
-              <label style={labelStyle}>Daily Additional Buy Limit</label>
+              <label style={labelStyle}>Buying Charges</label>
               <input
                 type="number"
                 min="0"
-                step="5"
-                value={additionalBuyAmount}
-                onChange={(e) => setAdditionalBuyAmount(e.target.value)}
-                placeholder="Multiples of 5 only"
+                step="0.01"
+                value={buyingCharges}
+                onChange={(e) => setBuyingCharges(e.target.value)}
+                onWheel={(e) => e.target.blur()}
+                placeholder="0"
                 style={inputStyle}
+                className="no-spinner-input"
                 disabled={!selectedAccoid}
               />
             </div>
@@ -651,31 +760,51 @@ const CustomerLimit = () => {
             </div>
 
 
-            <div style={{ marginBottom: "12px" }}>
-              <label style={labelStyle}>Daily Sell Limit </label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={dailySellLimit}
-                onChange={(e) => setDailySellLimit(e.target.value)}
-                placeholder=""
-                style={inputStyle}
-                disabled={!selectedAccoid}
-              />
+            <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Daily Sell Limit </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  value={dailySellLimit}
+                  onChange={(e) => setDailySellLimit(e.target.value)}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder=""
+                  style={inputStyle}
+                  className="no-spinner-input"
+                  disabled={!selectedAccoid}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={labelStyle}>Additional Limit</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="5"
+                  value={additionalSellAmount}
+                  onChange={(e) => setAdditionalSellAmount(e.target.value)}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="Multiples of 5 only"
+                  style={inputStyle}
+                  className="no-spinner-input"
+                  disabled={!selectedAccoid}
+                />
+              </div>
             </div>
 
-
             <div style={{ marginBottom: "12px" }}>
-              <label style={labelStyle}>Daily Additional Sell Limit</label>
+              <label style={labelStyle}>Selling Charges</label>
               <input
                 type="number"
                 min="0"
-                step="5"
-                value={additionalSellAmount}
-                onChange={(e) => setAdditionalSellAmount(e.target.value)}
-                placeholder="Multiples of 5 only"
+                step="0.01"
+                value={sellingCharges}
+                onChange={(e) => setSellingCharges(e.target.value)}
+                onWheel={(e) => e.target.blur()}
+                placeholder="0"
                 style={inputStyle}
+                className="no-spinner-input"
                 disabled={!selectedAccoid}
               />
             </div>
@@ -698,6 +827,7 @@ const CustomerLimit = () => {
               </button>
             </div>
           </div>
+
 
 
           <button

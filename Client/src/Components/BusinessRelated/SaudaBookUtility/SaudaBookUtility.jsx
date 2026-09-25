@@ -383,6 +383,29 @@ const handleExMillSelectionChange = (e) => {
         return;
       }
 
+
+      const EBUY_SUGAR_AC_CODE = process.env.REACT_APP_EBUY_SUGAR_AC_CODE;
+      if (
+        EBUY_SUGAR_AC_CODE &&
+        String(formData.Buyer) === String(EBUY_SUGAR_AC_CODE) &&
+        String(formData.ShipTo) === String(EBUY_SUGAR_AC_CODE) &&
+        millCode
+      ) {
+        try {
+          const millRes = await axios.get(`${API_URL}/getaccountmasterByid`, {
+            params: { Ac_Code: millCode, Company_Code: companyCode },
+          });
+          const govMillCode = millRes.data?.account_master_data?.gov_millcode;
+          if (!govMillCode) {
+            await Swal.fire("Warning", "This Mill Gov. Mill Code is not present", "warning");
+            setIsSubmitting(false);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to verify Mill Gov Mill Code", err);
+        }
+      }
+
       const commission = parseFloat(formData.Commission_Rate) || 0;
       if (commission < 0) {
         const result = await Swal.fire({

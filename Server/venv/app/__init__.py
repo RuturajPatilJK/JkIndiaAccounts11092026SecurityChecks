@@ -323,6 +323,8 @@ from app.Controllers.FileInformation.FileInformationController import *
 
 from app.Controllers.Masters.AccountInformation.EmployeeManagement import * 
 
+from app.Controllers.Transactions.OfflineTender.OfflineTenderController import *
+
 
 upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 

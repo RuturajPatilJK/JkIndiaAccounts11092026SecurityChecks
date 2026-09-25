@@ -531,7 +531,8 @@ const Navbar = () => {
         { to: "/utrentry-Utility", icon: CursorArrowRaysIcon, text: "UTR Entry" },
         { to: "/debitcreditnote-utility", icon: ReceiptPercentIcon, text: "Debit/Credit Note" },
         { to: "/other-purchaseutility", icon: ShoppingBagIcon, text: "Other Purchase" },
-        { to: "/PaymentNote-utility", icon: CreditCardIcon, text: "Payment Note" }
+        { to: "/PaymentNote-utility", icon: CreditCardIcon, text: "Payment Note" },
+        { to: "/OfflineTender_Utility", icon: ClipboardDocumentCheckIcon, text: "Offline Tender" }
       ]
     },
     {

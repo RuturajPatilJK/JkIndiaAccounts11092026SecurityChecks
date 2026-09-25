@@ -179,8 +179,8 @@ const EInvoiceEwayBillGeneration = ({
           url = `${API_URL}/get_eWayBill_generationData_for_ServiceBill?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}`;
         } 
         else if (tran_type === 'SB') {
-          url = `${API_URL}/get_eInvoice_generationData_SB?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}&do_no=${do_no}`;
-        } 
+          url = `${API_URL}/get_eInvoice_generationData_SB?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}&do_no=${do_no}&tran_type=${tran_type}`;
+        }
 
         else if (tran_type === 'PR') {
           url = `${API_URL}/getEInvoiceGeneration_PR?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}`;
