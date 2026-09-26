@@ -67,7 +67,7 @@ const EwayBillGeneration = ({
 
         if (tran_type === "SB") {
           response = await axios.get(
-            `${API_URL}/getEwayBillGeneratioData_SB?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}&do_no=${do_no}`
+            `${API_URL}/getEwayBillGeneratioData_SB?Company_Code=${Company_Code}&Year_Code=${Year_Code}&doc_no=${doc_no}&do_no=${do_no}&tran_type=${tran_type}`
           );
         } else if (tran_type === "RS") {
           response = await axios.get(

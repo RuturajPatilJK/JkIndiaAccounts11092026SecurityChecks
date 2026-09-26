@@ -4515,7 +4515,7 @@ const TenderPurchase = () => {
                   <TableCell sx={headerCellStyle}>Ship To Name</TableCell>
                   <TableCell sx={headerCellStyle}>Quintal</TableCell>
                   <TableCell sx={headerCellStyle}>Sale Rate</TableCell>
-                  <TableCell sx={headerCellStyle}>Commission</TableCell>
+                  <TableCell sx={headerCellStyle}>Charges</TableCell>
                   <TableCell sx={headerCellStyle}>Sauda Date</TableCell>
                   <TableCell sx={headerCellStyle}>Sauda Narration</TableCell>
                   <TableCell sx={headerCellStyle}>Delivery Type</TableCell>

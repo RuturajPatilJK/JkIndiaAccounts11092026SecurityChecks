@@ -442,6 +442,7 @@ const SaleBill = () => {
           ...formData,
           ...data.last_head_data
         });
+        warmTdsCalcInfoForEdit(data.last_head_data.Ac_Code);
         setIsEditMode(true);
         setAddOneButtonEnabled(false);
         setSaveButtonEnabled(true);
@@ -1175,6 +1176,30 @@ const SaleBill = () => {
     return { TDS_Rate: 0, TCS_Rate: 0 };
   };
 
+  // handleBillFrom skips AmountCalculation while isEditMode is true (so it
+  // doesn't clobber an already-saved record's TDS on open), but that also
+  // means tdsCalcInfoRef is never warmed for that party - so if the user
+  // then edits any amount field, computeSaleTdsTcsRates recalculates TDS
+  // off the ref's zeroed defaults, and TDS_Amt collapses to 0. This warms
+  // the ref (without touching formData) whenever edit mode is entered.
+  const warmTdsCalcInfoForEdit = async (acCode) => {
+    if (!acCode) return;
+    try {
+      const updateApiUrl = `${API_URL}/getAmountcalculationDataForOutword?CompanyCode=${companyCode}&Ac_Code=${acCode}&Year_Code=${Year_Code}`;
+      const response = await axios.get(updateApiUrl);
+      const details = response.data;
+      tdsCalcInfoRef.current = {
+        balancelimit: parseFloat(details['Balancelimt']) || 0,
+        tdsApplicable: details['SaleTDSApplicable_Data'],
+        saleTdsRate: parseFloat(details['SaleTDSRate']) || 0,
+        tcsRate: TCSApplicable === 'Y' ? (parseFloat(details['TCSRate']) || 0) : 0,
+        priorAmt: parseFloat(details['SBAmt']) || 0,
+      };
+    } catch (error) {
+      console.error("Error warming TDS calc info for edit:", error);
+    }
+  };
+
   const calculateDependentValues = async (
     name,
     input,
@@ -1239,7 +1264,14 @@ const SaleBill = () => {
       cashAdvance
     ).toFixed(2);
 
-    const { TDS_Rate: tdsRate, TCS_Rate: tcsRate } = computeSaleTdsTcsRates(updatedFormData.TaxableAmount);
+    const autoRates = computeSaleTdsTcsRates(updatedFormData.TaxableAmount);
+    // If the user is directly typing into TDS Rate itself, respect what
+    // they typed (e.g. clearing 0.100 to 0) instead of silently overriding
+    // it with the auto-computed rate - matches Purchase Bill's behavior.
+    const tdsRate = name === 'TDS_Rate'
+      ? (parseFloat(updatedFormData.TDS_Rate) || 0)
+      : autoRates.TDS_Rate;
+    const tcsRate = autoRates.TCS_Rate;
 
     updatedFormData.TCS_Amt = (
       (updatedFormData.Bill_Amount * tcsRate) /

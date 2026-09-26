@@ -467,7 +467,8 @@ def getreceiptpaymentByid():
             "receipt_payment_details": [{
                 **{column.name: getattr(detail, column.name) for column in detail.__table__.columns},
                 **format_dates(detail)
-            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).all()]
+            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid)
+             .order_by(ReceiptPaymentDetail.trandetailid.desc()).all()]
         }
 
         return jsonify(response), 200
@@ -1165,8 +1166,8 @@ def get_firstreceiptpayment_navigation():
             {
                 **{column.name: getattr(detail, column.name) for column in detail.__table__.columns},
                 **format_dates(detail)
-            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).all()
-        ]
+            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).order_by(ReceiptPaymentDetail.trandetailid.desc()).all()]
+        
 
         response = {
             "first_head_data": first_head_data,
@@ -1208,7 +1209,7 @@ def get_lastreceiptpayment_navigation():
             {
                 **{column.name: getattr(detail, column.name) for column in detail.__table__.columns},
                 **format_dates(detail)
-            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).all()
+            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).order_by(ReceiptPaymentDetail.trandetailid.desc()).all()
         ]
 
         response = {
@@ -1252,7 +1253,7 @@ def get_previousreceiptpayment_navigation():
             {
                 **{column.name: getattr(detail, column.name) for column in detail.__table__.columns},
                 **format_dates(detail)
-            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).all()
+            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).order_by(ReceiptPaymentDetail.trandetailid.desc()).all()
         ]
 
         response = {
@@ -1296,7 +1297,7 @@ def get_nextreceiptpayment_navigation():
             {
                 **{column.name: getattr(detail, column.name) for column in detail.__table__.columns},
                 **format_dates(detail)
-            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).all()
+            } for detail in ReceiptPaymentDetail.query.filter_by(tranid=tranid).order_by(ReceiptPaymentDetail.trandetailid.desc()).all()
         ]
 
         response = {

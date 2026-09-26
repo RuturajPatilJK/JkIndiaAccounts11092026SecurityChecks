@@ -8090,6 +8090,7 @@ const DeliveryOrder = () => {
                       }}
                     />
                   </Grid>
+
                 </Grid>
               </div>
 
@@ -8324,6 +8325,16 @@ const DeliveryOrder = () => {
                       }
                     />
                   </Grid>
+
+                  <Button
+
+
+                    onClick={() => handleGenerateEwayBill()}
+
+                    style={{ whiteSpace: "nowrap" }}
+                  >
+                    .
+                  </Button>
                 </Grid>
               </div>
 
