@@ -2718,7 +2718,7 @@ const TenderPurchase = () => {
           handleEdit={handleEdit}
           editButtonEnabled={editButtonEnabled && formData.customer_sale !== 'Y'}
           handleDelete={handleDelete}
-          deleteButtonEnabled={deleteButtonEnabled && formData.customer_sale !== 'Y'}
+          deleteButtonEnabled={deleteButtonEnabled }
           handleCancel={handleCancel}
           cancelButtonEnabled={cancelButtonEnabled}
           handleBack={handleBack}
