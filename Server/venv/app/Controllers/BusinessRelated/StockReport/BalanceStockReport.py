@@ -123,12 +123,44 @@ def tender_reports():
 FROM     dbo.qrytenderdobalanceview LEFT OUTER JOIN
                   dbo.nt_1_tenderGradeDetails ON dbo.qrytenderdobalanceview.gradeid = dbo.nt_1_tenderGradeDetails.gradeid AND dbo.qrytenderdobalanceview.tenderid = dbo.nt_1_tenderGradeDetails.tenderid LEFT OUTER JOIN
                   dbo.nt_1_systemmaster ON dbo.nt_1_tenderGradeDetails.gradeid = dbo.nt_1_systemmaster.systemid
-            WHERE dbo.qrytenderdobalanceview.Company_Code = :company_code;
+            WHERE dbo.qrytenderdobalanceview.Company_Code = :company_code and dbo.qrytenderdobalanceview.buyer != 9401 ;
         ''')
         sales_details_result = db.session.execute(sales_details_query, {'company_code': company_code}).fetchall()
 
         if not sales_details_result:
             return jsonify({"error": "No sales details found for the given Company_Code"}), 404
+
+        despatch_sauda_query = text('''
+            SELECT dbo.nt_1_tender.Tender_No, dbo.nt_1_tender.Tender_Date, dbo.nt_1_tender.Quantal,
+                   dbo.qryTendersaudadespatchebuy.despatch, dbo.qryTendersaudaebuy.sauda
+            FROM dbo.nt_1_tender LEFT OUTER JOIN
+                dbo.qryTendersaudaebuy ON dbo.nt_1_tender.Tender_No = dbo.qryTendersaudaebuy.Tender_No AND dbo.nt_1_tender.Company_Code = dbo.qryTendersaudaebuy.Company_Code LEFT OUTER JOIN
+                dbo.qryTendersaudadespatchebuy ON dbo.nt_1_tender.Tender_No = dbo.qryTendersaudadespatchebuy.purc_no AND dbo.nt_1_tender.Company_Code = dbo.qryTendersaudadespatchebuy.company_code
+            WHERE dbo.nt_1_tender.Company_Code = :company_code
+        ''')
+        despatch_sauda_result = db.session.execute(despatch_sauda_query, {'company_code': company_code}).fetchall()
+        despatch_sauda_map = {
+            row.Tender_No: {'despatch': row.despatch, 'sauda': row.sauda}
+            for row in despatch_sauda_result
+        }
+
+        ebuy_balance_query = text('''
+            SELECT td.Tender_No, SUM(td.Buyer_Quantal) - ISNULL(SUM(es.esale), 0) AS ebuy_balance
+            FROM dbo.nt_1_tenderdetails td
+            LEFT OUTER JOIN dbo.qryEbuysalesummary es ON td.tenderdetailid = es.ebuyid
+            WHERE td.Buyer = 9401 AND td.Company_Code = :company_code
+            GROUP BY td.Tender_No
+        ''')
+        ebuy_balance_result = db.session.execute(ebuy_balance_query, {'company_code': company_code}).fetchall()
+        ebuy_balance_map = {row.Tender_No: row.ebuy_balance for row in ebuy_balance_result}
+
+        self_balance_query = text('''
+            SELECT Tender_No, selfqty
+            FROM dbo.qryebuysaleselfstock
+            WHERE Company_Code = :company_code
+        ''')
+        self_balance_result = db.session.execute(self_balance_query, {'company_code': company_code}).fetchall()
+        self_balance_map = {row.Tender_No: row.selfqty for row in self_balance_result}
 
         # Group tender details by Tender_No
         tender_grouped = defaultdict(list)
@@ -149,7 +181,10 @@ FROM     dbo.qrytenderdobalanceview LEFT OUTER JOIN
         # Construct response
         response = {
             "tender_details": [{"Tender_No": tender_no, "details": details} for tender_no, details in tender_grouped.items()],
-            "sales_details": [{"Tender_No": tender_no, "details": details} for tender_no, details in sales_grouped.items()]
+            "sales_details": [{"Tender_No": tender_no, "details": details} for tender_no, details in sales_grouped.items()],
+            "despatch_sauda_details": despatch_sauda_map,
+            "ebuy_balance_details": ebuy_balance_map,
+            "self_balance_details": self_balance_map
         }
 
         return jsonify(response)

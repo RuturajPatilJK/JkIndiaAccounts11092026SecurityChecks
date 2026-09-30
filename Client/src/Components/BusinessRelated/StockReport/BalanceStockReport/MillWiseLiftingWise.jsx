@@ -63,6 +63,9 @@ const MillWiseLiftingWise = () => {
     }, []);
 
     const filterSelfRecords = (data) => {
+        const despatchSaudaDetails = data.despatch_sauda_details || {};
+        const ebuyBalanceDetails = data.ebuy_balance_details || {};
+        const selfBalanceDetails = data.self_balance_details || {};
         const grouped = data.tender_details.map((tender) => {
             const salesDetails = data.sales_details.find(
                 (sale) => sale.Tender_No === tender.Tender_No
@@ -72,9 +75,23 @@ const MillWiseLiftingWise = () => {
                 ? salesDetails.details.filter((sale) => parseFloat(sale.BALANCE) !== 0)
                 : [];
 
+            const despatchSauda = despatchSaudaDetails[tender.Tender_No] || {};
+            const selfBalance = selfBalanceDetails[tender.Tender_No];
+
+            // Self (ID=1) row's Quintal/Balance are overridden with the
+            // query-derived self balance instead of its own raw values.
+            const selfAdjustedDetails = validDetails.map((sale) =>
+                sale.ID === 1
+                    ? { ...sale, Buyer_Quantal: selfBalance, BALANCE: selfBalance }
+                    : sale
+            );
+
             return {
                 ...tender.details[0],
-                salesDetails: validDetails,
+                salesDetails: selfAdjustedDetails,
+                despatch: despatchSauda.despatch,
+                sauda: despatchSauda.sauda,
+                ebuyBalance: ebuyBalanceDetails[tender.Tender_No],
             };
         });
         setGroupedData(grouped.filter((tender) => tender.salesDetails.length > 0));
@@ -299,10 +316,6 @@ const MillWiseLiftingWise = () => {
                             {filteredData.map((tender, index) => {
                                 const totalBalance = tender.salesDetails.reduce((sum, sale) => sum + parseFloat(sale.BALANCE || 0), 0);
                                 const totalDispatch = tender.salesDetails.reduce((sum, sale) => sum + parseFloat(sale.despatchqty || 0), 0);
-                                const saleWithID1 = tender.salesDetails.find(sale => sale.ID === 1);
-                                const qtyDifference = saleWithID1
-                                    ? Number(tender.Quantal || 0) - Number(saleWithID1.Buyer_Quantal || 0)
-                                    : Number(tender.Quantal || 0) - Number(tender.Buyer_Quantal || 0);
 
                                 return (
                                     <React.Fragment key={index}>
@@ -311,9 +324,12 @@ const MillWiseLiftingWise = () => {
                                                 {tender.Tender_No}
                                             </TableCell>
                                             <TableCell style={{ whiteSpace: "nowrap" }}>
-                                                {tender.Tender_Date} / <span style={{ color: 'red' }}> Disp - {Number(tender.Quantal || 0) - Number(totalBalance || 0)} </span> /
-                                                {qtyDifference !== null && (
-                                                    <span style={{ color: 'green', fontWeight: 'bold' }}> Sauda - {qtyDifference} </span>
+                                                {tender.Tender_Date} / <span style={{ color: 'red' }}> Disp : {formatReadableAmount(tender.despatch || 0)} </span> /
+                                                <span style={{ color: 'green', fontWeight: 'bold' }}> Sauda : {formatReadableAmount(tender.sauda || 0)} </span>
+                                                {tender.ebuyBalance !== undefined && (
+                                                    <span style={{ color: 'purple', fontWeight: 'bold' }}>
+                                                        {' '}/ eBuy Balance : {formatReadableAmount(tender.ebuyBalance || 0)}
+                                                    </span>
                                                 )}
                                             </TableCell>
                                             <TableCell sx={{ textAlign: 'left', fontWeight: "bold" }}>{tender.millname}</TableCell>

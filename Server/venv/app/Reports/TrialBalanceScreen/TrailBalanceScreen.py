@@ -281,10 +281,15 @@ def create_roundoffJV():
                         detail_counter += 1
 
                 jv_url = f"{API_SERVER}/insert-receiptpayment"
-                jv_response = requests.post(jv_url, json={
-                    "head_data": jv_head,
-                    "detail_data": jv_details
-                })
+                jv_response = requests.post(
+                    jv_url,
+                    json={
+                        "head_data": jv_head,
+                        "detail_data": jv_details
+                    },
+                    cookies=request.cookies,
+                    headers={'X-CSRF-TOKEN': request.headers.get('X-CSRF-TOKEN', '')}
+                )
 
                 if jv_response.status_code != 200:
                     raise Exception(f"JV API failed: {jv_response.text}")
@@ -560,10 +565,15 @@ def create_depreciationJV():
 
         # Post JV via API
         jv_url = f"{API_SERVER}/insert-receiptpayment"
-        response = requests.post(jv_url, json={
-            "head_data": jv_head,
-            "detail_data": jv_details
-        })
+        response = requests.post(
+            jv_url,
+            json={
+                "head_data": jv_head,
+                "detail_data": jv_details
+            },
+            cookies=request.cookies,
+            headers={'X-CSRF-TOKEN': request.headers.get('X-CSRF-TOKEN', '')}
+        )
 
         if response.status_code != 200:
             return jsonify({

@@ -67,9 +67,9 @@ def _enforce_jwt_globally():
     request.current_user = get_jwt_identity()
 
 # Initialize SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*")
+# socketio = SocketIO(app, cors_allowed_origins="*")
 
-# socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*", message_queue="redis://localhost:6379/0")
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*", message_queue="redis://localhost:6379/0")
 
 
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
