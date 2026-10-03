@@ -164,12 +164,14 @@ const DashBoard = () => {
         <DashboardButton label="Day Book" icon={FaBook} path="/daybook" />
         <DashboardButton label="Trial Balance" icon={FaBalanceScale} path="/trial-balance" />
         <DashboardButton label="Register" icon={FaClipboardList} path="/register" />
-        <DashboardButton label="Self Stock" icon={FaWarehouse} path="/self-stock" onClick={handleSelfStock} />
+        {/* <DashboardButton label="Self Stock" icon={FaWarehouse} path="/self-stock" onClick={handleSelfStock} /> */}
+        <DashboardButton label="Dispatch Summary" icon={FaChartPie} path="/register" />
+
       </div>
 
       {/* Inventory and System Logs Section */}
       <div className="CommonbuttonContainer">
-        <DashboardButton label="Dispatch Summary" icon={FaChartPie} path="/register" />
+        <DashboardButton label="Sale Bill" icon={FaChartPie} path="/SaleBill-utility" />
         <DashboardButton label="Stock Book" icon={FaBookOpen} path="/balance-stock" />
         <DashboardButton label="Stock Summary" icon={FaLayerGroup} path="/stock-book" />
         <DashboardButton label="Company Logs" icon={FaHistory} path="/companylogs" onClick={handleCompanyLogsClick} />

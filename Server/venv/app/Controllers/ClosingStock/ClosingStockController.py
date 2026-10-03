@@ -244,7 +244,7 @@ FROM            dbo.nt_1_tender INNER JOIN
                          dbo.nt_1_accountmaster AS pt ON dbo.nt_1_tender.pt = pt.accoid INNER JOIN
                          dbo.nt_1_accountmaster AS do ON dbo.nt_1_tender.td = do.accoid INNER JOIN
                          dbo.nt_1_systemmaster ON dbo.nt_1_tenderdetails.gradeid = dbo.nt_1_systemmaster.systemid
-      WHERE dbo.nt_1_tenderdetails.Sauda_Date  = :selected_date
+      WHERE dbo.nt_1_tenderdetails.Sauda_Date  = :selected_date And dbo.nt_1_tenderdetails.buyer != 9401
               AND dbo.nt_1_tender.Company_Code        = :company_code
 GROUP BY mill.Short_Name, pt.Short_Name, do.Short_Name, dbo.nt_1_systemmaster.System_Name_E, dbo.nt_1_tender.Lifting_Date, dbo.nt_1_tender.Mill_Rate, dbo.nt_1_tender.Purc_Rate, dbo.nt_1_tender.Grade, 
                          dbo.nt_1_tender.season, dbo.nt_1_tender.Quantal, dbo.nt_1_tender.Mill_Code, dbo.nt_1_tender.Tender_No, dbo.nt_1_tenderdetails.Sale_Rate, dbo.nt_1_tender.Party_Bill_Rate

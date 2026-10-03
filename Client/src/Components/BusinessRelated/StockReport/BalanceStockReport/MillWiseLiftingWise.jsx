@@ -51,6 +51,7 @@ const MillWiseLiftingWise = () => {
                     params: { Company_Code: sessionStorage.getItem('Company_Code') },
                 });
                 const data = response.data;
+
                 filterSelfRecords(data);
             } catch (err) {
                 console.error('Error fetching data:', err);
@@ -71,20 +72,20 @@ const MillWiseLiftingWise = () => {
                 (sale) => sale.Tender_No === tender.Tender_No
             );
 
-            const validDetails = salesDetails
-                ? salesDetails.details.filter((sale) => parseFloat(sale.BALANCE) !== 0)
-                : [];
-
             const despatchSauda = despatchSaudaDetails[tender.Tender_No] || {};
             const selfBalance = selfBalanceDetails[tender.Tender_No];
 
             // Self (ID=1) row's Quintal/Balance are overridden with the
-            // query-derived self balance instead of its own raw values.
-            const selfAdjustedDetails = validDetails.map((sale) =>
+            // query-derived self balance BEFORE the BALANCE!=0 filter below -
+            // otherwise a self row whose own raw BALANCE is 0 gets dropped
+            // before the override ever has a chance to replace it.
+            const rawDetails = salesDetails ? salesDetails.details : [];
+            const selfAdjustedAll = rawDetails.map((sale) =>
                 sale.ID === 1
                     ? { ...sale, Buyer_Quantal: selfBalance, BALANCE: selfBalance }
                     : sale
             );
+            const selfAdjustedDetails = selfAdjustedAll.filter((sale) => parseFloat(sale.BALANCE) !== 0);
 
             return {
                 ...tender.details[0],
@@ -92,6 +93,7 @@ const MillWiseLiftingWise = () => {
                 despatch: despatchSauda.despatch,
                 sauda: despatchSauda.sauda,
                 ebuyBalance: ebuyBalanceDetails[tender.Tender_No],
+                selfBalance,
             };
         });
         setGroupedData(grouped.filter((tender) => tender.salesDetails.length > 0));
@@ -328,9 +330,19 @@ const MillWiseLiftingWise = () => {
                                                 <span style={{ color: 'green', fontWeight: 'bold' }}> Sauda : {formatReadableAmount(tender.sauda || 0)} </span>
                                                 {tender.ebuyBalance !== undefined && (
                                                     <span style={{ color: 'purple', fontWeight: 'bold' }}>
-                                                        {' '}/ eBuy Balance : {formatReadableAmount(tender.ebuyBalance || 0)}
+                                                        {' '}/ eBuy : {formatReadableAmount(tender.ebuyBalance || 0)}
                                                     </span>
                                                 )}
+                                                {(tender.ebuyBalance !== undefined || tender.selfBalance !== undefined) && (
+                                                    <span style={{ color: 'black', fontWeight: 'bold' }}>
+                                                        {' '}/ eBuy with Self Balance : {formatReadableAmount((parseFloat(tender.ebuyBalance) || 0) + (parseFloat(tender.selfBalance) || 0))}
+                                                    </span>
+                                                )}
+                                                {/* {tender.selfBalance !== undefined && (
+                                                    <span style={{ color: 'black', fontWeight: 'bold' }}>
+                                                        {' '}/ Self : {formatReadableAmount(tender.selfBalance || 0)}
+                                                    </span>
+                                                )} */}
                                             </TableCell>
                                             <TableCell sx={{ textAlign: 'left', fontWeight: "bold" }}>{tender.millname}</TableCell>
                                             <TableCell>{tender.Grade}</TableCell>

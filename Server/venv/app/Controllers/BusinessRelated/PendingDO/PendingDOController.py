@@ -80,16 +80,13 @@ def sync_pending_delivery_order_for_do(*, tenderdetailid, tenderid, doid, do_no,
     # can be split across multiple DOs over time (e.g. 200 now, 300 later),
     # and each must get/keep its own mirror row rather than overwriting
     # whichever other DO's entry happens to share the same tenderdetailid.
+    # Only updates an existing linked PendingDeliveryOrder row - never
+    # creates a new one here. A DO with no pending-order origin (doid not
+    # already present) is intentionally left alone, per explicit request.
     existing = PendingDeliveryOrder.query.filter_by(doid=doid).first()
     if existing:
         for key, value in field_values.items():
             setattr(existing, key, value)
-    else:
-        field_values['Adj_Quintal'] = 0
-        field_values['Created_Date'] = now
-        field_values['isLocked'] = False
-        field_values['isDeleted'] = False
-        db.session.add(PendingDeliveryOrder(**field_values))
 
 
 @app.route(API_URL + "/get-pending-delivery-orders", methods=["GET"])

@@ -811,34 +811,10 @@ async def insert_DeliveryOrder():
                     'pendingDoid': int(_pending_doc_id),
                 }
             )
-        else:
-            # No existing pending request was being approved - this is a
-            # fresh/manual DO (e.g. a further split of an already-partially-
-            # fulfilled sauda). Give it its own pending-entry mirror instead
-            # of touching any other DO's row that happens to share the same
-            # tenderdetailid.
-            sync_pending_delivery_order_for_do(
-                tenderdetailid=new_head.tenderdetailid,
-                tenderid=new_head.tenderid,
-                doid=new_head.doid,
-                do_no=new_doc_no,
-                company_code=headData['company_code'],
-                mill_code=headData.get('mill_code'),
-                mc=new_head.mc,
-                year_code=headData['Year_Code'],
-                truck_no=new_head.truck_no,
-                driver_no=new_head.driver_no,
-                admin_user_id=headData.get('User_Id'),
-                bill_to_ac_code=new_head.SaleBillTo,
-                bill_to_accoid=new_head.sb,
-                ship_to_ac_code=new_head.voucher_by,
-                ship_to_accoid=new_head.vb,
-                mill_rate=new_head.mill_rate,
-                ebuy_user_id=new_head.broker,
-                quantal=new_head.quantal,
-                sale_rate=new_head.sale_rate,
-                third_party_do=_bank_code,
-            )
+        # Note: a manually-created DO with no existing pending-order origin
+        # (_pending_doc_id falsy) no longer gets auto-mirrored into
+        # nt_1_PendingDeliveryOrder - per explicit request, only approving an
+        # existing pending request (the `if` branch above) touches that table.
 
         # ── FIX 1: lightweight company parameters — cached, single SELECT ─────
         company_parameters = _get_company_parameters(

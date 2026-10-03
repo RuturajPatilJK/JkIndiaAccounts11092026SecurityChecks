@@ -40,18 +40,29 @@ const PdfPreview_JK = ({ pdfData, apiData, label }) => {
 
   /* ─── send WhatsApp ─── */
   const sendWhatsApp = async (pdfUrl, whatsappNumbers, options) => {
+    const numbers = Array.from(new Set(
+      String(whatsappNumbers || '').split(',')
+        .map(n => n.trim()).filter(n => /^\d{10}$/.test(n))
+        .map(n => `91${n}`)
+    ));
+    if (numbers.length === 0) throw new Error('No valid WhatsApp numbers.');
+
     const resp = await fetch(pdfUrl);
     if (!resp.ok) throw new Error(`PDF fetch failed: ${resp.status}`);
     const srcBlob = await resp.blob();
     const pdfFilename = `${(options.pdfName || 'document').replace(/\.pdf$/i, '')}.pdf`;
     const fixedBlob = new Blob([srcBlob], { type: 'application/pdf' });
 
+    // The WhatsApp proxy has no true "upload for a reusable media_id" step -
+    // it only accepts a full send request wanting a document.link (a public
+    // URL). So this just saves the PDF to our own backend and gets back a
+    // URL to reference, instead of a media_id.
     const uploadForm = new FormData();
     uploadForm.append('file', fixedBlob, pdfFilename);
     const uploadRes = await fetch(`${apiKey}/upload-to-whatsapp-media`, { method: 'POST', body: uploadForm });
     if (!uploadRes.ok) throw new Error(`Media upload failed: ${uploadRes.status}`);
-    const { media_id: mediaId } = await uploadRes.json();
-    if (!mediaId) throw new Error('No media_id returned.');
+    const { url: mediaUrl } = await uploadRes.json();
+    if (!mediaUrl) throw new Error('No media URL returned.');
 
     const messageTemplate = messageTemplates[options.label];
     if (!messageTemplate || !Array.isArray(messageTemplate.params))
@@ -64,18 +75,11 @@ const PdfPreview_JK = ({ pdfData, apiData, label }) => {
       })
     );
 
-    const numbers = Array.from(new Set(
-      String(whatsappNumbers || '').split(',')
-        .map(n => n.trim()).filter(n => /^\d{10}$/.test(n))
-        .map(n => `91${n}`)
-    ));
-    if (numbers.length === 0) throw new Error('No valid WhatsApp numbers.');
-
     const components = [];
     if (messageTemplate.header === 'document') {
       components.push({
         type: 'header',
-        parameters: [{ type: 'document', document: { id: mediaId, filename: pdfFilename } }],
+        parameters: [{ type: 'document', document: { link: mediaUrl, filename: pdfFilename } }],
       });
     }
     if (paramArray.length > 0) {

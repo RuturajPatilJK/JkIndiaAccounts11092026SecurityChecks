@@ -419,9 +419,9 @@ const PendingReports = () => {
                     <Button variant="outlined" color="secondary" onClick={() => window.open('/millwise-stock', '_blank')}>
                         Mill Wise Lifting Wise
                     </Button>
-                    <Button variant="outlined" color="secondary" onClick={() => window.open('/self-stock', '_blank')}>
+                    {/* <Button variant="outlined" color="secondary" onClick={() => window.open('/self-stock', '_blank')}>
                         Self Stock
-                    </Button>
+                    </Button> */}
                     <Button variant="outlined" color="secondary" onClick={() => window.open('/ebuysugar-self-stock', '_blank')}>
                         eBuySelf Stock
                     </Button>

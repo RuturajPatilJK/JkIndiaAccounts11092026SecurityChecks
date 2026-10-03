@@ -5,22 +5,38 @@
 import os
 import re
 import json
+import uuid
 import requests
-from flask import request, jsonify, make_response
-from app import app
+from flask import request, jsonify, make_response, send_from_directory
+from app import app, FRONTEND_ORIGINS
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 API_URL        = os.getenv("API_URL", "/api/sugarian")
+API_URL_SERVER = os.getenv("API_URL_SERVER")
 D360_API_KEY   = os.getenv("D360_API_KEY")
 D360_BASE_URL  = "https://waba-v2.360dialog.io"
 D360_API_URL   = os.getenv("D360_API_URL")
-ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "*")
+
+
+def _whatsapp_media_dir():
+    base = os.getenv('UPLOAD_FOLDER', 'Uploads')
+    path = os.path.join(base, 'whatsappmedia')
+    os.makedirs(path, exist_ok=True)
+    return path
 
 # ─── CORS helper ──────────────────────────────────────────────────────────────
+# This route builds its own response (not going through flask-cors), so it
+# needs its own CORS headers. Reuses the same FRONTEND_ORIGINS allowlist the
+# rest of the app already uses (app/__init__.py), instead of the separate,
+# never-configured ALLOWED_ORIGIN env var that defaulted to '*' - a wildcard
+# origin is rejected by browsers for credentialed (cookie) requests.
 def _corsify(resp):
-    resp.headers["Access-Control-Allow-Origin"]  = ALLOWED_ORIGIN
+    origin = request.headers.get("Origin")
+    if origin in FRONTEND_ORIGINS:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
     resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-CSRF-TOKEN"
     resp.headers["Access-Control-Max-Age"]        = "86400"
     return resp
 
@@ -35,62 +51,31 @@ def upload_to_whatsapp_media():
     if not file:
         return _corsify(make_response(jsonify(error="No file provided"), 400))
 
-    filename  = file.filename or "document.pdf"
+    filename = file.filename or "document.pdf"
     if not filename.lower().endswith(".pdf"):
         filename += ".pdf"
 
-    file_bytes = file.read()
+    # This proxy has no true "upload for a reusable media_id" endpoint - it
+    # only accepts a full send-message request, which in turn wants a
+    # document.link (a publicly fetchable URL), not raw/base64 file bytes.
+    # So instead of uploading to the proxy here, save the PDF to our own
+    # public storage and hand back a URL this server can serve to Meta's
+    # fetchers - /send-whatsapp then references that link directly.
+    stored_name = f"{uuid.uuid4().hex}.pdf"
+    with open(os.path.join(_whatsapp_media_dir(), stored_name), "wb") as f:
+        f.write(file.read())
 
-    app.logger.info(f"Uploading '{filename}' ({len(file_bytes)} bytes) to 360dialog …")
+    public_url = f"{API_URL_SERVER}/whatsapp-media/{stored_name}"
+    app.logger.info(f"Saved '{filename}' for WhatsApp send at {public_url}")
 
-    try:
-        resp = requests.post(
-            D360_API_URL,
-            headers={
-                "API-KEY": f"Bearer {D360_API_KEY}",
-                "MM_lite": "yes",
-                # NOTE: Do NOT add Content-Type here — requests sets it
-                #       automatically with the correct multipart boundary.
-            },
-            files={
-                "file": (filename, file_bytes, "application/pdf"),
-            },
-            data={
-                "messaging_product": "whatsapp",   # ← must be in data=, not files=
-            },
-            timeout=30,
-        )
-    except requests.RequestException as exc:
-        app.logger.error(f"360dialog media upload network error: {exc}")
-        return _corsify(make_response(jsonify(error=f"Network error: {exc}"), 502))
+    return _corsify(make_response(jsonify(url=public_url, filename=filename), 200))
 
-    app.logger.info(f"360dialog media upload → {resp.status_code}: {resp.text}")
 
-    if not resp.ok:
-        return _corsify(make_response(
-            jsonify(error="360dialog upload failed", status=resp.status_code, detail=resp.text),
-            resp.status_code,
-        ))
-
-    try:
-        data = resp.json()
-    except ValueError:
-        return _corsify(make_response(jsonify(error="Non-JSON response from 360dialog", raw=resp.text), 500))
-
-    # Handle both known response shapes
-    if "media" in data and isinstance(data["media"], list):
-        media_id = data["media"][0].get("id")
-    elif "id" in data:
-        media_id = data["id"]
-    else:
-        app.logger.error(f"Unexpected 360dialog response: {data}")
-        return _corsify(make_response(jsonify(error="Unexpected response shape", raw=data), 500))
-
-    if not media_id:
-        return _corsify(make_response(jsonify(error="media_id missing in response", raw=data), 500))
-
-    app.logger.info(f"360dialog media_id: {media_id}")
-    return _corsify(make_response(jsonify(media_id=media_id), 200))
+@app.route(API_URL + "/whatsapp-media/<path:stored_name>", methods=["GET"])
+def serve_whatsapp_media(stored_name):
+    # Public by design (see PUBLIC_ENDPOINTS in app/__init__.py) - Meta's
+    # servers fetch this directly, with no session of their own to present.
+    return send_from_directory(os.path.abspath(_whatsapp_media_dir()), stored_name)
 
 
 

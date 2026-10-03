@@ -757,7 +757,7 @@ const handleExMillSelectionChange = (e) => {
             </Grid>
             <Grid item xs={12} sm={8}>
               <Box display="flex" gap={2}>
-                <TextField style={{ marginTop:"10px"}} type="date" size="small" fullWidth name="Sauda_Date" label="Sauda Date" value={formData.Sauda_Date} onChange={handleInputChange} InputLabelProps={{ shrink: true }} />
+                <TextField style={{ marginTop:"10px"}} type="date" size="small" fullWidth name="Sauda_Date" label="Sauda Date" value={formData.Sauda_Date} onChange={handleInputChange} InputLabelProps={{ shrink: true }} disabled />
                 <TextField style={{ marginTop:"10px"}} type="date" size="small" fullWidth name="Lifting_Date" label="Payment Date" value={formData.Lifting_Date} onChange={handleInputChange} InputLabelProps={{ shrink: true }} />
                 <TextField style={{ marginTop:"10px"}} type="date" size="small" fullWidth name="Sauda_Lifting_Date" label="Sauda Lifting Date" value={formData.Sauda_Lifting_Date} onChange={handleInputChange} InputLabelProps={{ shrink: true }} />
               </Box>

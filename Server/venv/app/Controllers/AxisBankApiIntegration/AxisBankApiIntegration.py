@@ -15,10 +15,11 @@ import ipaddress
 import hmac
 from functools import wraps
 
-API_URL = os.getenv('API_URL')  
-API_AUTH_KEY = os.getenv('API_AUTH_KEY')     
-API_AUTH_HEADER = 'X-API-KEY' 
+API_URL = os.getenv('API_URL')
+API_AUTH_KEY = os.getenv('API_AUTH_KEY')
+API_AUTH_HEADER = 'X-API-KEY'
 API_URL_SERVER = os.getenv('API_URL_SERVER')
+INTERNAL_API_KEY = os.getenv('INTERNAL_API_KEY')
 
 VALID_PREFIX_CODE = os.getenv('VALID_PREFIX_CODE')
 COMPANY_CODE = int(os.getenv('COMPANY_CODE', 4))
@@ -518,7 +519,7 @@ def notification():
                     br_response = requests.put(br_url, json={
                         "head_data": br_head,
                         "detail_data": br_details
-                    }, timeout=30)
+                    }, headers={'X-Internal-Api-Key': INTERNAL_API_KEY}, timeout=30)
                     
                 else:
                     br_head = {
@@ -562,7 +563,7 @@ def notification():
                         "head_data": br_head,
                         "detail_data": br_details,
                         "head_exists": False
-                    }, timeout=30)
+                    }, headers={'X-Internal-Api-Key': INTERNAL_API_KEY}, timeout=30)
 
                 if br_response.status_code in [200, 201]:
                     br_success = True

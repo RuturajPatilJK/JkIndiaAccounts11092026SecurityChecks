@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+import hmac
 from datetime import timedelta
 from flask_jwt_extended import JWTManager, verify_jwt_in_request, get_jwt_identity
 from flask_socketio import SocketIO
@@ -52,7 +53,13 @@ jwt.unauthorized_loader(_auth_error_response)   # no/missing token, missing CSRF
 jwt.invalid_token_loader(_auth_error_response)  # malformed/invalid token
 jwt.expired_token_loader(_auth_error_response)  # expired token
 
-PUBLIC_ENDPOINTS = {'login', 'refresh', 'logout', 'register_user', 'static'}
+PUBLIC_ENDPOINTS = {
+    'login', 'refresh', 'logout', 'register_user', 'static',
+    'notification', 'receiptvalidation',
+    'serve_whatsapp_media',
+}
+
+INTERNAL_API_KEY = os.getenv('INTERNAL_API_KEY')
 
 
 @app.before_request
@@ -63,13 +70,17 @@ def _enforce_jwt_globally():
     if not request.endpoint or request.endpoint in PUBLIC_ENDPOINTS:
         return
 
+    internal_key = request.headers.get('X-Internal-Api-Key')
+    if INTERNAL_API_KEY and internal_key and hmac.compare_digest(internal_key, INTERNAL_API_KEY):
+        return
+
     verify_jwt_in_request()
     request.current_user = get_jwt_identity()
 
 # Initialize SocketIO
-# socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*", message_queue="redis://localhost:6379/0")
+# socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*", message_queue="redis://localhost:6379/0")
 
 
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
